@@ -1,0 +1,145 @@
+```html
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSchool AI | SMK Negeri 2 Takalar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f7f3;
+      color: #20352b;
+    }
+    header {
+      background: #126b45;
+      color: white;
+      padding: 25px 16px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 10px; font-size: 25px; }
+    header p { margin: 5px 0; }
+    .notice {
+      background: #fff2cc;
+      color: #795600;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+    main {
+      max-width: 850px;
+      margin: 24px auto;
+      padding: 0 15px;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px #0000000d;
+    }
+    label { display: block; margin: 14px 0 7px; font-weight: bold; }
+    select, input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    select, input, textarea {
+      border: 1px solid #cbd8cf;
+      background: white;
+    }
+    button {
+      margin-top: 14px;
+      border: none;
+      background: #16804f;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #0d5e39; }
+    #hasil {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      margin-top: 18px;
+    }
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #52665a;
+      font-size: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>🌱 EcoSchool AI</h1>
+    <p><strong>Tutor Belajar Adaptif</strong></p>
+    <p>SMK Negeri 2 Takalar</p>
+    <p>Teman belajar siswa kelas X</p>
+  </header>
+
+  <div class="notice">
+    ⚠️ WEBSITE DALAM TAHAP UJI COBA
+  </div>
+
+  <main>
+    <section class="card">
+      <h2>Selamat Datang, Siswa!</h2>
+      <p>
+        Gunakan ruang belajar ini untuk mempelajari materi,
+        memahami konsep, dan berlatih menjawab soal.
+      </p>
+
+      <label for="mapel">Pilih mata pelajaran</label>
+      <select id="mapel">
+        <option value="IPAS">IPAS</option>
+        <option value="Matematika">Matematika</option>
+        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+        <option value="Bahasa Inggris">Bahasa Inggris</option>
+        <option value="Informatika">Informatika</option>
+      </select>
+
+      <label for="materi">Materi yang ingin dipelajari</label>
+      <input id="materi" placeholder="Contoh: Energi terbarukan">
+
+      <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
+      <textarea id="pertanyaan" rows="4"
+        placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+
+      <button onclick="belajar()">Mulai Belajar</button>
+
+      <div id="hasil" aria-live="polite"></div>
+    </section>
+  </main>
+
+  <footer>
+    SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
+  </footer>
+
+  <script>
+    function belajar() {
+      const mapel = document.getElementById("mapel").value;
+      const materi = document.getElementById("materi").value.trim();
+      const pertanyaan = document.getElementById("pertanyaan").value.trim();
+      const hasil = document.getElementById("hasil");
+
+      if (!materi || !pertanyaan) {
+        hasil.textContent =
+          "Silakan isi materi dan pertanyaan terlebih dahulu.";
+        return;
+      }
+
+      hasil.textContent =
+        "Mata pelajaran: " + mapel + "\n" +
+        "Materi: " + materi + "\n\n" +
+        "Pertanyaanmu: " + pertanyaan + "\n\n" +
+        "Halaman belajar berhasil digunakan. " +
+        "Fitur tutor AI akan dihubungkan pada tahap berikutnya.";
+    }
+  </script>
+</body>
+</html>
+```
