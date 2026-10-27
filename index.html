@@ -119,27 +119,67 @@
     SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
   </footer>
 
-  <script>
-    function belajar() {
-      const mapel = document.getElementById("mapel").value;
-      const materi = document.getElementById("materi").value.trim();
-      const pertanyaan = document.getElementById("pertanyaan").value.trim();
-      const hasil = document.getElementById("hasil");
+ <script>
+  async function belajar() {
+    const mapel = document.getElementById("mapel").value;
+    const materi = document.getElementById("materi").value.trim();
+    const pertanyaan = document.getElementById("pertanyaan").value.trim();
+    const hasil = document.getElementById("hasil");
+    const tombol = document.querySelector("button");
 
-      if (!materi || !pertanyaan) {
-        hasil.textContent =
-          "Silakan isi materi dan pertanyaan terlebih dahulu.";
-        return;
+    if (!materi || !pertanyaan) {
+      hasil.textContent = "Silakan isi materi dan pertanyaan terlebih dahulu.";
+      return;
+    }
+
+    tombol.disabled = true;
+    tombol.textContent = "Sedang menyiapkan jawaban AI...";
+    hasil.textContent = "EcoSchool AI sedang berpikir. Mohon tunggu.";
+
+    try {
+      const response = await fetch(
+        "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat",
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json"
+          },
+          body: JSON.stringify({
+            question:
+              "Mata pelajaran: " + mapel +
+              "\nMateri: " + materi +
+              "\n\nPertanyaan siswa: " + pertanyaan +
+              "\n\nJawab dalam bahasa Indonesia yang mudah dipahami siswa kelas X SMK. Berikan penjelasan akurat dan contoh yang benar. Sesuaikan jawaban dengan mata pelajaran dan materi yang dipilih."
+          })
+        }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.success) {
+        throw new Error(data.error || "AI belum dapat menjawab.");
+      }
+
+      if (!data.answer || !data.answer.trim()) {
+        throw new Error("Jawaban AI kosong. Silakan coba lagi.");
       }
 
       hasil.textContent =
-        "Mata pelajaran: " + mapel + "\n" +
+        "ECO SCHOOL AI — " + mapel + "\n" +
         "Materi: " + materi + "\n\n" +
-        "Pertanyaanmu: " + pertanyaan + "\n\n" +
-        "Halaman belajar berhasil digunakan. " +
-        "Fitur tutor AI akan dihubungkan pada tahap berikutnya.";
+        data.answer;
+
+    } catch (error) {
+      hasil.textContent =
+        "Maaf, jawaban belum berhasil dimuat.\n\n" +
+        "Penyebab: " + error.message +
+        "\n\nSilakan coba kembali beberapa saat lagi.";
+    } finally {
+      tombol.disabled = false;
+      tombol.textContent = "Mulai Belajar";
     }
-  </script>
+  }
+</script>
 </body>
 </html>
 ```
