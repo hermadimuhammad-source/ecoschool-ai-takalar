@@ -375,10 +375,9 @@
         );
         return;
       }
+const sesiTutorToken = sessionStorage.getItem("ecoschool_siswa_token");
 
-      const token = sessionStorage.getItem("ecoschool_siswa_token");
-
-if (!token) {
+if (!sesiTutorToken) {
   throw new Error("Sesi login tidak ditemukan. Silakan login kembali.");
 }
 
@@ -388,7 +387,7 @@ const response = await fetch(
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      "Authorization": "Bearer " + token
+      "Authorization": "Bearer " + sesiTutorToken
     },
     body: JSON.stringify({
       question:
