@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="id">
 <head>
@@ -40,7 +39,11 @@
       margin-bottom: 18px;
       box-shadow: 0 3px 12px #0000000d;
     }
-    label { display: block; margin: 14px 0 7px; font-weight: bold; }
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-weight: bold;
+    }
     select, input, textarea, button {
       width: 100%;
       padding: 12px;
@@ -60,10 +63,29 @@
       cursor: pointer;
     }
     button:hover { background: #0d5e39; }
+    button:disabled { opacity: .65; cursor: wait; }
+    .secondary { background: #64756b; }
+    .secondary:hover { background: #435248; }
+    .hidden { display: none !important; }
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .status.error { background: #fde8e7; color: #8c211b; }
+    .status.success { background: #e4f5e9; color: #165b32; }
     #hasil {
       white-space: pre-wrap;
       line-height: 1.7;
       margin-top: 18px;
+    }
+    .student-badge {
+      background: #e7f4eb;
+      padding: 12px;
+      border-radius: 8px;
+      line-height: 1.6;
     }
     footer {
       text-align: center;
@@ -86,8 +108,43 @@
   </div>
 
   <main>
-    <section class="card">
-      <h2>Selamat Datang, Siswa!</h2>
+    <section class="card" id="loginCard">
+      <h2>Login Siswa</h2>
+      <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
+
+      <form id="loginForm">
+        <label for="namaSiswa">Nama lengkap</label>
+        <input id="namaSiswa" autocomplete="name" required
+          maxlength="120" placeholder="Masukkan nama sesuai data sekolah">
+
+        <label for="kelasSiswa">Kelas</label>
+        <input id="kelasSiswa" required maxlength="40"
+          placeholder="Contoh: X RPL 1">
+
+        <label for="kodeAkses">Kode akses siswa</label>
+        <input id="kodeAkses" type="password"
+          autocomplete="current-password" required maxlength="200"
+          placeholder="Masukkan kode akses">
+
+        <button id="loginButton" type="submit">Login</button>
+        <div id="loginStatus" class="status hidden"
+          role="status" aria-live="polite"></div>
+      </form>
+    </section>
+
+    <section class="card hidden" id="belajarCard">
+      <div class="student-badge">
+        Login sebagai <strong id="namaAktif"></strong><br>
+        Kelas: <strong id="kelasAktif"></strong>
+      </div>
+
+      <button id="logoutButton" class="secondary" type="button">
+        Keluar dari akun
+      </button>
+
+      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+
+      <h2>Ruang Belajar</h2>
       <p>
         Gunakan ruang belajar ini untuk mempelajari materi,
         memahami konsep, dan berlatih menjawab soal.
@@ -109,8 +166,7 @@
       <textarea id="pertanyaan" rows="4"
         placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
 
-      <button onclick="belajar()">Mulai Belajar</button>
-
+      <button id="belajarButton" type="button">Mulai Belajar</button>
       <div id="hasil" aria-live="polite"></div>
     </section>
   </main>
@@ -119,16 +175,182 @@
     SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
   </footer>
 
- <script>
+<script>
+  // Alamat fungsi Supabase proyek EcoSchool yang baru.
+  const LOGIN_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/login-siswa";
+  const DATA_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/data-siswa";
+  const SESSION_KEY = "ecoschool_siswa_token";
+
+  const loginCard = document.getElementById("loginCard");
+  const belajarCard = document.getElementById("belajarCard");
+  const loginForm = document.getElementById("loginForm");
+  const loginButton = document.getElementById("loginButton");
+  const loginStatus = document.getElementById("loginStatus");
+  const hasil = document.getElementById("hasil");
+
+  function showStatus(element, message, type) {
+    element.textContent = message;
+    element.className = "status " + (type || "");
+    element.classList.remove("hidden");
+  }
+
+  function hideStatus(element) {
+    element.textContent = "";
+    element.className = "status hidden";
+  }
+
+  function showLogin() {
+    loginCard.classList.remove("hidden");
+    belajarCard.classList.add("hidden");
+  }
+
+  function showLearning(siswa) {
+    document.getElementById("namaAktif").textContent = siswa.nama;
+    document.getElementById("kelasAktif").textContent = siswa.kelas;
+    loginCard.classList.add("hidden");
+    belajarCard.classList.remove("hidden");
+    hideStatus(loginStatus);
+  }
+
+  async function readJsonResponse(response) {
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server memberikan respons yang tidak dapat dibaca.");
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || data.message ||
+        ("Permintaan gagal (" + response.status + ").")
+      );
+    }
+
+    return data;
+  }
+
+  // LOGIN SISWA
+  loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    hideStatus(loginStatus);
+
+    const nama = document.getElementById("namaSiswa").value.trim();
+    const kelas = document.getElementById("kelasSiswa").value.trim();
+    const kode_akses = document.getElementById("kodeAkses").value;
+
+    if (!nama || !kelas || !kode_akses) {
+      showStatus(
+        loginStatus,
+        "Lengkapi nama, kelas, dan kode akses.",
+        "error"
+      );
+      return;
+    }
+
+    loginButton.disabled = true;
+    loginButton.textContent = "Memeriksa login...";
+
+    try {
+      const response = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, kelas, kode_akses })
+      });
+
+      const data = await readJsonResponse(response);
+
+      if (!data.token || !data.siswa) {
+        throw new Error("Respons login belum lengkap. Silakan coba kembali.");
+      }
+
+      // Menyimpan token sesi, bukan kode akses siswa.
+      sessionStorage.setItem(SESSION_KEY, data.token);
+      document.getElementById("kodeAkses").value = "";
+
+      showLearning(data.siswa);
+      hasil.textContent = "";
+    } catch (error) {
+      showStatus(
+        loginStatus,
+        "Login belum berhasil.\n" + error.message +
+        "\nPeriksa nama, kelas, dan kode akses, lalu coba lagi.",
+        "error"
+      );
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = "Login";
+    }
+  });
+
+  // MEMERIKSA SESI YANG MASIH TERSIMPAN
+  async function validateExistingSession() {
+    const token = sessionStorage.getItem(SESSION_KEY);
+
+    if (!token) {
+      showLogin();
+      return;
+    }
+
+    try {
+      const response = await fetch(DATA_URL, {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      const data = await readJsonResponse(response);
+
+      if (!data.siswa) {
+        throw new Error("Data sesi tidak tersedia.");
+      }
+
+      showLearning(data.siswa);
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY);
+      showLogin();
+      showStatus(
+        loginStatus,
+        "Sesi login sudah berakhir atau tidak valid. Silakan login kembali.",
+        "error"
+      );
+    }
+  }
+
+  // LOGOUT SISWA
+  document.getElementById("logoutButton").addEventListener("click", function() {
+    sessionStorage.removeItem(SESSION_KEY);
+    document.getElementById("materi").value = "";
+    document.getElementById("pertanyaan").value = "";
+    hasil.textContent = "";
+    showLogin();
+    showStatus(loginStatus, "Anda sudah keluar dari akun.", "success");
+  });
+
+  document.getElementById("belajarButton").addEventListener("click", belajar);
+
+  // RUANG BELAJAR AI
   async function belajar() {
+    const token = sessionStorage.getItem(SESSION_KEY);
     const mapel = document.getElementById("mapel").value;
     const materi = document.getElementById("materi").value.trim();
     const pertanyaan = document.getElementById("pertanyaan").value.trim();
-    const hasil = document.getElementById("hasil");
-    const tombol = document.querySelector("button");
+    const tombol = document.getElementById("belajarButton");
+
+    if (!token) {
+      showLogin();
+      showStatus(
+        loginStatus,
+        "Silakan login kembali sebelum mulai belajar.",
+        "error"
+      );
+      return;
+    }
 
     if (!materi || !pertanyaan) {
-      hasil.textContent = "Silakan isi materi dan pertanyaan terlebih dahulu.";
+      hasil.textContent =
+        "Silakan isi materi dan pertanyaan terlebih dahulu.";
       return;
     }
 
@@ -137,13 +359,28 @@
     hasil.textContent = "EcoSchool AI sedang berpikir. Mohon tunggu.";
 
     try {
+      // Memeriksa sesi sebelum mengirim pertanyaan.
+      const sessionResponse = await fetch(DATA_URL, {
+        method: "GET",
+        headers: { "Authorization": "Bearer " + token }
+      });
+
+      if (!sessionResponse.ok) {
+        sessionStorage.removeItem(SESSION_KEY);
+        showLogin();
+        showStatus(
+          loginStatus,
+          "Sesi login tidak valid atau sudah berakhir. Silakan login kembali.",
+          "error"
+        );
+        return;
+      }
+
       const response = await fetch(
         "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat",
         {
           method: "POST",
-          headers: {
-            "Content-Type": "application/json"
-          },
+          headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             question:
               "Mata pelajaran: " + mapel +
@@ -164,81 +401,81 @@
         throw new Error("Jawaban AI kosong. Silakan coba lagi.");
       }
 
-     hasil.replaceChildren();
+      hasil.replaceChildren();
 
-const header = document.createElement("h3");
-header.textContent = "ECO SCHOOL AI — " + mapel;
-hasil.appendChild(header);
+      const heading = document.createElement("h3");
+      heading.textContent = "ECO SCHOOL AI — " + mapel;
+      hasil.appendChild(heading);
 
-const subheader = document.createElement("p");
-subheader.textContent = "Materi: " + materi;
-hasil.appendChild(subheader);
+      const subheading = document.createElement("p");
+      subheading.textContent = "Materi: " + materi;
+      hasil.appendChild(subheading);
 
-const content = document.createElement("div");
-content.className = "ai-answer-content";
+      const content = document.createElement("div");
+      content.className = "ai-answer-content";
+      const lines = data.answer.split("\n");
+      let list = null;
 
-const lines = data.answer.split("\n");
-let list = null;
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
 
-for (const rawLine of lines) {
-  const line = rawLine.trim();
+        if (!line) {
+          list = null;
+          continue;
+        }
 
-  if (!line) {
-    list = null;
-    continue;
-  }
+        const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+        const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
+        const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
 
-  const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
-  const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
-  const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+        if (headingMatch) {
+          list = null;
+          const answerHeading = document.createElement("h3");
+          answerHeading.textContent =
+            headingMatch[1].replace(/\*\*/g, "");
+          content.appendChild(answerHeading);
+        } else if (numberedMatch) {
+          if (!list || list.tagName !== "OL") {
+            list = document.createElement("ol");
+            content.appendChild(list);
+          }
 
-  if (headingMatch) {
-    list = null;
-    const heading = document.createElement("h3");
-    heading.textContent = headingMatch[1].replace(/\*\*/g, "");
-    content.appendChild(heading);
-  } else if (numberedMatch) {
-    if (!list || list.tagName !== "OL") {
-      list = document.createElement("ol");
-      content.appendChild(list);
-    }
+          const item = document.createElement("li");
+          item.textContent = numberedMatch[1].replace(/\*\*/g, "");
+          list.appendChild(item);
+        } else if (bulletMatch) {
+          if (!list || list.tagName !== "UL") {
+            list = document.createElement("ul");
+            content.appendChild(list);
+          }
 
-    const item = document.createElement("li");
-    item.textContent = numberedMatch[1].replace(/\*\*/g, "");
-    list.appendChild(item);
-  } else if (bulletMatch) {
-    if (!list || list.tagName !== "UL") {
-      list = document.createElement("ul");
-      content.appendChild(list);
-    }
+          const item = document.createElement("li");
+          item.textContent = bulletMatch[1].replace(/\*\*/g, "");
+          list.appendChild(item);
+        } else {
+          list = null;
+          const paragraph = document.createElement("p");
+          paragraph.textContent = line
+            .replace(/^#{1,6}\s*/, "")
+            .replace(/\*\*/g, "")
+            .replace(/^\*(.+)\*$/, "$1");
+          content.appendChild(paragraph);
+        }
+      }
 
-    const item = document.createElement("li");
-    item.textContent = bulletMatch[1].replace(/\*\*/g, "");
-    content.appendChild(list);
-  } else {
-    list = null;
-    const paragraph = document.createElement("p");
-    paragraph.textContent = line
-      .replace(/^#{1,6}\s*/, "")
-      .replace(/\*\*/g, "")
-      .replace(/^\*(.+)\*$/, "$1");
-    content.appendChild(paragraph);
-  }
-}
-
-hasil.appendChild(content);
-
+      hasil.appendChild(content);
     } catch (error) {
       hasil.textContent =
-        "Maaf, jawaban belum berhasil dimuat.\n\n" +
-        "Penyebab: " + error.message +
+        "Maaf, jawaban belum berhasil dimuat.\n\nPenyebab: " +
+        error.message +
         "\n\nSilakan coba kembali beberapa saat lagi.";
     } finally {
       tombol.disabled = false;
       tombol.textContent = "Mulai Belajar";
     }
   }
+
+  validateExistingSession();
 </script>
 </body>
 </html>
-```
