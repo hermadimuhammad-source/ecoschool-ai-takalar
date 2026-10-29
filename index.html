@@ -399,16 +399,13 @@
       });
 
       if (!sessionResponse.ok) {
-        sessionStorage.removeItem(SESSION_KEY);
-        showLogin();
-
-        showStatus(
-          loginStatus,
-          "Sesi login tidak valid atau sudah berakhir. Silakan login kembali.",
-          "error"
-        );
-        return;
-      }
+  const errorData = await readJsonResponse(sessionResponse);
+  throw new Error(
+    errorData.error ||
+    errorData.message ||
+    "Supabase menolak validasi sesi."
+  );
+}
 
       const sessionData = await readJsonResponse(sessionResponse);
 
