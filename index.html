@@ -561,143 +561,153 @@
 
   // MENAMPILKAN SOAL SATU PER SATU
   function renderQuestion() {
-    if (!quizData) return;
+  if (!quizData) return;
 
-    const q = quizData.questions[quizIndex];
-    const total = quizData.questions.length;
-    const progress = Math.round(((quizIndex + 1) / total) * 100);
+  const q = quizData.questions[quizIndex];
+  const total = quizData.questions.length;
+  const progress = Math.round(((quizIndex + 1) / total) * 100);
 
-    const wrapper = document.createElement("div");
-    wrapper.className = "quiz-shell";
+  const wrapper = document.createElement("div");
+  wrapper.className = "quiz-shell";
 
-    wrapper.innerHTML = `
-      <div class="quiz-progress">
-        <span style="width:${progress}%"></span>
+  wrapper.innerHTML = `
+    <div class="quiz-progress">
+      <span style="width:${progress}%"></span>
+    </div>
+
+    <section class="quiz-card">
+      <div class="quiz-meta">
+        <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
+        <span class="quiz-chip">${escapeHtml(String(quizData.difficulty || "").toUpperCase())}</span>
+        <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
       </div>
 
-      <section class="quiz-card">
-        <div class="quiz-meta">
-          <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
-          <span class="quiz-chip">${escapeHtml(String(quizData.difficulty || "").toUpperCase())}</span>
-          <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
-        </div>
+      <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+      <p>${escapeHtml(quizData.instructions || "Bacalah soal dengan teliti.")}</p>
+      <div class="quiz-question">${escapeHtml(q.question)}</div>
+      <div id="quizInputArea"></div>
 
-        <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+      <div class="quiz-actions">
+        <button type="button" id="quizPrev" class="light-button">
+          ← Sebelumnya
+        </button>
+        <button type="button" id="quizNext">
+          ${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}
+        </button>
+      </div>
+    </section>
+  `;
 
-        <p>${escapeHtml(quizData.instructions || "Bacalah soal dengan teliti.")}</p>
+  hasilSoal.replaceChildren(wrapper);
 
-        <div class="quiz-question">${escapeHtml(q.question)}</div>
+  const inputArea = wrapper.querySelector("#quizInputArea");
 
-        <div id="quizInputArea"></div>
-
-        <div class="quiz-actions">
-          <button type="button" id="quizPrev" class="light-button">
-            ← Sebelumnya
-          </button>
-
-          <button type="button" id="quizNext">
-            ${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}
-          </button>
-        </div>
-      </section>
-    `;
-
-    hasilSoal.replaceChildren(wrapper);
-
-    const inputArea = wrapper.querySelector("#quizInputArea");
-
-    if (q.type === "pilihan_ganda") {
-      if (!Array.isArray(q.options) || !q.options.length) {
-        hasilSoal.textContent = "Pilihan jawaban tidak tersedia.";
-        return;
-      }
-
-      q.options.forEach(option => {
-        const label = document.createElement("label");
-        label.className = "quiz-option";
-
-        const radio = document.createElement("input");
-        radio.type = "radio";
-        radio.name = "jawabanQuiz";
-        radio.value = option.key;
-        radio.checked = quizAnswers[quizIndex] === option.key;
-
-        radio.addEventListener("change", () => {
-          quizAnswers[quizIndex] = option.key;
-        });
-
-        const text = document.createElement("span");
-        text.textContent = option.key + ". " + option.text;
-
-        label.append(radio, text);
-        inputArea.appendChild(label);
-      });
-
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.className = "quiz-answer";
-      textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
-      textarea.value = quizAnswers[quizIndex] || "";
-
-      textarea.addEventListener("input", () => {
-        quizAnswers[quizIndex] = textarea.value;
-      });
-
-      inputArea.appendChild(textarea);
+  if (q.type === "pilihan_ganda") {
+    if (!Array.isArray(q.options) || !q.options.length) {
+      hasilSoal.textContent = "Pilihan jawaban tidak tersedia.";
+      return;
     }
 
-    const previousButton = wrapper.querySelector("#quizPrev");
-    const nextButton = wrapper.querySelector("#quizNext");
+    q.options.forEach(option => {
+      const optionLabel = option.label || option.key || "";
+      const optionText = option.text || option.value || "";
 
-    previousButton.disabled = quizIndex === 0;
+      const label = document.createElement("label");
+      label.className = "quiz-option";
 
-    previousButton.addEventListener("click", () => {
-      saveCurrentAnswer();
+      const radio = document.createElement("input");
+      radio.type = "radio";
+      radio.name = "jawabanQuiz";
+      radio.value = optionLabel;
+      radio.checked = quizAnswers[quizIndex] === optionLabel;
 
-      if (quizIndex > 0) {
-        quizIndex--;
-        renderQuestion();
-      }
+      radio.addEventListener("change", () => {
+        quizAnswers[quizIndex] = optionLabel;
+      });
+
+      const text = document.createElement("span");
+      text.textContent = optionLabel + ". " + optionText;
+
+      label.append(radio, text);
+      inputArea.appendChild(label);
     });
 
-    nextButton.addEventListener("click", () => {
-      saveCurrentAnswer();
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.className = "quiz-answer";
+    textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
+    textarea.value = quizAnswers[quizIndex] || "";
 
-      if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
-        alert("Pilih salah satu jawaban terlebih dahulu.");
-        return;
-      }
-
-      if (
-        q.type !== "pilihan_ganda" &&
-        !String(quizAnswers[quizIndex] || "").trim()
-      ) {
-        alert("Tuliskan jawaban terlebih dahulu.");
-        return;
-      }
-
-      if (quizIndex < total - 1) {
-        quizIndex++;
-        renderQuestion();
-      } else {
-        submitQuiz();
-      }
+    textarea.addEventListener("input", () => {
+      quizAnswers[quizIndex] = textarea.value;
     });
+
+    inputArea.appendChild(textarea);
   }
+
+  const previousButton = wrapper.querySelector("#quizPrev");
+  const nextButton = wrapper.querySelector("#quizNext");
+
+  previousButton.disabled = quizIndex === 0;
+
+  previousButton.addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (quizIndex > 0) {
+      quizIndex--;
+      renderQuestion();
+    }
+  });
+
+  nextButton.addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (
+      q.type === "pilihan_ganda" &&
+      !String(quizAnswers[quizIndex] || "").trim()
+    ) {
+      alert("Pilih salah satu jawaban terlebih dahulu.");
+      return;
+    }
+
+    if (
+      q.type !== "pilihan_ganda" &&
+      !String(quizAnswers[quizIndex] || "").trim()
+    ) {
+      alert("Tuliskan jawaban terlebih dahulu.");
+      return;
+    }
+
+    if (quizIndex < total - 1) {
+      quizIndex++;
+      renderQuestion();
+    } else {
+      submitQuiz();
+    }
+  });
+}
 
   function saveCurrentAnswer() {
-    if (!quizData) return;
+  if (!quizData) return;
 
-    const q = quizData.questions[quizIndex];
+  const q = quizData.questions[quizIndex];
 
-    if (q.type !== "pilihan_ganda") {
-      const textarea = hasilSoal.querySelector("textarea");
+  if (q.type === "pilihan_ganda") {
+    const selected = hasilSoal.querySelector(
+      'input[name="jawabanQuiz"]:checked'
+    );
 
-      if (textarea) {
-        quizAnswers[quizIndex] = textarea.value.trim();
-      }
+    if (selected) {
+      quizAnswers[quizIndex] = selected.value;
+    }
+  } else {
+    const textarea = hasilSoal.querySelector("textarea");
+
+    if (textarea) {
+      quizAnswers[quizIndex] = textarea.value.trim();
     }
   }
+}
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
@@ -711,143 +721,176 @@
 
   // MENGIRIM JAWABAN UNTUK DINILAI
   async function submitQuiz() {
-    if (!quizData) {
-      hasilSoal.textContent = "Data latihan tidak tersedia.";
+  if (!quizData) {
+    hasilSoal.textContent = "Data latihan tidak tersedia.";
+    return;
+  }
+
+  saveCurrentAnswer();
+
+  const currentQuizId = String(
+    quizId || quizData.quizId || ""
+  ).trim();
+
+  if (!currentQuizId) {
+    hasilSoal.textContent =
+      "ID latihan tidak ditemukan. Silakan buat latihan baru.";
+    return;
+  }
+
+  // Pastikan semua soal sudah dijawab.
+  for (let i = 0; i < quizData.questions.length; i++) {
+    if (!String(quizAnswers[i] || "").trim()) {
+      quizIndex = i;
+      renderQuestion();
+
+      alert("Silakan jawab semua soal terlebih dahulu.");
       return;
-    }
-
-    saveCurrentAnswer();
-
-    const currentQuizId = String(
-      quizId || quizData.quizId || ""
-    ).trim();
-
-    const answersToSend = quizAnswers.slice();
-
-    if (!currentQuizId) {
-      hasilSoal.textContent =
-        "ID latihan tidak ditemukan. Silakan buat latihan baru.";
-      return;
-    }
-
-    if (answersToSend.length !== quizData.questions.length) {
-      hasilSoal.textContent =
-        "Jumlah jawaban tidak sesuai dengan jumlah soal.";
-      return;
-    }
-
-    showThinking(
-      hasilSoal,
-      "AI sedang memeriksa jawaban dan menyiapkan pembahasan..."
-    );
-
-    try {
-      const data = await postWorker(EVALUATE_URL, {
-        quizId: currentQuizId,
-        answers: answersToSend
-      });
-
-      if (!data.success || !Array.isArray(data.results)) {
-        throw new Error(data.error || "Hasil penilaian tidak valid.");
-      }
-
-      renderQuizResult(data);
-
-    } catch (error) {
-      hasilSoal.textContent =
-        "Penilaian belum berhasil.\n" +
-        error.message +
-        "\nJawabanmu masih tersimpan di halaman ini. Silakan coba kembali.";
-
-      const retry = document.createElement("button");
-      retry.textContent = "Coba Penilaian Lagi";
-      retry.addEventListener("click", submitQuiz);
-
-      hasilSoal.appendChild(retry);
     }
   }
+
+  // Format jawaban harus sesuai dengan Worker.
+  const answersToSend = quizData.questions.map((question, index) => ({
+    id: question.id,
+    answer: quizAnswers[index]
+  }));
+
+  showThinking(
+    hasilSoal,
+    "AI sedang memeriksa jawaban dan menyiapkan pembahasan..."
+  );
+
+  try {
+    const data = await postWorker(EVALUATE_URL, {
+      quizId: currentQuizId,
+      answers: answersToSend
+    });
+
+    if (!data.success || !Array.isArray(data.results)) {
+      throw new Error(data.error || "Hasil penilaian tidak valid.");
+    }
+
+    renderQuizResult(data);
+
+  } catch (error) {
+    hasilSoal.textContent =
+      "Penilaian belum berhasil.\n" +
+      error.message +
+      "\nJawabanmu masih tersimpan di halaman ini.";
+
+    const retry = document.createElement("button");
+    retry.textContent = "Coba Penilaian Lagi";
+    retry.addEventListener("click", submitQuiz);
+
+    hasilSoal.appendChild(retry);
+  }
+}
 
   // MENAMPILKAN HASIL PENILAIAN
   function renderQuizResult(data) {
-    const result = document.createElement("section");
-    result.className = "quiz-result";
+  const result = document.createElement("section");
+  result.className = "quiz-result";
 
-    const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+  const score = Math.max(
+    0,
+    Math.min(100, Number(data.score) || 0)
+  );
 
-    result.innerHTML = `
-      <h2 style="text-align:center">🏆 Latihan Selesai!</h2>
+  const correctCount = data.results.filter(
+    item => item.correct === true
+  ).length;
 
-      <div class="score-circle" style="--score:${score}%">
-        <strong>${score}</strong>
-      </div>
+  result.innerHTML = `
+    <h2 style="text-align:center">🏆 Latihan Selesai!</h2>
 
-      <p style="text-align:center">
-        <strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong>
-      </p>
+    <div class="score-circle" style="--score:${score}%">
+      <strong>${score}</strong>
+    </div>
 
-      <p style="text-align:center">
-        Jawaban tepat: ${Number(data.correct) || 0}
-        dari ${Number(data.total) || 0} soal
-      </p>
+    <p style="text-align:center">
+      <strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong>
+    </p>
 
-      <h3>📖 Pembahasan Jawaban</h3>
-      <div id="quizReview"></div>
+    <p style="text-align:center">
+      Jawaban tepat: ${correctCount} dari ${data.totalQuestions || data.results.length} soal
+    </p>
 
-      <button type="button" id="ulangQuiz">
-        ↻ Buat Latihan Baru
-      </button>
-    `;
+    <p style="text-align:center">
+      Predikat: <strong>${escapeHtml(data.grade || "-")}</strong>
+    </p>
 
-    const review = result.querySelector("#quizReview");
+    <h3>📖 Pembahasan Jawaban</h3>
+    <div id="quizReview"></div>
 
-    data.results.forEach((item, index) => {
-      const q = quizData.questions[index];
-      if (!q) return;
+    <button type="button" id="ulangQuiz">
+      ↻ Buat Latihan Baru
+    </button>
+  `;
 
-      const row = document.createElement("div");
-      row.className = "review-item";
+  const review = result.querySelector("#quizReview");
 
-      const status = item.isCorrect
-        ? "✓ Tepat"
-        : "✗ Perlu diperbaiki";
+  data.results.forEach((item, index) => {
+    const row = document.createElement("div");
+    row.className = "review-item";
 
-      const heading = document.createElement("strong");
-      heading.textContent = "Soal " + (index + 1) + " — " + status;
-      heading.className = item.isCorrect ? "correct-text" : "wrong-text";
+    const heading = document.createElement("strong");
+    heading.textContent =
+      "Soal " + (item.number || index + 1) +
+      (item.correct ? " — ✓ Tepat" : " — ✗ Perlu diperbaiki");
 
-      const question = document.createElement("p");
-      question.textContent = q.question;
+    heading.className = item.correct
+      ? "correct-text"
+      : "wrong-text";
 
-      const feedback = document.createElement("p");
-      feedback.textContent =
-        "Umpan balik: " + (item.feedback || "Tidak ada umpan balik.");
+    const question = document.createElement("p");
+    question.textContent = item.question || "";
 
-      const explanation = document.createElement("p");
-      explanation.textContent =
-        "Pembahasan: " +
-        (item.explanation || "Pelajari kembali materi terkait.");
+    const studentAnswer = document.createElement("p");
+    studentAnswer.textContent =
+      "Jawaban Anda: " + (item.studentAnswer || "Tidak dijawab");
 
-      const correct = document.createElement("p");
-      correct.textContent =
-        "Acuan jawaban: " + (item.correctAnswer ?? "Tidak tersedia");
+    const correctAnswer = document.createElement("p");
+    correctAnswer.textContent =
+      "Kunci/pedoman jawaban: " +
+      (item.correctAnswer || "Tidak tersedia");
 
-      row.append(heading, question, feedback, explanation, correct);
-      review.appendChild(row);
-    });
+    const feedback = document.createElement("p");
+    feedback.textContent =
+      "Umpan balik: " + (item.feedback || "-");
 
-    hasilSoal.replaceChildren(result);
+    const explanation = document.createElement("p");
+    explanation.textContent =
+      "Pembahasan: " + (item.explanation || "-");
 
-    result.querySelector("#ulangQuiz").addEventListener("click", () => {
-      quizData = null;
-      quizId = null;
-      quizIndex = 0;
-      quizAnswers = [];
+    const scoreText = document.createElement("p");
+    scoreText.textContent =
+      "Nilai soal: " + (Number(item.score) || 0);
 
-      hasilSoal.replaceChildren();
+    row.append(
+      heading,
+      question,
+      studentAnswer,
+      correctAnswer,
+      feedback,
+      explanation,
+      scoreText
+    );
 
-      document.getElementById("latihanMateri").focus();
-    });
-  }
+    review.appendChild(row);
+  });
+
+  hasilSoal.replaceChildren(result);
+
+  result.querySelector("#ulangQuiz").addEventListener("click", () => {
+    quizData = null;
+    quizId = null;
+    quizIndex = 0;
+    quizAnswers = [];
+
+    hasilSoal.replaceChildren();
+    document.getElementById("latihanMateri").focus();
+  });
+}
     
 
   // STATUS LOGIN
