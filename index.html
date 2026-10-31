@@ -1,652 +1,485 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>EcoSchool AI | SMK Negeri 2 Takalar</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0;
-      font-family: Arial, sans-serif;
-      background: #f0f7f3;
-      color: #20352b;
-    }
-    header {
-      background: #126b45;
-      color: white;
-      padding: 25px 16px;
-      text-align: center;
-    }
-    header h1 { margin: 0 0 10px; font-size: 25px; }
-    header p { margin: 5px 0; }
-    .notice {
-      background: #fff2cc;
-      color: #795600;
-      padding: 12px;
-      text-align: center;
-      font-weight: bold;
-    }
-    main {
-      max-width: 850px;
-      margin: 24px auto;
-      padding: 0 15px;
-    }
-    .card {
-      background: white;
-      border-radius: 14px;
-      padding: 22px;
-      margin-bottom: 18px;
-      box-shadow: 0 3px 12px #0000000d;
-    }
-    label {
-      display: block;
-      margin: 14px 0 7px;
-      font-weight: bold;
-    }
-    select, input, textarea, button {
-      width: 100%;
-      padding: 12px;
-      border-radius: 8px;
-      font-size: 16px;
-    }
-    select, input, textarea {
-      border: 1px solid #cbd8cf;
-      background: white;
-    }
-    button {
-      margin-top: 14px;
-      border: none;
-      background: #16804f;
-      color: white;
-      font-weight: bold;
-      cursor: pointer;
-    }
-    button:hover { background: #0d5e39; }
-    button:disabled { opacity: .65; cursor: wait; }
-    .secondary { background: #64756b; }
-    .secondary:hover { background: #435248; }
-    .hidden { display: none !important; }
-    .status {
-      margin-top: 14px;
-      padding: 12px;
-      border-radius: 8px;
-      white-space: pre-wrap;
-      line-height: 1.5;
-    }
-    .status.error { background: #fde8e7; color: #8c211b; }
-    .status.success { background: #e4f5e9; color: #165b32; }
-    #hasil {
-      white-space: pre-wrap;
-      line-height: 1.7;
-      margin-top: 18px;
-    }
-    .student-badge {
-      background: #e7f4eb;
-      padding: 12px;
-      border-radius: 8px;
-      line-height: 1.6;
-    }
-    .ai-answer-content {
-      white-space: normal;
-      overflow-wrap: anywhere;
-    }
-    .ai-answer-content p {
-      line-height: 1.7;
-      margin: 12px 0;
-    }
-    .ai-answer-content li { margin-bottom: 7px; }
-    .student-nav {
-      display: flex;
-      gap: 10px;
-      margin: 20px 0;
-    }
-    .student-nav .nav-button {
-      flex: 1;
-      margin-top: 0;
-      background: #e5efe8;
-      color: #20583b;
-      border: 1px solid #c8ddcf;
-    }
-    .student-nav .nav-button.active {
-      background: #16804f;
-      color: white;
-      border-color: #16804f;
-    }
-    .small-note {
-      color: #64756b;
-      font-size: 13px;
-      line-height: 1.5;
-    }
-    #hasilSoal {
-      margin-top: 16px;
-      line-height: 1.6;
-      white-space: pre-wrap;
-    }
-    @media (max-width: 480px) {
-      .student-nav { flex-direction: column; }
-    }
-    footer {
-      text-align: center;
-      padding: 20px;
-      color: #52665a;
-      font-size: 14px;
-    }
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>EcoSchool AI | SMK Negeri 2 Takalar</title>
+<style>
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#f0f7f3;color:#20352b}
+header{background:#126b45;color:white;padding:25px 16px;text-align:center}
+header h1{margin:0 0 10px;font-size:25px}
+header p{margin:5px 0}
+.notice{background:#fff2cc;color:#795600;padding:12px;text-align:center;font-weight:bold}
+main{max-width:850px;margin:24px auto;padding:0 15px}
+.card{background:white;border-radius:14px;padding:22px;margin-bottom:18px;box-shadow:0 3px 12px #0000000d}
+label{display:block;margin:14px 0 7px;font-weight:bold}
+select,input,textarea,button{width:100%;padding:12px;border-radius:8px;font-size:16px}
+select,input,textarea{border:1px solid #cbd8cf;background:white}
+button{margin-top:14px;border:none;background:#16804f;color:white;font-weight:bold;cursor:pointer}
+button:hover{background:#0d5e39}
+button:disabled{opacity:.65;cursor:wait}
+.secondary{background:#64756b}
+.secondary:hover{background:#435248}
+.hidden{display:none!important}
+.status{margin-top:14px;padding:12px;border-radius:8px;white-space:pre-wrap;line-height:1.5}
+.status.error{background:#fde8e7;color:#8c211b}
+.status.success{background:#e4f5e9;color:#165b32}
+#hasil{white-space:pre-wrap;line-height:1.7;margin-top:18px}
+.student-badge{background:#e7f4eb;padding:12px;border-radius:8px;line-height:1.6}
+.ai-answer-content{white-space:normal;overflow-wrap:anywhere}
+.ai-answer-content p{line-height:1.7;margin:12px 0}
+.ai-answer-content li{margin-bottom:7px}
+.student-nav{display:flex;gap:10px;margin:20px 0}
+.student-nav .nav-button{flex:1;margin-top:0;background:#e5efe8;color:#20583b;border:1px solid #c8ddcf}
+.student-nav .nav-button.active{background:#16804f;color:white;border-color:#16804f}
+.small-note{color:#64756b;font-size:13px;line-height:1.5}
+#hasilSoal{margin-top:16px;line-height:1.6;white-space:pre-wrap}
+footer{text-align:center;padding:20px;color:#52665a;font-size:14px}
+@media(max-width:480px){.student-nav{flex-direction:column}}
+</style>
 </head>
 <body>
-  <header>
-    <h1>🌱 EcoSchool AI</h1>
-    <p><strong>Tutor Belajar Adaptif</strong></p>
-    <p>SMK Negeri 2 Takalar</p>
-    <p>Teman belajar siswa kelas X</p>
-  </header>
 
-  <div class="notice">
-    ⚠️ WEBSITE DALAM TAHAP UJI COBA
-  </div>
+<header>
+<h1>🌱 EcoSchool AI</h1>
+<p><strong>Tutor Belajar Adaptif</strong></p>
+<p>SMK Negeri 2 Takalar</p>
+<p>Teman belajar siswa kelas X</p>
+</header>
 
-  <main>
-    <section class="card" id="loginCard">
-      <h2>Login Siswa</h2>
-      <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
+<div class="notice">⚠️ WEBSITE DALAM TAHAP UJI COBA</div>
 
-      <form id="loginForm">
-        <label for="namaSiswa">Nama lengkap</label>
-        <input id="namaSiswa" autocomplete="name" required
-          maxlength="120" placeholder="Masukkan nama sesuai data sekolah">
+<main>
 
-        <label for="kelasSiswa">Kelas</label>
-        <input id="kelasSiswa" required maxlength="40"
-          placeholder="Contoh: X RPL 1">
+<!-- LOGIN SISWA -->
+<section class="card" id="loginCard">
+<h2>Login Siswa</h2>
+<p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
 
-        <label for="kodeAkses">Kode akses siswa</label>
-        <input id="kodeAkses" type="password"
-          autocomplete="current-password" required maxlength="200"
-          placeholder="Masukkan kode akses">
+<form id="loginForm">
+<label for="namaSiswa">Nama lengkap</label>
+<input id="namaSiswa" autocomplete="name" required maxlength="120" placeholder="Masukkan nama sesuai data sekolah">
 
-        <button id="loginButton" type="submit">Login</button>
-        <div id="loginStatus" class="status hidden"
-          role="status" aria-live="polite"></div>
-      </form>
-    </section>
+<label for="kelasSiswa">Kelas</label>
+<input id="kelasSiswa" required maxlength="40" placeholder="Contoh: X RPL 1">
 
-    <section class="card hidden" id="belajarCard">
-      <div class="student-badge">
-        Login sebagai <strong id="namaAktif"></strong><br>
-        Kelas: <strong id="kelasAktif"></strong>
-      </div>
+<label for="kodeAkses">Kode akses siswa</label>
+<input id="kodeAkses" type="password" autocomplete="current-password" required maxlength="200" placeholder="Masukkan kode akses">
 
-      <button id="logoutButton" class="secondary" type="button">
-        Keluar dari akun
-      </button>
+<button id="loginButton" type="submit">Login</button>
+<div id="loginStatus" class="status hidden" role="status" aria-live="polite"></div>
+</form>
+</section>
 
-      <nav class="student-nav" aria-label="Menu pembelajaran">
-        <button id="menuRuangBelajar" class="nav-button active" type="button" aria-current="page">📖 Ruang Belajar</button>
-        <button id="menuBankSoal" class="nav-button" type="button">📚 Bank Soal</button>
-      </nav>
+<!-- SATU PANEL UTAMA SETELAH LOGIN -->
+<section class="card hidden" id="belajarCard">
 
-      <div id="ruangBelajarPanel">
-        <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+<div class="student-badge">
+Login sebagai <strong id="namaAktif"></strong><br>
+Kelas: <strong id="kelasAktif"></strong>
+</div>
 
-        <h2>Ruang Belajar</h2>
-        <p>
-          Gunakan ruang belajar ini untuk mempelajari materi,
-          memahami konsep, dan berlatih menjawab soal.
-        </p>
+<button id="logoutButton" class="secondary" type="button">Keluar dari akun</button>
 
-        <label for="mapel">Pilih mata pelajaran</label>
-        <select id="mapel">
-          <option value="IPAS">IPAS</option>
-          <option value="Matematika">Matematika</option>
-          <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-          <option value="Bahasa Inggris">Bahasa Inggris</option>
-          <option value="Informatika">Informatika</option>
-        </select>
+<!-- NAVIGASI KEDUA MENU -->
+<nav class="student-nav" aria-label="Menu pembelajaran">
+<button id="menuRuangBelajar" class="nav-button active" type="button">📖 Ruang Belajar</button>
+<button id="menuBankSoal" class="nav-button" type="button">📚 Bank Soal</button>
+</nav>
 
-        <label for="materi">Materi yang ingin dipelajari</label>
-        <input id="materi" placeholder="Contoh: Energi terbarukan">
+<!-- PANEL RUANG BELAJAR -->
+<div id="ruangBelajarPanel">
 
-        <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
-        <textarea id="pertanyaan" rows="4"
-          placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+<hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
 
-        <button id="belajarButton" type="button">Mulai Belajar</button>
-        <div id="hasil" aria-live="polite"></div>
-      </div>
+<h2>📖 Ruang Belajar</h2>
+<p>Gunakan ruang belajar ini untuk mempelajari materi, memahami konsep, dan berlatih menjawab soal.</p>
 
-      <section class="card hidden" id="bankSoalCard">
-        <h2>📚 Bank Soal EcoSchool AI</h2>
-        <p>Buat latihan sesuai mata pelajaran, materi, jenis soal, dan tingkat kesulitan yang kamu inginkan.</p>
+<label for="mapel">Pilih mata pelajaran</label>
+<select id="mapel">
+<option value="IPAS">IPAS</option>
+<option value="Matematika">Matematika</option>
+<option value="Bahasa Indonesia">Bahasa Indonesia</option>
+<option value="Bahasa Inggris">Bahasa Inggris</option>
+<option value="Informatika">Informatika</option>
+</select>
 
-        <label for="latihanMapel">Mata Pelajaran</label>
-        <select id="latihanMapel">
-          <option value="IPAS">IPAS</option>
-          <option value="Matematika">Matematika</option>
-          <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-          <option value="Bahasa Inggris">Bahasa Inggris</option>
-          <option value="Informatika">Informatika</option>
-        </select>
+<label for="materi">Materi yang ingin dipelajari</label>
+<input id="materi" placeholder="Contoh: Energi terbarukan">
 
-        <label for="latihanMateri">Materi</label>
-        <input id="latihanMateri" placeholder="Contoh: Energi terbarukan">
+<label for="pertanyaan">Apa yang ingin kamu pahami?</label>
+<textarea id="pertanyaan" rows="4" placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
 
-        <label for="jenisSoal">Jenis Soal</label>
-        <select id="jenisSoal">
-          <option value="pilihan_ganda">Pilihan Ganda</option>
-          <option value="esai">Soal Esai</option>
-          <option value="campuran">Campuran</option>
-        </select>
+<button id="belajarButton" type="button">Mulai Belajar</button>
+<div id="hasil" aria-live="polite"></div>
 
-        <label for="tingkatKesulitan">Tingkat Kesulitan</label>
-        <select id="tingkatKesulitan">
-          <option value="mudah">Mudah</option>
-          <option value="sedang" selected>Sedang</option>
-          <option value="sulit">Sulit</option>
-          <option value="hots">HOTS</option>
-        </select>
+</div>
+<!-- AKHIR PANEL RUANG BELAJAR -->
 
-        <label for="jumlahSoal">Jumlah Soal</label>
-        <input id="jumlahSoal" type="number" min="1" max="100" value="10" placeholder="Masukkan jumlah soal">
-        <p class="small-note">Untuk menjaga kualitas dan kestabilan, jumlah maksimal per satu sesi pembuatan adalah 100 soal. Siswa dapat membuat sesi latihan baru kapan saja.</p>
+<!-- PANEL BANK SOAL: MASIH DALAM belajarCard -->
+<div id="bankSoalCard" class="hidden">
 
-        <button id="buatSoalButton" type="button">✨ Buat Latihan</button>
-        <div id="hasilSoal" aria-live="polite"></div>
-      </section>
-    </section>
-  </main>
+<hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
 
-  <footer>
-    SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
-  </footer>
+<h2>📚 Bank Soal EcoSchool AI</h2>
+<p>Buat latihan sesuai mata pelajaran, materi, jenis soal, dan tingkat kesulitan yang kamu inginkan.</p>
+
+<label for="latihanMapel">Mata Pelajaran</label>
+<select id="latihanMapel">
+<option value="IPAS">IPAS</option>
+<option value="Matematika">Matematika</option>
+<option value="Bahasa Indonesia">Bahasa Indonesia</option>
+<option value="Bahasa Inggris">Bahasa Inggris</option>
+<option value="Informatika">Informatika</option>
+</select>
+
+<label for="latihanMateri">Materi</label>
+<input id="latihanMateri" placeholder="Contoh: Energi terbarukan">
+
+<label for="jenisSoal">Jenis Soal</label>
+<select id="jenisSoal">
+<option value="pilihan_ganda">Pilihan Ganda</option>
+<option value="esai">Soal Esai</option>
+<option value="campuran">Campuran</option>
+</select>
+
+<label for="tingkatKesulitan">Tingkat Kesulitan</label>
+<select id="tingkatKesulitan">
+<option value="mudah">Mudah</option>
+<option value="sedang" selected>Sedang</option>
+<option value="sulit">Sulit</option>
+<option value="hots">HOTS</option>
+</select>
+
+<label for="jumlahSoal">Jumlah Soal</label>
+<input id="jumlahSoal" type="number" min="1" max="100" value="10">
+
+<p class="small-note">Jumlah maksimal per satu sesi adalah 100 soal. Siswa dapat membuat sesi latihan baru kapan saja.</p>
+
+<button id="buatSoalButton" type="button">✨ Buat Latihan</button>
+<div id="hasilSoal" aria-live="polite"></div>
+
+</div>
+<!-- AKHIR PANEL BANK SOAL -->
+
+</section>
+<!-- AKHIR SATU PANEL UTAMA -->
+
+</main>
+
+<!-- FOOTER BERADA DI LUAR PANEL UTAMA -->
+<footer>
+SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
+</footer>
 
 <script>
-  const LOGIN_URL =
-    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/login-siswa";
+const LOGIN_URL="https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/login-siswa";
+const DATA_URL="https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/data-siswa";
+const WORKER_URL="https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat";
+const SESSION_KEY="ecoschool_siswa_token";
 
-  const DATA_URL =
-    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/data-siswa";
+const loginCard=document.getElementById("loginCard");
+const belajarCard=document.getElementById("belajarCard");
+const loginForm=document.getElementById("loginForm");
+const loginButton=document.getElementById("loginButton");
+const loginStatus=document.getElementById("loginStatus");
+const belajarButton=document.getElementById("belajarButton");
+const hasil=document.getElementById("hasil");
 
-  const WORKER_URL =
-    "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat";
+const ruangBelajarPanel=document.getElementById("ruangBelajarPanel");
+const bankSoalCard=document.getElementById("bankSoalCard");
+const menuRuangBelajar=document.getElementById("menuRuangBelajar");
+const menuBankSoal=document.getElementById("menuBankSoal");
 
-  const SESSION_KEY = "ecoschool_siswa_token";
+function showStudentPanel(panel){
+  const showBank=panel==="bank";
 
-  const loginCard = document.getElementById("loginCard");
-  const belajarCard = document.getElementById("belajarCard");
-  const loginForm = document.getElementById("loginForm");
-  const loginButton = document.getElementById("loginButton");
-  const loginStatus = document.getElementById("loginStatus");
-  const belajarButton = document.getElementById("belajarButton");
-  const hasil = document.getElementById("hasil");
-  const ruangBelajarPanel = document.getElementById("ruangBelajarPanel");
-  const bankSoalCard = document.getElementById("bankSoalCard");
-  const menuRuangBelajar = document.getElementById("menuRuangBelajar");
-  const menuBankSoal = document.getElementById("menuBankSoal");
+  ruangBelajarPanel.classList.toggle("hidden",showBank);
+  bankSoalCard.classList.toggle("hidden",!showBank);
 
-  function showStudentPanel(panel) {
-    const showBank = panel === "bank";
-    ruangBelajarPanel.classList.toggle("hidden", showBank);
-    bankSoalCard.classList.toggle("hidden", !showBank);
-    menuRuangBelajar.classList.toggle("active", !showBank);
-    menuBankSoal.classList.toggle("active", showBank);
-    menuRuangBelajar.removeAttribute("aria-current");
-    menuBankSoal.removeAttribute("aria-current");
-    (showBank ? menuBankSoal : menuRuangBelajar).setAttribute("aria-current", "page");
+  menuRuangBelajar.classList.toggle("active",!showBank);
+  menuBankSoal.classList.toggle("active",showBank);
+}
+
+menuRuangBelajar.addEventListener("click",function(){
+  showStudentPanel("belajar");
+});
+
+menuBankSoal.addEventListener("click",function(){
+  showStudentPanel("bank");
+});
+
+function showStatus(element,message,type){
+  element.textContent=message;
+  element.className="status "+(type||"");
+  element.classList.remove("hidden");
+}
+
+function hideStatus(element){
+  element.textContent="";
+  element.className="status hidden";
+}
+
+function showLogin(){
+  loginCard.classList.remove("hidden");
+  belajarCard.classList.add("hidden");
+}
+
+function showLearning(siswa){
+  document.getElementById("namaAktif").textContent=siswa.nama;
+  document.getElementById("kelasAktif").textContent=siswa.kelas;
+
+  loginCard.classList.add("hidden");
+  belajarCard.classList.remove("hidden");
+
+  showStudentPanel("belajar");
+  hideStatus(loginStatus);
+}
+
+async function readJsonResponse(response){
+  let data;
+
+  try{
+    data=await response.json();
+  }catch{
+    throw new Error("Server memberikan respons yang tidak dapat dibaca.");
   }
 
-  menuRuangBelajar.addEventListener("click", function() {
-    showStudentPanel("belajar");
-  });
+  if(!response.ok){
+    throw new Error(data.error||data.message||("Permintaan gagal ("+response.status+")."));
+  }
 
-  menuBankSoal.addEventListener("click", function() {
-    showStudentPanel("bank");
-  });
+  return data;
+}
 
-  // Tombol pembuatan soal akan dihubungkan ke layanan AI pada tahap berikutnya.
-  document.getElementById("buatSoalButton").addEventListener("click", function() {
-    const materiLatihan = document.getElementById("latihanMateri").value.trim();
-    const jumlah = Number(document.getElementById("jumlahSoal").value);
-    const hasilSoal = document.getElementById("hasilSoal");
+/* LOGIN SISWA */
+loginForm.addEventListener("submit",async function(event){
+  event.preventDefault();
+  hideStatus(loginStatus);
 
-    if (!materiLatihan) {
-      hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
-      return;
+  const nama=document.getElementById("namaSiswa").value.trim();
+  const kelas=document.getElementById("kelasSiswa").value.trim();
+  const kode_akses=document.getElementById("kodeAkses").value;
+
+  if(!nama||!kelas||!kode_akses){
+    showStatus(loginStatus,"Lengkapi nama, kelas, dan kode akses.","error");
+    return;
+  }
+
+  loginButton.disabled=true;
+  loginButton.textContent="Memeriksa login...";
+
+  try{
+    const response=await fetch(LOGIN_URL,{
+      method:"POST",
+      headers:{"Content-Type":"application/json"},
+      body:JSON.stringify({nama,kelas,kode_akses})
+    });
+
+    const data=await readJsonResponse(response);
+
+    if(!data.token||!data.siswa){
+      throw new Error("Respons login belum lengkap. Silakan coba kembali.");
     }
 
-    if (!Number.isInteger(jumlah) || jumlah < 1 || jumlah > 100) {
-      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 100 untuk satu sesi.";
-      return;
+    sessionStorage.setItem(SESSION_KEY,data.token);
+    document.getElementById("kodeAkses").value="";
+
+    showLearning(data.siswa);
+    hasil.textContent="";
+
+  }catch(error){
+    showStatus(loginStatus,"Login belum berhasil.\n"+error.message,"error");
+  }finally{
+    loginButton.disabled=false;
+    loginButton.textContent="Login";
+  }
+});
+
+/* VALIDASI SESI */
+async function validateExistingSession(){
+  const existingSessionToken=sessionStorage.getItem(SESSION_KEY);
+
+  if(!existingSessionToken){
+    showLogin();
+    return;
+  }
+
+  try{
+    const response=await fetch(DATA_URL,{
+      method:"GET",
+      headers:{"Authorization":"Bearer "+existingSessionToken}
+    });
+
+    const data=await readJsonResponse(response);
+
+    if(!data.siswa){
+      throw new Error("Data sesi tidak tersedia.");
     }
 
-    hasilSoal.textContent = "Tampilan Bank Soal sudah siap. Fitur pembuatan soal AI akan diaktifkan pada tahap berikutnya.";
-  });
+    showLearning(data.siswa);
 
-  function showStatus(element, message, type) {
-    element.textContent = message;
-    element.className = "status " + (type || "");
-    element.classList.remove("hidden");
+  }catch{
+    sessionStorage.removeItem(SESSION_KEY);
+    showLogin();
+
+    showStatus(loginStatus,"Sesi login sudah berakhir atau tidak valid. Silakan login kembali.","error");
+  }
+}
+
+/* LOGOUT */
+document.getElementById("logoutButton").addEventListener("click",function(){
+  sessionStorage.removeItem(SESSION_KEY);
+
+  document.getElementById("materi").value="";
+  document.getElementById("pertanyaan").value="";
+  hasil.textContent="";
+
+  showLogin();
+  showStatus(loginStatus,"Anda sudah keluar dari akun.","success");
+});
+
+/* RUANG BELAJAR */
+belajarButton.addEventListener("click",belajar);
+
+async function belajar(){
+  const sessionToken=sessionStorage.getItem(SESSION_KEY);
+  const mapel=document.getElementById("mapel").value;
+  const materi=document.getElementById("materi").value.trim();
+  const pertanyaan=document.getElementById("pertanyaan").value.trim();
+
+  if(!sessionToken){
+    showLogin();
+    showStatus(loginStatus,"Silakan login kembali sebelum mulai belajar.","error");
+    return;
   }
 
-  function hideStatus(element) {
-    element.textContent = "";
-    element.className = "status hidden";
+  if(!materi||!pertanyaan){
+    hasil.textContent="Silakan isi materi dan pertanyaan terlebih dahulu.";
+    return;
   }
 
-  function showLogin() {
-    loginCard.classList.remove("hidden");
-    belajarCard.classList.add("hidden");
-  }
+  belajarButton.disabled=true;
+  belajarButton.textContent="Sedang menyiapkan jawaban AI...";
+  hasil.textContent="EcoSchool AI sedang berpikir. Mohon tunggu.";
 
-  function showLearning(siswa) {
-    document.getElementById("namaAktif").textContent = siswa.nama;
-    document.getElementById("kelasAktif").textContent = siswa.kelas;
-    loginCard.classList.add("hidden");
-    belajarCard.classList.remove("hidden");
-    showStudentPanel("belajar");
-    hideStatus(loginStatus);
-  }
+  try{
+    const sessionResponse=await fetch(DATA_URL,{
+      method:"GET",
+      headers:{"Authorization":"Bearer "+sessionToken}
+    });
 
-  async function readJsonResponse(response) {
-    let data;
+    const sessionData=await readJsonResponse(sessionResponse);
 
-    try {
-      data = await response.json();
-    } catch {
-      throw new Error(
-        "Server memberikan respons yang tidak dapat dibaca."
-      );
+    if(!sessionData.siswa){
+      throw new Error("Identitas siswa tidak dapat diverifikasi.");
     }
 
-    if (!response.ok) {
-      throw new Error(
-        data.error || data.message ||
-        ("Permintaan gagal (" + response.status + ").")
-      );
+    const tutorResponse=await fetch(WORKER_URL,{
+      method:"POST",
+      headers:{
+        "Content-Type":"application/json",
+        "Authorization":"Bearer "+sessionToken
+      },
+      body:JSON.stringify({
+        question:
+          "Mata pelajaran: "+mapel+
+          "\nMateri: "+materi+
+          "\n\nPertanyaan siswa: "+pertanyaan+
+          "\n\nJawab dalam bahasa Indonesia yang mudah dipahami siswa kelas X SMK. Berikan penjelasan akurat dan contoh yang benar. Sesuaikan jawaban dengan mata pelajaran dan materi yang dipilih."
+      })
+    });
+
+    const tutorData=await readJsonResponse(tutorResponse);
+
+    if(!tutorData.success){
+      throw new Error(tutorData.error||"AI belum dapat menjawab.");
     }
 
-    return data;
-  }
-
-  // LOGIN SISWA
-  loginForm.addEventListener("submit", async function(event) {
-    event.preventDefault();
-    hideStatus(loginStatus);
-
-    const nama = document.getElementById("namaSiswa").value.trim();
-    const kelas = document.getElementById("kelasSiswa").value.trim();
-    const kode_akses = document.getElementById("kodeAkses").value;
-
-    if (!nama || !kelas || !kode_akses) {
-      showStatus(
-        loginStatus,
-        "Lengkapi nama, kelas, dan kode akses.",
-        "error"
-      );
-      return;
+    if(typeof tutorData.answer!=="string"||!tutorData.answer.trim()){
+      throw new Error("Jawaban AI kosong. Silakan coba lagi.");
     }
 
-    loginButton.disabled = true;
-    loginButton.textContent = "Memeriksa login...";
+    hasil.replaceChildren();
 
-    try {
-      const response = await fetch(LOGIN_URL, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nama, kelas, kode_akses })
-      });
+    const heading=document.createElement("h3");
+    heading.textContent="EcoSchool AI — "+mapel;
+    hasil.appendChild(heading);
 
-      const data = await readJsonResponse(response);
+    const subheading=document.createElement("p");
+    subheading.textContent="Materi: "+materi;
+    hasil.appendChild(subheading);
 
-      if (!data.token || !data.siswa) {
-        throw new Error(
-          "Respons login belum lengkap. Silakan coba kembali."
-        );
+    const content=document.createElement("div");
+    content.className="ai-answer-content";
+
+    const lines=tutorData.answer.split("\n");
+    let list=null;
+
+    for(const rawLine of lines){
+      const line=rawLine.trim();
+
+      if(!line){
+        list=null;
+        continue;
       }
 
-      sessionStorage.setItem(SESSION_KEY, data.token);
-      document.getElementById("kodeAkses").value = "";
+      const headingMatch=line.match(/^#{1,6}\s+(.+)$/);
+      const numberedMatch=line.match(/^\d+[.)]\s+(.+)$/);
+      const bulletMatch=line.match(/^[-*•]\s+(.+)$/);
 
-      showLearning(data.siswa);
-      hasil.textContent = "";
-    } catch (error) {
-      showStatus(
-        loginStatus,
-        "Login belum berhasil.\n" + error.message +
-        "\nPeriksa nama, kelas, dan kode akses, lalu coba lagi.",
-        "error"
-      );
-    } finally {
-      loginButton.disabled = false;
-      loginButton.textContent = "Login";
-    }
-  });
+      if(headingMatch){
+        list=null;
+        const answerHeading=document.createElement("h3");
+        answerHeading.textContent=headingMatch[1].replace(/\*\*/g,"");
+        content.appendChild(answerHeading);
 
-  // MEMERIKSA SESI YANG TERSIMPAN
-  async function validateExistingSession() {
-    const existingSessionToken = sessionStorage.getItem(SESSION_KEY);
-
-    if (!existingSessionToken) {
-      showLogin();
-      return;
-    }
-
-    try {
-      const response = await fetch(DATA_URL, {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + existingSessionToken
-        }
-      });
-
-      const data = await readJsonResponse(response);
-
-      if (!data.siswa) {
-        throw new Error("Data sesi tidak tersedia.");
-      }
-
-      showLearning(data.siswa);
-    } catch {
-      sessionStorage.removeItem(SESSION_KEY);
-      showLogin();
-
-      showStatus(
-        loginStatus,
-        "Sesi login sudah berakhir atau tidak valid. Silakan login kembali.",
-        "error"
-      );
-    }
-  }
-
-  // LOGOUT SISWA
-  document.getElementById("logoutButton").addEventListener(
-    "click",
-    function() {
-      sessionStorage.removeItem(SESSION_KEY);
-      document.getElementById("materi").value = "";
-      document.getElementById("pertanyaan").value = "";
-      hasil.textContent = "";
-
-      showLogin();
-
-      showStatus(
-        loginStatus,
-        "Anda sudah keluar dari akun.",
-        "success"
-      );
-    }
-  );
-
-  belajarButton.addEventListener("click", belajar);
-
-  // RUANG BELAJAR AI
-  async function belajar() {
-    const sessionToken = sessionStorage.getItem(SESSION_KEY);
-    const mapel = document.getElementById("mapel").value;
-    const materi = document.getElementById("materi").value.trim();
-    const pertanyaan =
-      document.getElementById("pertanyaan").value.trim();
-
-    if (!sessionToken) {
-      showLogin();
-
-      showStatus(
-        loginStatus,
-        "Silakan login kembali sebelum mulai belajar.",
-        "error"
-      );
-      return;
-    }
-
-    if (!materi || !pertanyaan) {
-      hasil.textContent =
-        "Silakan isi materi dan pertanyaan terlebih dahulu.";
-      return;
-    }
-
-    belajarButton.disabled = true;
-    belajarButton.textContent = "Sedang menyiapkan jawaban AI...";
-    hasil.textContent = "EcoSchool AI sedang berpikir. Mohon tunggu.";
-
-    try {
-      // Validasi sesi ke Supabase sebelum meminta jawaban AI.
-      const sessionResponse = await fetch(DATA_URL, {
-        method: "GET",
-        headers: {
-          "Authorization": "Bearer " + sessionToken
-        }
-      });
-
-      if (!sessionResponse.ok) {
-        const errorData = await readJsonResponse(sessionResponse);
-        throw new Error(
-          errorData.error ||
-          errorData.message ||
-          "Supabase menolak validasi sesi."
-        );
-      }
-
-      const sessionData = await readJsonResponse(sessionResponse);
-
-      if (!sessionData.siswa) {
-        throw new Error(
-          "Identitas siswa tidak dapat diverifikasi. Silakan login kembali."
-        );
-      }
-
-      // Kirim pertanyaan beserta token sesi ke Cloudflare Worker.
-      const tutorResponse = await fetch(WORKER_URL, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": "Bearer " + sessionToken
-        },
-        body: JSON.stringify({
-          question:
-            "Mata pelajaran: " + mapel +
-            "\nMateri: " + materi +
-            "\n\nPertanyaan siswa: " + pertanyaan +
-            "\n\nJawab dalam bahasa Indonesia yang mudah dipahami siswa kelas X SMK. Berikan penjelasan akurat dan contoh yang benar. Sesuaikan jawaban dengan mata pelajaran dan materi yang dipilih."
-        })
-      });
-
-      const tutorData = await readJsonResponse(tutorResponse);
-
-      if (!tutorData.success) {
-        throw new Error(
-          tutorData.error || "AI belum dapat menjawab."
-        );
-      }
-
-      if (
-        typeof tutorData.answer !== "string" ||
-        !tutorData.answer.trim()
-      ) {
-        throw new Error("Jawaban AI kosong. Silakan coba lagi.");
-      }
-
-      // Tampilkan jawaban sebagai teks yang aman.
-      hasil.replaceChildren();
-
-      const heading = document.createElement("h3");
-      heading.textContent = "EcoSchool AI — " + mapel;
-      hasil.appendChild(heading);
-
-      const subheading = document.createElement("p");
-      subheading.textContent = "Materi: " + materi;
-      hasil.appendChild(subheading);
-
-      const content = document.createElement("div");
-      content.className = "ai-answer-content";
-
-      const lines = tutorData.answer.split("\n");
-      let list = null;
-
-      for (const rawLine of lines) {
-        const line = rawLine.trim();
-
-        if (!line) {
-          list = null;
-          continue;
+      }else if(numberedMatch){
+        if(!list||list.tagName!=="OL"){
+          list=document.createElement("ol");
+          content.appendChild(list);
         }
 
-        const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
-        const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
-        const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+        const item=document.createElement("li");
+        item.textContent=numberedMatch[1].replace(/\*\*/g,"");
+        list.appendChild(item);
 
-        if (headingMatch) {
-          list = null;
-
-          const answerHeading = document.createElement("h3");
-          answerHeading.textContent =
-            headingMatch[1].replace(/\*\*/g, "");
-
-          content.appendChild(answerHeading);
-        } else if (numberedMatch) {
-          if (!list || list.tagName !== "OL") {
-            list = document.createElement("ol");
-            content.appendChild(list);
-          }
-
-          const item = document.createElement("li");
-          item.textContent = numberedMatch[1].replace(/\*\*/g, "");
-          list.appendChild(item);
-        } else if (bulletMatch) {
-          if (!list || list.tagName !== "UL") {
-            list = document.createElement("ul");
-            content.appendChild(list);
-          }
-
-          const item = document.createElement("li");
-          item.textContent = bulletMatch[1].replace(/\*\*/g, "");
-          list.appendChild(item);
-        } else {
-          list = null;
-
-          const paragraph = document.createElement("p");
-          paragraph.textContent = line
-            .replace(/^#{1,6}\s*/, "")
-            .replace(/\*\*/g, "")
-            .replace(/^\*(.+)\*$/, "$1");
-
-          content.appendChild(paragraph);
+      }else if(bulletMatch){
+        if(!list||list.tagName!=="UL"){
+          list=document.createElement("ul");
+          content.appendChild(list);
         }
+
+        const item=document.createElement("li");
+        item.textContent=bulletMatch[1].replace(/\*\*/g,"");
+        list.appendChild(item);
+
+      }else{
+        list=null;
+        const paragraph=document.createElement("p");
+        paragraph.textContent=line.replace(/\*\*/g,"");
+        content.appendChild(paragraph);
       }
-
-      hasil.appendChild(content);
-
-    } catch (error) {
-      hasil.textContent =
-        "Maaf, jawaban belum berhasil dimuat.\n\nPenyebab: " +
-        error.message +
-        "\n\nSilakan coba kembali beberapa saat lagi.";
-    } finally {
-      belajarButton.disabled = false;
-      belajarButton.textContent = "Mulai Belajar";
     }
-  }
 
-  validateExistingSession();
-</script>
-</body>
-</html>
+    hasil.appendChild(content);
+
+  }catch(error){
+    hasil.textContent="Maaf, jawaban belum berhasil dimuat.\n\nPenyebab: "+error.message;
+  }finally{
+    belajarButton.disabled=false;
+    belajarButton.textContent="Mulai Belajar";
+  }
+}
+
+/* BANK SOAL - TAMPILAN AWAL */
+document.getElementById("buatSoalButton").addEventListener("click",function(){
+  const materiLatihan=document.getElementById("latihanMateri").value.trim();
+  const jumlah=Number(document.getElementById("jumlahSoal").value);
+  const hasilSoal=document.getElementById("hasilSoal");
+
+  if(!materiLatihan){
+    hasilSoal.textContent="Silakan isi materi latihan terlebih dahulu.";
+    return;
+  }
