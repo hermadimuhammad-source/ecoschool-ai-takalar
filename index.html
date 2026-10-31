@@ -236,7 +236,8 @@
 
   <!-- LOGIN SISWA -->
   <section class="card" id="loginCard">
-    <h2>Login Siswa</h2> <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
+    <h2>Login Siswa</h2>
+    <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
 
     <form id="loginForm">
       <label for="namaSiswa">Nama lengkap</label>
@@ -416,10 +417,16 @@
   });
 
   // BANK SOAL AI INTERAKTIF
-  const GENERATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/generate-questions";
-  const EVALUATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/evaluate-answers";
+  const GENERATE_URL =
+    "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/generate-questions";
+
+  const EVALUATE_URL =
+    "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/evaluate-answers";
+
   const hasilSoal = document.getElementById("hasilSoal");
+
   let quizData = null;
+  let quizId = null;
   let quizIndex = 0;
   let quizAnswers = [];
 
@@ -430,7 +437,11 @@
 
   async function postWorker(url, payload) {
     const token = sessionStorage.getItem(SESSION_KEY);
-    if (!token) throw new Error("Sesi login tidak ditemukan. Silakan login kembali.");
+
+    if (!token) {
+      throw new Error("Sesi login tidak ditemukan. Silakan login kembali.");
+    }
+
     const response = await fetch(url, {
       method: "POST",
       headers: {
@@ -439,186 +450,359 @@
       },
       body: JSON.stringify(payload)
     });
+
     return await readJsonResponse(response);
   }
 
+  // MEMBUAT LATIHAN SOAL
   document.getElementById("buatSoalButton").addEventListener("click", async function() {
     const subject = document.getElementById("latihanMapel").value;
     const topic = document.getElementById("latihanMateri").value.trim();
     const type = document.getElementById("jenisSoal").value;
     const difficulty = document.getElementById("tingkatKesulitan").value;
     const count = Number(document.getElementById("jumlahSoal").value);
-    if (!topic) { hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu."; return; }
+
+    if (!topic) {
+      hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
+      return;
+    }
+
     if (!Number.isInteger(count) || count < 1 || count > 30) {
-      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi."; return;
+      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
+      return;
     }
 
     const button = this;
     button.disabled = true;
     button.textContent = "Sedang membuat soal...";
+
+    // Bersihkan latihan sebelumnya
+    quizData = null;
+    quizId = null;
+    quizIndex = 0;
+    quizAnswers = [];
+
     showThinking(hasilSoal, "EcoSchool AI sedang menyusun soal yang sesuai...");
+
     try {
       const data = await postWorker(GENERATE_URL, {
-        subject, topic, type, difficulty, count
+        subject,
+        topic,
+        type,
+        difficulty,
+        count
       });
-      if (!data.success || !Array.isArray(data.questions) || !data.questions.length) {
-        throw new Error(data.error || "Soal belum berhasil dibuat.");
+
+      if (
+        !data.success ||
+        !data.quizId ||
+        !Array.isArray(data.questions) ||
+        !data.questions.length
+      ) {
+        throw new Error(
+          data.error ||
+          "Soal belum berhasil dibuat atau ID latihan tidak tersedia."
+        );
       }
+
       quizData = data;
+      quizId = data.quizId;
       quizIndex = 0;
       quizAnswers = new Array(data.questions.length).fill("");
+
       renderQuestion();
+
     } catch (error) {
-      hasilSoal.textContent = "Maaf, latihan belum berhasil dibuat.\n" + error.message;
+      hasilSoal.textContent =
+        "Maaf, latihan belum berhasil dibuat.\n" + error.message;
+
     } finally {
       button.disabled = false;
       button.textContent = "✨ Buat Latihan";
     }
   });
 
+  // MENAMPILKAN SOAL SATU PER SATU
   function renderQuestion() {
     if (!quizData) return;
+
     const q = quizData.questions[quizIndex];
     const total = quizData.questions.length;
     const progress = Math.round((quizIndex / total) * 100);
+
     const wrapper = document.createElement("div");
     wrapper.className = "quiz-shell";
+
     wrapper.innerHTML = `
-      <div class="quiz-progress" aria-label="Kemajuan latihan"><span style="width:${progress}%"></span></div>
+      <div class="quiz-progress" aria-label="Kemajuan latihan">
+        <span style="width:${progress}%"></span>
+      </div>
+
       <section class="quiz-card">
         <div class="quiz-meta">
           <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
-          <span class="quiz-chip">${escapeHtml(quizData.difficulty.toUpperCase())}</span>
+          <span class="quiz-chip">${escapeHtml(String(quizData.difficulty || "").toUpperCase())}</span>
           <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
         </div>
+
         <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+
         <p>${escapeHtml(quizData.instructions || "Bacalah soal dengan teliti.")}</p>
+
         <div class="quiz-question">${escapeHtml(q.question)}</div>
+
         <div id="quizInputArea"></div>
+
         <div class="quiz-actions">
-          <button type="button" id="quizPrev" class="light-button">← Sebelumnya</button>
-          <button type="button" id="quizNext">${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}</button>
+          <button type="button" id="quizPrev" class="light-button">
+            ← Sebelumnya
+          </button>
+
+          <button type="button" id="quizNext">
+            ${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}
+          </button>
         </div>
-      </section>`;
+      </section>
+    `;
+
     hasilSoal.replaceChildren(wrapper);
 
     const inputArea = wrapper.querySelector("#quizInputArea");
+
     if (q.type === "pilihan_ganda") {
+      if (!Array.isArray(q.options) || !q.options.length) {
+        hasilSoal.textContent = "Pilihan jawaban tidak tersedia. Silakan buat latihan baru.";
+        return;
+      }
+
       q.options.forEach(option => {
         const label = document.createElement("label");
         label.className = "quiz-option";
+
         const radio = document.createElement("input");
         radio.type = "radio";
         radio.name = "jawabanQuiz";
         radio.value = option.key;
         radio.checked = quizAnswers[quizIndex] === option.key;
-        radio.addEventListener("change", () => { quizAnswers[quizIndex] = option.key; });
+
+        radio.addEventListener("change", () => {
+          quizAnswers[quizIndex] = option.key;
+        });
+
         const text = document.createElement("span");
         text.textContent = option.key + ". " + option.text;
+
         label.append(radio, text);
         inputArea.appendChild(label);
       });
+
     } else {
       const textarea = document.createElement("textarea");
       textarea.className = "quiz-answer";
       textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
       textarea.value = quizAnswers[quizIndex] || "";
-      textarea.addEventListener("input", () => { quizAnswers[quizIndex] = textarea.value; });
+
+      textarea.addEventListener("input", () => {
+        quizAnswers[quizIndex] = textarea.value;
+      });
+
       inputArea.appendChild(textarea);
     }
 
     wrapper.querySelector("#quizPrev").disabled = quizIndex === 0;
+
     wrapper.querySelector("#quizPrev").addEventListener("click", () => {
       saveCurrentAnswer();
-      if (quizIndex > 0) { quizIndex--; renderQuestion(); }
+
+      if (quizIndex > 0) {
+        quizIndex--;
+        renderQuestion();
+      }
     });
+
     wrapper.querySelector("#quizNext").addEventListener("click", () => {
       saveCurrentAnswer();
+
       if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
-        alert("Pilih salah satu jawaban terlebih dahulu."); return;
+        alert("Pilih salah satu jawaban terlebih dahulu.");
+        return;
       }
-      if (q.type === "esai" && !String(quizAnswers[quizIndex]).trim()) {
-        alert("Tuliskan jawaban terlebih dahulu."); return;
+
+      if (
+        q.type !== "pilihan_ganda" &&
+        !String(quizAnswers[quizIndex] || "").trim()
+      ) {
+        alert("Tuliskan jawaban terlebih dahulu.");
+        return;
       }
-      if (quizIndex < total - 1) { quizIndex++; renderQuestion(); }
-      else submitQuiz();
+
+      if (quizIndex < total - 1) {
+        quizIndex++;
+        renderQuestion();
+      } else {
+        submitQuiz();
+      }
     });
   }
 
   function saveCurrentAnswer() {
     const q = quizData.questions[quizIndex];
-    if (q.type === "esai") {
+
+    if (q.type !== "pilihan_ganda") {
       const textarea = hasilSoal.querySelector("textarea");
-      if (textarea) quizAnswers[quizIndex] = textarea.value.trim();
+
+      if (textarea) {
+        quizAnswers[quizIndex] = textarea.value.trim();
+      }
     }
   }
 
   function escapeHtml(value) {
     return String(value ?? "").replace(/[&<>"']/g, char => ({
-      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;"
     })[char]);
-  }async function submitQuiz() {
+  }
+
+  // MENGIRIM JAWABAN KE WORKER UNTUK DINILAI
+  async function submitQuiz() {
     const nextButton = hasilSoal.querySelector("#quizNext");
-    if (nextButton) { nextButton.disabled = true; nextButton.textContent = "Sedang menilai..."; }
-    showThinking(hasilSoal, "AI sedang memeriksa jawaban dan menyiapkan pembahasan...");
+
+    if (nextButton) {
+      nextButton.disabled = true;
+      nextButton.textContent = "Sedang menilai...";
+    }
+
+    if (!quizId) {
+      hasilSoal.textContent =
+        "ID latihan tidak ditemukan. Silakan buat latihan baru.";
+      return;
+    }
+
+    showThinking(
+      hasilSoal,
+      "AI sedang memeriksa jawaban dan menyiapkan pembahasan..."
+    );
+
     try {
+      // Hanya mengirim ID latihan dan jawaban siswa.
+      // Kunci jawaban tetap berada di KV Cloudflare Worker.
       const data = await postWorker(EVALUATE_URL, {
-        questions: quizData.questions,
+        quizId: quizId,
         answers: quizAnswers
       });
+
+      if (!data.success || !Array.isArray(data.results)) {
+        throw new Error(data.error || "Hasil penilaian tidak valid.");
+      }
+
       renderQuizResult(data);
+
     } catch (error) {
-      hasilSoal.textContent = "Penilaian belum berhasil.\n" + error.message +
-        "\nJawabanmu masih tersimpan di halaman ini. Silakan coba selesaikan kembali.";
+      hasilSoal.textContent =
+        "Penilaian belum berhasil.\n" +
+        error.message +
+        "\nJawabanmu masih tersimpan di halaman ini. Silakan coba kembali.";
+
       const retry = document.createElement("button");
       retry.textContent = "Coba Penilaian Lagi";
       retry.addEventListener("click", submitQuiz);
+
       hasilSoal.appendChild(retry);
     }
   }
 
+  // MENAMPILKAN HASIL DAN PEMBAHASAN
   function renderQuizResult(data) {
     const result = document.createElement("section");
     result.className = "quiz-result";
+
+    const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+
     result.innerHTML = `
       <h2 style="text-align:center">🏆 Latihan Selesai!</h2>
-      <div class="score-circle" style="--score:${Math.max(0,Math.min(100,data.score))}%">
-        <strong>${data.score}</strong>
+
+      <div class="score-circle" style="--score:${score}%">
+        <strong>${score}</strong>
       </div>
-      <p style="text-align:center"><strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong></p>
-      <p style="text-align:center">Jawaban tepat: ${data.correct} dari ${data.total} soal</p>
+
+      <p style="text-align:center">
+        <strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong>
+      </p>
+
+      <p style="text-align:center">
+        Jawaban tepat: ${Number(data.correct) || 0} dari ${Number(data.total) || 0} soal
+      </p>
+
       <h3>📖 Pembahasan Jawaban</h3>
+
       <div id="quizReview"></div>
-      <button type="button" id="ulangQuiz">↻ Buat Latihan Baru</button>`;
+
+      <button type="button" id="ulangQuiz">
+        ↻ Buat Latihan Baru
+      </button>
+    `;
+
     const review = result.querySelector("#quizReview");
+
     data.results.forEach((item, index) => {
       const q = quizData.questions[index];
+
+      if (!q) return;
+
       const row = document.createElement("div");
       row.className = "review-item";
-      const status = item.isCorrect ? "✓ Tepat" : "✗ Perlu diperbaiki";
-      const answerText = q.type === "pilihan_ganda"
-        ? (q.options.find(o => o.key === item.correctAnswer)?.text || item.correctAnswer)
-        : item.correctAnswer;
-      row.innerHTML = `<strong>Soal ${index + 1}</strong> — <span class="${item.isCorrect ? "correct-text" : "wrong-text"}">${status}</span>`;
+
+      const status = item.isCorrect
+        ? "✓ Tepat"
+        : "✗ Perlu diperbaiki";
+
+      const answerText = item.correctAnswer ?? "Tidak tersedia";
+
+      row.innerHTML = `
+        <strong>Soal ${index + 1}</strong> —
+        <span class="${item.isCorrect ? "correct-text" : "wrong-text"}">
+          ${status}
+        </span>
+      `;
+
       const question = document.createElement("p");
       question.textContent = q.question;
+
       const feedback = document.createElement("p");
-      feedback.textContent = "Umpan balik: " + item.feedback;
+      feedback.textContent =
+        "Umpan balik: " + (item.feedback || "Tidak ada umpan balik.");
+
       const explanation = document.createElement("p");
-      explanation.textContent = "Pembahasan: " + (item.explanation || "Pelajari kembali materi terkait.");
+      explanation.textContent =
+        "Pembahasan: " +
+        (item.explanation || "Pelajari kembali materi terkait.");
+
       const correct = document.createElement("p");
       correct.textContent = "Acuan jawaban: " + answerText;
+
       row.append(question, feedback, explanation, correct);
       review.appendChild(row);
     });
+
     hasilSoal.replaceChildren(result);
+
     result.querySelector("#ulangQuiz").addEventListener("click", () => {
       quizData = null;
+      quizId = null;
+      quizIndex = 0;
+      quizAnswers = [];
+
       hasilSoal.replaceChildren();
+
       document.getElementById("latihanMateri").focus();
     });
   }
 
+  // STATUS LOGIN
   function showStatus(element, message, type) {
     element.textContent = message;
     element.className = "status " + (type || "");
@@ -646,6 +830,7 @@
     hideStatus(loginStatus);
   }
 
+  // MEMBACA RESPONS SERVER
   async function readJsonResponse(response) {
     let data;
 
@@ -657,7 +842,8 @@
 
     if (!response.ok) {
       throw new Error(
-        data.error || data.message ||
+        data.error ||
+        data.message ||
         ("Permintaan gagal (" + response.status + ").")
       );
     }
@@ -675,7 +861,11 @@
     const kode_akses = document.getElementById("kodeAkses").value;
 
     if (!nama || !kelas || !kode_akses) {
-      showStatus(loginStatus, "Lengkapi nama, kelas, dan kode akses.", "error");
+      showStatus(
+        loginStatus,
+        "Lengkapi nama, kelas, dan kode akses.",
+        "error"
+      );
       return;
     }
 
@@ -685,14 +875,22 @@
     try {
       const response = await fetch(LOGIN_URL, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nama, kelas, kode_akses })
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+          nama,
+          kelas,
+          kode_akses
+        })
       });
 
       const data = await readJsonResponse(response);
 
       if (!data.token || !data.siswa) {
-        throw new Error("Respons login belum lengkap. Silakan coba kembali.");
+        throw new Error(
+          "Respons login belum lengkap. Silakan coba kembali."
+        );
       }
 
       sessionStorage.setItem(SESSION_KEY, data.token);
@@ -704,10 +902,12 @@
     } catch (error) {
       showStatus(
         loginStatus,
-        "Login belum berhasil.\n" + error.message +
+        "Login belum berhasil.\n" +
+        error.message +
         "\nPeriksa nama, kelas, dan kode akses, lalu coba lagi.",
         "error"
       );
+
     } finally {
       loginButton.disabled = false;
       loginButton.textContent = "Login";
@@ -716,7 +916,8 @@
 
   // MEMERIKSA SESI TERSIMPAN
   async function validateExistingSession() {
-    const existingSessionToken = sessionStorage.getItem(SESSION_KEY);
+    const existingSessionToken =
+      sessionStorage.getItem(SESSION_KEY);
 
     if (!existingSessionToken) {
       showLogin();
@@ -757,11 +958,23 @@
 
     document.getElementById("materi").value = "";
     document.getElementById("pertanyaan").value = "";
+
     hasil.textContent = "";
+
+    // Bersihkan data latihan dari halaman
+    quizData = null;
+    quizId = null;
+    quizIndex = 0;
+    quizAnswers = [];
+    hasilSoal.replaceChildren();
 
     showLogin();
 
-    showStatus(loginStatus, "Anda sudah keluar dari akun.", "success");
+    showStatus(
+      loginStatus,
+      "Anda sudah keluar dari akun.",
+      "success"
+    );
   });
 
   // RUANG BELAJAR AI
@@ -775,18 +988,25 @@
 
     if (!sessionToken) {
       showLogin();
-      showStatus(loginStatus, "Silakan login kembali sebelum mulai belajar.", "error");
+
+      showStatus(
+        loginStatus,
+        "Silakan login kembali sebelum mulai belajar.",
+        "error"
+      );
       return;
     }
 
     if (!materi || !pertanyaan) {
-      hasil.textContent = "Silakan isi materi dan pertanyaan terlebih dahulu.";
+      hasil.textContent =
+        "Silakan isi materi dan pertanyaan terlebih dahulu.";
       return;
     }
 
     belajarButton.disabled = true;
     belajarButton.textContent = "Sedang menyiapkan jawaban AI...";
-    hasil.textContent = "EcoSchool AI sedang berpikir. Mohon tunggu.";
+    hasil.textContent =
+      "EcoSchool AI sedang berpikir. Mohon tunggu.";
 
     try {
       const sessionResponse = await fetch(DATA_URL, {
@@ -796,10 +1016,13 @@
         }
       });
 
-      const sessionData = await readJsonResponse(sessionResponse);
+      const sessionData =
+        await readJsonResponse(sessionResponse);
 
       if (!sessionData.siswa) {
-        throw new Error("Identitas siswa tidak dapat diverifikasi.");
+        throw new Error(
+          "Identitas siswa tidak dapat diverifikasi."
+        );
       }
 
       const tutorResponse = await fetch(WORKER_URL, {
@@ -817,14 +1040,22 @@
         })
       });
 
-      const tutorData = await readJsonResponse(tutorResponse);
+      const tutorData =
+        await readJsonResponse(tutorResponse);
 
       if (!tutorData.success) {
-        throw new Error(tutorData.error || "AI belum dapat menjawab.");
+        throw new Error(
+          tutorData.error || "AI belum dapat menjawab."
+        );
       }
 
-      if (typeof tutorData.answer !== "string" || !tutorData.answer.trim()) {
-        throw new Error("Jawaban AI kosong. Silakan coba lagi.");
+      if (
+        typeof tutorData.answer !== "string" ||
+        !tutorData.answer.trim()
+      ) {
+        throw new Error(
+          "Jawaban AI kosong. Silakan coba lagi."
+        );
       }
 
       hasil.replaceChildren();
@@ -851,15 +1082,24 @@
           continue;
         }
 
-        const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
-        const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
-        const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+        const headingMatch =
+          line.match(/^#{1,6}\s+(.+)$/);
+
+        const numberedMatch =
+          line.match(/^\d+[.)]\s+(.+)$/);
+
+        const bulletMatch =
+          line.match(/^[-*•]\s+(.+)$/);
 
         if (headingMatch) {
           list = null;
 
-          const answerHeading = document.createElement("h3");
-          answerHeading.textContent = headingMatch[1].replace(/\*\*/g, "");
+          const answerHeading =
+            document.createElement("h3");
+
+          answerHeading.textContent =
+            headingMatch[1].replace(/\*\*/g, "");
+
           content.appendChild(answerHeading);
 
         } else if (numberedMatch) {
@@ -869,7 +1109,10 @@
           }
 
           const item = document.createElement("li");
-          item.textContent = numberedMatch[1].replace(/\*\*/g, "");
+
+          item.textContent =
+            numberedMatch[1].replace(/\*\*/g, "");
+
           list.appendChild(item);
 
         } else if (bulletMatch) {
@@ -879,13 +1122,18 @@
           }
 
           const item = document.createElement("li");
-          item.textContent = bulletMatch[1].replace(/\*\*/g, "");
+
+          item.textContent =
+            bulletMatch[1].replace(/\*\*/g, "");
+
           list.appendChild(item);
 
         } else {
           list = null;
 
-          const paragraph = document.createElement("p");
+          const paragraph =
+            document.createElement("p");
+
           paragraph.textContent = line
             .replace(/^#{1,6}\s*/, "")
             .replace(/\*\*/g, "")
@@ -905,11 +1153,14 @@
 
     } finally {
       belajarButton.disabled = false;
-      belajarButton.textContent = "Mulai Belajar dengan AI";
+      belajarButton.textContent =
+        "Mulai Belajar dengan AI";
     }
   }
 
+  // JALANKAN PEMERIKSAAN SESI SAAT HALAMAN DIBUKA
   validateExistingSession();
 </script>
+
 </body>
 </html>
