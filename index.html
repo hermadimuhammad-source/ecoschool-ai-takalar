@@ -96,6 +96,36 @@
       margin: 12px 0;
     }
     .ai-answer-content li { margin-bottom: 7px; }
+    .student-nav {
+      display: flex;
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .student-nav .nav-button {
+      flex: 1;
+      margin-top: 0;
+      background: #e5efe8;
+      color: #20583b;
+      border: 1px solid #c8ddcf;
+    }
+    .student-nav .nav-button.active {
+      background: #16804f;
+      color: white;
+      border-color: #16804f;
+    }
+    .small-note {
+      color: #64756b;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+    #hasilSoal {
+      margin-top: 16px;
+      line-height: 1.6;
+      white-space: pre-wrap;
+    }
+    @media (max-width: 480px) {
+      .student-nav { flex-direction: column; }
+    }
     footer {
       text-align: center;
       padding: 20px;
@@ -151,89 +181,84 @@
         Keluar dari akun
       </button>
 
-      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+      <nav class="student-nav" aria-label="Menu pembelajaran">
+        <button id="menuRuangBelajar" class="nav-button active" type="button" aria-current="page">📖 Ruang Belajar</button>
+        <button id="menuBankSoal" class="nav-button" type="button">📚 Bank Soal</button>
+      </nav>
 
-      <h2>Ruang Belajar</h2>
-      <p>
-        Gunakan ruang belajar ini untuk mempelajari materi,
-        memahami konsep, dan berlatih menjawab soal.
-      </p>
+      <div id="ruangBelajarPanel">
+        <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
 
-      <label for="mapel">Pilih mata pelajaran</label>
-      <select id="mapel">
-        <option value="IPAS">IPAS</option>
-        <option value="Matematika">Matematika</option>
-        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-        <option value="Bahasa Inggris">Bahasa Inggris</option>
-        <option value="Informatika">Informatika</option>
-      </select>
+        <h2>Ruang Belajar</h2>
+        <p>
+          Gunakan ruang belajar ini untuk mempelajari materi,
+          memahami konsep, dan berlatih menjawab soal.
+        </p>
 
-      <label for="materi">Materi yang ingin dipelajari</label>
-      <input id="materi" placeholder="Contoh: Energi terbarukan">
+        <label for="mapel">Pilih mata pelajaran</label>
+        <select id="mapel">
+          <option value="IPAS">IPAS</option>
+          <option value="Matematika">Matematika</option>
+          <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+          <option value="Bahasa Inggris">Bahasa Inggris</option>
+          <option value="Informatika">Informatika</option>
+        </select>
 
-      <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
-      <textarea id="pertanyaan" rows="4"
-        placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+        <label for="materi">Materi yang ingin dipelajari</label>
+        <input id="materi" placeholder="Contoh: Energi terbarukan">
 
-      <button id="belajarButton" type="button">Mulai Belajar</button>
-      <div id="hasil" aria-live="polite"></div>
+        <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
+        <textarea id="pertanyaan" rows="4"
+          placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+
+        <button id="belajarButton" type="button">Mulai Belajar</button>
+        <div id="hasil" aria-live="polite"></div>
+      </div>
+
+      <section class="card hidden" id="bankSoalCard">
+        <h2>📚 Bank Soal EcoSchool AI</h2>
+        <p>Buat latihan sesuai mata pelajaran, materi, jenis soal, dan tingkat kesulitan yang kamu inginkan.</p>
+
+        <label for="latihanMapel">Mata Pelajaran</label>
+        <select id="latihanMapel">
+          <option value="IPAS">IPAS</option>
+          <option value="Matematika">Matematika</option>
+          <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+          <option value="Bahasa Inggris">Bahasa Inggris</option>
+          <option value="Informatika">Informatika</option>
+        </select>
+
+        <label for="latihanMateri">Materi</label>
+        <input id="latihanMateri" placeholder="Contoh: Energi terbarukan">
+
+        <label for="jenisSoal">Jenis Soal</label>
+        <select id="jenisSoal">
+          <option value="pilihan_ganda">Pilihan Ganda</option>
+          <option value="esai">Soal Esai</option>
+          <option value="campuran">Campuran</option>
+        </select>
+
+        <label for="tingkatKesulitan">Tingkat Kesulitan</label>
+        <select id="tingkatKesulitan">
+          <option value="mudah">Mudah</option>
+          <option value="sedang" selected>Sedang</option>
+          <option value="sulit">Sulit</option>
+          <option value="hots">HOTS</option>
+        </select>
+
+        <label for="jumlahSoal">Jumlah Soal</label>
+        <input id="jumlahSoal" type="number" min="1" max="100" value="10" placeholder="Masukkan jumlah soal">
+        <p class="small-note">Untuk menjaga kualitas dan kestabilan, jumlah maksimal per satu sesi pembuatan adalah 100 soal. Siswa dapat membuat sesi latihan baru kapan saja.</p>
+
+        <button id="buatSoalButton" type="button">✨ Buat Latihan</button>
+        <div id="hasilSoal" aria-live="polite"></div>
+      </section>
     </section>
   </main>
 
   <footer>
     SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
-  <section class="card" id="bankSoalCard">
-  <h2>📚 Bank Soal EcoSchool AI</h2>
-  <p>
-    Buat latihan sesuai mata pelajaran, materi, jenis soal,
-    dan tingkat kesulitan yang kamu inginkan.
-  </p>
-
-  <label for="latihanMapel">Mata Pelajaran</label>
-  <select id="latihanMapel">
-    <option value="IPAS">IPAS</option>
-    <option value="Matematika">Matematika</option>
-    <option value="Bahasa Indonesia">Bahasa Indonesia</option>
-    <option value="Bahasa Inggris">Bahasa Inggris</option>
-    <option value="Informatika">Informatika</option>
-  </select>
-
-  <label for="latihanMateri">Materi</label>
-  <input
-    id="latihanMateri"
-    placeholder="Contoh: Energi terbarukan"
-  >
-
-  <label for="jenisSoal">Jenis Soal</label>
-  <select id="jenisSoal">
-    <option value="pilihan_ganda">Pilihan Ganda</option>
-    <option value="esai">Soal Esai</option>
-    <option value="campuran">Campuran</option>
-  </select>
-
-  <label for="tingkatKesulitan">Tingkat Kesulitan</label>
-  <select id="tingkatKesulitan">
-    <option value="mudah">Mudah</option>
-    <option value="sedang" selected>Sedang</option>
-    <option value="sulit">Sulit</option>
-    <option value="hots">HOTS</option>
-  </select>
-
-  <label for="jumlahSoal">Jumlah Soal</label>
-  <input
-    id="jumlahSoal"
-    type="number"
-    min="1"
-    value="10"
-    placeholder="Masukkan jumlah soal"
-  >
-
-  <button id="buatSoalButton" type="button">
-    ✨ Buat Latihan
-  </button>
-
-  <div id="hasilSoal" aria-live="polite"></div>
-</section></footer>
+  </footer>
 
 <script>
   const LOGIN_URL =
@@ -254,6 +279,48 @@
   const loginStatus = document.getElementById("loginStatus");
   const belajarButton = document.getElementById("belajarButton");
   const hasil = document.getElementById("hasil");
+  const ruangBelajarPanel = document.getElementById("ruangBelajarPanel");
+  const bankSoalCard = document.getElementById("bankSoalCard");
+  const menuRuangBelajar = document.getElementById("menuRuangBelajar");
+  const menuBankSoal = document.getElementById("menuBankSoal");
+
+  function showStudentPanel(panel) {
+    const showBank = panel === "bank";
+    ruangBelajarPanel.classList.toggle("hidden", showBank);
+    bankSoalCard.classList.toggle("hidden", !showBank);
+    menuRuangBelajar.classList.toggle("active", !showBank);
+    menuBankSoal.classList.toggle("active", showBank);
+    menuRuangBelajar.removeAttribute("aria-current");
+    menuBankSoal.removeAttribute("aria-current");
+    (showBank ? menuBankSoal : menuRuangBelajar).setAttribute("aria-current", "page");
+  }
+
+  menuRuangBelajar.addEventListener("click", function() {
+    showStudentPanel("belajar");
+  });
+
+  menuBankSoal.addEventListener("click", function() {
+    showStudentPanel("bank");
+  });
+
+  // Tombol pembuatan soal akan dihubungkan ke layanan AI pada tahap berikutnya.
+  document.getElementById("buatSoalButton").addEventListener("click", function() {
+    const materiLatihan = document.getElementById("latihanMateri").value.trim();
+    const jumlah = Number(document.getElementById("jumlahSoal").value);
+    const hasilSoal = document.getElementById("hasilSoal");
+
+    if (!materiLatihan) {
+      hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
+      return;
+    }
+
+    if (!Number.isInteger(jumlah) || jumlah < 1 || jumlah > 100) {
+      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 100 untuk satu sesi.";
+      return;
+    }
+
+    hasilSoal.textContent = "Tampilan Bank Soal sudah siap. Fitur pembuatan soal AI akan diaktifkan pada tahap berikutnya.";
+  });
 
   function showStatus(element, message, type) {
     element.textContent = message;
@@ -276,6 +343,7 @@
     document.getElementById("kelasAktif").textContent = siswa.kelas;
     loginCard.classList.add("hidden");
     belajarCard.classList.remove("hidden");
+    showStudentPanel("belajar");
     hideStatus(loginStatus);
   }
 
@@ -450,13 +518,13 @@
       });
 
       if (!sessionResponse.ok) {
-  const errorData = await readJsonResponse(sessionResponse);
-  throw new Error(
-    errorData.error ||
-    errorData.message ||
-    "Supabase menolak validasi sesi."
-  );
-}
+        const errorData = await readJsonResponse(sessionResponse);
+        throw new Error(
+          errorData.error ||
+          errorData.message ||
+          "Supabase menolak validasi sesi."
+        );
+      }
 
       const sessionData = await readJsonResponse(sessionResponse);
 
