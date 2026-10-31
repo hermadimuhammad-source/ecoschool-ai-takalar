@@ -483,3 +483,16 @@ document.getElementById("buatSoalButton").addEventListener("click",function(){
     hasilSoal.textContent="Silakan isi materi latihan terlebih dahulu.";
     return;
   }
+
+  if(!Number.isInteger(jumlah)||jumlah<1||jumlah>100){
+    hasilSoal.textContent="Masukkan jumlah soal antara 1 sampai 100 untuk satu sesi.";
+    return;
+  }
+
+  hasilSoal.textContent="Tampilan Bank Soal sudah siap. Fitur pembuatan soal AI akan diaktifkan pada tahap berikutnya.";
+});
+
+validateExistingSession();
+</script>
+</body>
+</html>
