@@ -182,7 +182,58 @@
 
   <footer>
     SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
-  </footer>
+  <section class="card" id="bankSoalCard">
+  <h2>📚 Bank Soal EcoSchool AI</h2>
+  <p>
+    Buat latihan sesuai mata pelajaran, materi, jenis soal,
+    dan tingkat kesulitan yang kamu inginkan.
+  </p>
+
+  <label for="latihanMapel">Mata Pelajaran</label>
+  <select id="latihanMapel">
+    <option value="IPAS">IPAS</option>
+    <option value="Matematika">Matematika</option>
+    <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+    <option value="Bahasa Inggris">Bahasa Inggris</option>
+    <option value="Informatika">Informatika</option>
+  </select>
+
+  <label for="latihanMateri">Materi</label>
+  <input
+    id="latihanMateri"
+    placeholder="Contoh: Energi terbarukan"
+  >
+
+  <label for="jenisSoal">Jenis Soal</label>
+  <select id="jenisSoal">
+    <option value="pilihan_ganda">Pilihan Ganda</option>
+    <option value="esai">Soal Esai</option>
+    <option value="campuran">Campuran</option>
+  </select>
+
+  <label for="tingkatKesulitan">Tingkat Kesulitan</label>
+  <select id="tingkatKesulitan">
+    <option value="mudah">Mudah</option>
+    <option value="sedang" selected>Sedang</option>
+    <option value="sulit">Sulit</option>
+    <option value="hots">HOTS</option>
+  </select>
+
+  <label for="jumlahSoal">Jumlah Soal</label>
+  <input
+    id="jumlahSoal"
+    type="number"
+    min="1"
+    value="10"
+    placeholder="Masukkan jumlah soal"
+  >
+
+  <button id="buatSoalButton" type="button">
+    ✨ Buat Latihan
+  </button>
+
+  <div id="hasilSoal" aria-live="polite"></div>
+</section></footer>
 
 <script>
   const LOGIN_URL =
