@@ -520,6 +520,30 @@
           );
         }
 
+        // Samakan format opsi dari Worker: {label, text} menjadi {key, text}.
+        // Worker menyimpan kunci jawaban sebagai huruf A/B/C/D.
+        data.questions = data.questions.map((question, index) => {
+          const normalizedType = String(question.type || "").toLowerCase();
+          const isEssay = normalizedType === "esai" || normalizedType === "essay";
+          const normalizedOptions = Array.isArray(question.options)
+            ? question.options.slice(0, 4).map((option, optionIndex) => {
+                const key = String(
+                  option?.key || option?.label || ["A", "B", "C", "D"][optionIndex]
+                ).trim().toUpperCase();
+                const text = typeof option === "string"
+                  ? option
+                  : String(option?.text || option?.value || option?.content || "");
+                return { key, text };
+              })
+            : [];
+          return {
+            ...question,
+            number: question.number || index + 1,
+            type: isEssay ? "esai" : "pilihan_ganda",
+            options: normalizedOptions
+          };
+        });
+
         quizData = data;
         quizData.quizId = quizId || data.quizId;
         quizIndex = 0;
@@ -566,17 +590,21 @@
 
     const inputArea = wrapper.querySelector("#quizInputArea");
     if (q.type === "pilihan_ganda") {
-      q.options.forEach(option => {
+      (Array.isArray(q.options) ? q.options : []).forEach((option, optionIndex) => {
+        const optionKey = String(option?.key || option?.label || ["A", "B", "C", "D"][optionIndex]);
+        const optionText = String(option?.text || option?.value || option?.content || "");
         const label = document.createElement("label");
         label.className = "quiz-option";
         const radio = document.createElement("input");
         radio.type = "radio";
         radio.name = "jawabanQuiz";
-        radio.value = option.key;
-        radio.checked = quizAnswers[quizIndex] === option.key;
-        radio.addEventListener("change", () => { quizAnswers[quizIndex] = option.key; });
+        radio.value = optionKey;
+        radio.checked = String(quizAnswers[quizIndex] || "") === optionKey;
+        radio.addEventListener("change", () => {
+          if (radio.checked) quizAnswers[quizIndex] = optionKey;
+        });
         const text = document.createElement("span");
-        text.textContent = option.key + ". " + option.text;
+        text.textContent = optionKey + ". " + optionText;
         label.append(radio, text);
         inputArea.appendChild(label);
       });
@@ -612,6 +640,9 @@
     if (q.type === "esai") {
       const textarea = hasilSoal.querySelector("textarea");
       if (textarea) quizAnswers[quizIndex] = textarea.value.trim();
+    } else {
+      const selected = hasilSoal.querySelector('input[name="jawabanQuiz"]:checked');
+      if (selected) quizAnswers[quizIndex] = selected.value;
     }
   }
 
@@ -693,7 +724,7 @@
       const status = item.correct ? "✓ Tepat" : "✗ Perlu diperbaiki";
       const answerText = q.type === "pilihan_ganda"
         ? (q.options.find(option =>
-            String(option.key).toUpperCase() === String(item.correctAnswer).toUpperCase()
+            String(option.key || option.label).toUpperCase() === String(item.correctAnswer).toUpperCase()
           )?.text || item.correctAnswer)
         : item.correctAnswer;
 
