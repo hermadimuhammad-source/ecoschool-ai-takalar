@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Guru - EcoSchool AI</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+:root {
+  --primary:#176b52;
+  --dark:#123c32;
+  --bg:#f3f6f5;
+  --white:#fff;
+  --muted:#718078;
+  --border:#e3eae6;
+  --shadow:0 5px 20px rgba(20,60,45,.07);
+}
+*{box-sizing:border-box}
+body{
+  margin:0;font-family:Arial,sans-serif;background:var(--bg);
+  color:#20352d;
+}
+button,input{font:inherit}
+button{cursor:pointer}
+.hidden{display:none!important}
+.login-page{
+  min-height:100vh;display:flex;align-items:center;
+  justify-content:center;padding:20px;
+  background:linear-gradient(135deg,#123c32,#208361);
+}
+.login-card{
+  width:100%;max-width:420px;background:white;
+  padding:35px;border-radius:20px;box-shadow:var(--shadow);
+}
+.logo{
+  width:60px;height:60px;border-radius:16px;
+  background:#e3f4ec;color:var(--primary);
+  display:grid;place-items:center;font-size:30px;
+  margin-bottom:20px;
+}
+.login-card h1{font-size:24px;margin:0 0 8px}
+.login-card p{color:var(--muted);line-height:1.5}
+.field{margin:18px 0}
+.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:8px}
+.field input{
+  width:100%;padding:13px;border:1px solid var(--border);
+  border-radius:9px;outline:none;
+}
+.field input:focus{border-color:var(--primary)}
+.primary-btn{
+  border:0;background:var(--primary);color:white;
+  padding:13px 18px;border-radius:9px;font-weight:bold;
+}
+.primary-btn:hover{background:var(--dark)}
+.full{width:100%}
+.error{color:#c0392b;font-size:13px;margin-top:12px}
+.layout{min-height:100vh;display:flex}
+.sidebar{
+  width:245px;background:var(--dark);color:white;
+  padding:24px 15px;flex-shrink:0;
+}
+.brand{padding:5px 12px 25px}
+.brand strong{font-size:19px;display:block}
+.brand small{color:#b8d5c8}
+.nav-title{
+  color:#9fc2b2;font-size:11px;font-weight:bold;
+  padding:18px 12px 8px;text-transform:uppercase;
+}
+.nav-btn{
+  width:100%;padding:12px;border:0;background:transparent;
+  color:#dcebe4;text-align:left;border-radius:8px;
+  margin:3px 0;font-size:14px;
+}
+.nav-btn:hover,.nav-btn.active{background:#28634f;color:white}
+.main{flex:1;min-width:0}
+.topbar{
+  background:white;padding:17px 25px;border-bottom:1px solid var(--border);
+  display:flex;align-items:center;justify-content:space-between;gap:15px;
+}
+.topbar h2{margin:0;font-size:19px}
+.user-info{font-size:13px;color:var(--muted)}
+.content{padding:25px;max-width:1400px;margin:auto}
+.page-title{margin:0 0 7px;font-size:24px}
+.subtitle{color:var(--muted);margin:0 0 23px;font-size:14px}
+.stats{
+  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
+  gap:16px;margin-bottom:25px;
+}
+.stat{
+  background:white;padding:21px;border-radius:13px;
+  box-shadow:var(--shadow);border:1px solid var(--border);
+}
+.stat span{font-size:13px;color:var(--muted)}
+.stat strong{display:block;font-size:29px;margin-top:12px;color:var(--primary)}
+.panel{
+  background:white;border:1px solid var(--border);
+  border-radius:13px;padding:20px;margin-bottom:20px;
+  box-shadow:var(--shadow);
+}
+.panel h3{margin:0 0 17px;font-size:17px}
+.table-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;min-width:600px}
+th,td{
+  padding:12px 11px;border-bottom:1px solid var(--border);
+  text-align:left;font-size:13px;vertical-align:top;
+}
+th{background:#f6f9f7;color:#53645b}
+tr:last-child td{border-bottom:0}
+.action-btn{
+  border:0;background:#e5f3ec;color:var(--primary);
+  padding:8px 11px;border-radius:7px;font-size:12px;font-weight:bold;
+}
+.action-btn:hover{background:#d1eade}
+.back-btn{margin-bottom:15px}
+.badge{
+  display:inline-block;padding:5px 9px;border-radius:20px;
+  font-size:11px;background:#e5f3ec;color:var(--primary);
+}
+.muted{color:var(--muted)}
+.notice{
+  padding:13px;border-radius:8px;background:#fff8e6;
+  color:#805d17;font-size:13px;margin-bottom:15px;
+}
+.empty{padding:25px;text-align:center;color:var(--muted)}
+.question{
+  padding:15px 0;border-bottom:1px solid var(--border);
+  line-height:1.6;
+}
+.question:last-child{border:0}
+.answer-box{
+  background:#f5f8f6;border-radius:8px;padding:11px;
+  margin-top:9px;font-size:13px;
+}
+.mobile-menu{display:none}
+@media(max-width:900px){
+  .stats{grid-template-columns:repeat(2,1fr)}
+  .sidebar{width:205px}
+}
+@media(max-width:650px){
+  .layout{display:block}
+  .sidebar{width:100%;padding:12px}
+  .brand{padding:8px}
+  .nav-title{padding-top:10px}
+  .nav-btn{width:auto;display:inline-block;padding:10px}
+  .topbar{padding:14px}
+  .content{padding:15px}
+  .stats{gap:10px}
+  .stat{padding:15px}
+  .stat strong{font-size:23px}
+}
+</style>
+</head>
+<body>
+
+<!-- HALAMAN LOGIN -->
+<section id="loginPage" class="login-page">
+  <div class="login-card">
+    <div class="logo">🌿</div>
+    <h1>EcoSchool AI</h1>
+    <p>Portal khusus guru SMK Negeri 2 Takalar. Silakan masuk menggunakan akun guru.</p>
+
+    <form id="loginForm">
+      <div class="field">
+        <label>Email Guru</label>
+        <input id="email" type="email" required autocomplete="username"
+          placeholder="Masukkan email guru">
+      </div>
+      <div class="field">
+        <label>Password</label>
+        <input id="password" type="password" required
+          autocomplete="current-password" placeholder="Masukkan password">
+      </div>
+      <button id="loginBtn" class="primary-btn full" type="submit">
+        Masuk ke Dashboard
+      </button>
+      <div id="loginError" class="error"></div>
+    </form>
+  </div>
+</section>
+
+<!-- APLIKASI DASHBOARD -->
+<section id="appPage" class="layout hidden">
+  <aside class="sidebar">
+    <div class="brand">
+      <strong>🌿 EcoSchool AI</strong>
+      <small>Dashboard Guru</small>
+    </div>
+
+    <div class="nav-title">Menu Utama</div>
+    <button class="nav-btn active" data-page="dashboard">▦ Dashboard</button>
+    <button class="nav-btn" data-page="siswa">👨‍🎓 Data Siswa</button>
+    <button class="nav-btn" data-page="bank">📚 Bank Soal</button>
+
+    <div class="nav-title">Akun</div>
+    <button id="logoutBtn" class="nav-btn">↪ Keluar</button>
+  </aside>
+
+  <main class="main">
+    <header class="topbar">
+      <h2 id="topTitle">Dashboard</h2>
+      <div class="user-info" id="guruName">Guru</div>
+    </header>
+
+    <div class="content">
+      <div id="messageArea"></div>
+
+      <!-- DASHBOARD -->
+      <section id="dashboardPage">
+        <h1 class="page-title">Dashboard Guru</h1>
+        <p class="subtitle">Ringkasan aktivitas pembelajaran EcoSchool AI.</p>
+
+        <div class="stats">
+          <div class="stat">
+            <span>Total Siswa</span>
+            <strong id="statSiswa">-</strong>
+          </div>
+          <div class="stat">
+            <span>Sesi Belajar</span>
+            <strong id="statSesi">-</strong>
+          </div>
+          <div class="stat">
+            <span>Hasil Kuis</span>
+            <strong id="statKuis">-</strong>
+          </div>
+          <div class="stat">
+            <span>Bank Soal</span>
+            <strong id="statBank">-</strong>
+          </div>
+        </div>
+
+        <div class="panel">
+          <h3>Selamat Datang</h3>
+          <p class="muted">
+            Gunakan menu Data Siswa untuk melihat aktivitas belajar,
+            nilai, serta jawaban masing-masing siswa.
+          </p>
+          <button class="primary-btn" onclick="showPage('siswa')">
+            Lihat Data Siswa
+          </button>
+        </div>
+      </section>
+
+      <!-- DATA SISWA -->
+      <section id="siswaPage" class="hidden">
+        <h1 class="page-title">Data Siswa</h1>
+        <p class="subtitle">Daftar siswa yang terdaftar di EcoSchool AI.</p>
+
+        <div class="panel">
+          <h3>Daftar Siswa</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>No.</th><th>Nama</th><th>Kelas</th>
+                  <th>Status</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="studentTable">
+                <tr><td colspan="5">Memuat data...</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="studentDetail" class="hidden">
+          <button class="action-btn back-btn" onclick="closeStudentDetail()">
+            ← Kembali ke daftar siswa
+          </button>
+          <div class="panel">
+            <h3 id="studentTitle">Riwayat Belajar</h3>
+            <div class="table-wrap">
+              <table>
+                <thead>
+                  <tr>
+                    <th>Tanggal</th><th>Mata Pelajaran</th>
+                    <th>Topik</th><th>Benar</th><th>Jumlah Soal</th>
+                    <th>Nilai</th><th>Aksi</th>
+                  </tr>
+                </thead>
+                <tbody id="historyTable"></tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <div id="answerDetail" class="panel hidden">
+          <button class="action-btn back-btn" onclick="closeAnswerDetail()">
+            ← Kembali ke riwayat
+          </button>
+          <h3>Detail Jawaban Siswa</h3>
+          <div id="answerContent"></div>
+        </div>
+      </section>
+
+      <!-- BANK SOAL -->
+      <section id="bankPage" class="hidden">
+        <h1 class="page-title">Bank Soal</h1>
+        <p class="subtitle">Kumpulan soal yang dibuat melalui EcoSchool AI.</p>
+
+        <div class="panel">
+          <h3>Daftar Bank Soal</h3>
+          <div class="table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Judul</th><th>Mata Pelajaran</th>
+                  <th>Topik</th><th>Tingkat</th><th>Tanggal</th><th>Aksi</th>
+                </tr>
+              </thead>
+              <tbody id="bankTable"></tbody>
+            </table>
+          </div>
+        </div>
+
+        <div id="bankDetail" class="panel hidden">
+          <button class="action-btn back-btn" onclick="closeBankDetail()">
+            ← Kembali ke bank soal
+          </button>
+          <h3>Isi Bank Soal</h3>
+          <div id="bankQuestions"></div>
+        </div>
+      </section>
+    </div>
+  </main>
+</section>
+
+<script>
+const SUPABASE_URL = "https://mnhiijtjyxluvslsssmp.supabase.co";
+const SUPABASE_KEY = "sb_publishable_XWRlRU7krKutg017zS7iGA_T291QmcR";
+const DATA_GURU_URL = SUPABASE_URL + "/functions/v1/data-guru";
+
+const supabaseClient = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY,
+  {
+    auth: {
+      persistSession: true,
+      autoRefreshToken: true,
+      detectSessionInUrl: true
+    }
+  }
+);
+
+let currentSession = null;
+let students = [];
+let selectedStudent = null;
+
+const $ = id => document.getElementById(id);
+
+function escapeHTML(value) {
+  return String(value ?? "").replace(/[&<>"']/g, char => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#039;"
+  })[char]);
+}
+
+function showMessage(message, type = "error") {
+  const color = type === "error" ? "#a93226" : "#176b52";
+  $("messageArea").innerHTML =
+    `<div class="notice" style="color:${color}">${escapeHTML(message)}</div>`;
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+function clearMessage() {
+  $("messageArea").innerHTML = "";
+}
+
+function showLogin() {
+  $("loginPage").classList.remove("hidden");
+  $("appPage").classList.add("hidden");
+}
+
+function showApp() {
+  $("loginPage").classList.add("hidden");
+  $("appPage").classList.remove("hidden");
+}
+
+async function api(action, extra = {}) {
+  if (!currentSession?.access_token) {
+    throw new Error("Sesi login tidak tersedia. Silakan login kembali.");
+  }
+
+  const response = await fetch(DATA_GURU_URL, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "apikey": SUPABASE_KEY,
+      "Authorization": "Bearer " + currentSession.access_token
+    },
+    body: JSON.stringify({action, ...extra})
+  });
+
+  let result;
+  try {
+    result = await response.json();
+  } catch {
+    throw new Error("Respons backend tidak dapat dibaca.");
+  }
+
+  if (!response.ok || !result.success) {
+    throw new Error(result.message || "Permintaan data gagal.");
+  }
+
+  return result;
+}
+
+async function loginGuru(event) {
+  event.preventDefault();
+  clearMessage();
+
+  const button = $("loginBtn");
+  button.disabled = true;
+  button.textContent = "Memeriksa akun...";
+
+  try {
+    const {data, error} = await supabaseClient.auth.signInWithPassword({
+      email: $("email").value.trim(),
+      password: $("password").value
+    });
+
+    if (error) throw error;
+
+    currentSession = data.session;
+
+    // Backend memastikan akun benar-benar terdaftar sebagai guru aktif.
+    const result = await api("ringkasan");
+
+    $("guruName").textContent = result.guru || "Administrator";
+    showApp();
+    showPage("dashboard");
+    renderSummary(result.ringkasan);
+
+  } catch (error) {
+    await supabaseClient.auth.signOut();
+    currentSession = null;
+    $("loginError").textContent =
+      error.message || "Login gagal. Periksa akun guru.";
+  } finally {
+    button.disabled = false;
+    button.textContent = "Masuk ke Dashboard";
+  }
+}
+
+function renderSummary(data) {
+  $("statSiswa").textContent = data.jumlah_siswa ?? 0;
+  $("statSesi").textContent = data.jumlah_sesi_belajar ?? 0;
+  $("statKuis").textContent = data.jumlah_hasil_kuis ?? 0;
+  $("statBank").textContent = data.jumlah_bank_soal ?? 0;
+}
+
+async function loadDashboard() {
+  try {
+    const result = await api("ringkasan");
+    renderSummary(result.ringkasan);
+  } catch (error) {
+    showMessage(error.message);
+  }
+}
+
+function showPage(page) {
+  clearMessage();
+
+  ["dashboard","siswa","bank"].forEach(name => {
+    $(name + "Page").classList.toggle("hidden", name !== page);
+  });
+
+  document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
+    button.classList.toggle("active", button.dataset.page === page);
+  });
+
+  const titles = {
+    dashboard:"Dashboard",
+    siswa:"Data Siswa",
+    bank:"Bank Soal"
+  };
+  $("topTitle").textContent = titles[page] || "Dashboard";
+
+  if (page === "dashboard") loadDashboard();
+  if (page === "siswa") loadStudents();
+  if (page === "bank") loadBanks();
+}
+
+async function loadStudents() {
+  $("studentTable").innerHTML =
+    '<tr><td colspan="5">Memuat data siswa...</td></tr>';
+
+  $("studentDetail").classList.add("hidden");
+  $("answerDetail").classList.add("hidden");
+
+  try {
+    const result = await api("daftar_siswa");
+    students = result.data || [];
+
+    if (!students.length) {
+      $("studentTable").innerHTML =
+        '<tr><td colspan="5" class="empty">Belum ada data siswa.</td></tr>';
+      return;
+    }
+
+    $("studentTable").innerHTML = students.map((student,index) => `
+      <tr>
+        <td>${index+1}</td>
+        <td>${escapeHTML(student.nama)}</td>
+        <td>${escapeHTML(student.kelas)}</td>
+        <td><span class="badge">${student.aktif ? "Aktif" : "Nonaktif"}</span></td>
+        <td>
+          <button class="action-btn"
+            onclick="openStudent(${Number(student.id)})">
+            Lihat Riwayat
+          </button>
+        </td>
+      </tr>
+    `).join("");
+
+  } catch (error) {
+    $("studentTable").innerHTML =
+      `<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+async function openStudent(id) {
+  const student = students.find(item => Number(item.id) === Number(id));
+  if (!student) return;
+
+  selectedStudent = student;
+  $("studentDetail").classList.remove("hidden");
+  $("answerDetail").classList.add("hidden");
+  $("studentTitle").textContent =
+    "Riwayat Belajar: " + student.nama + " (" + student.kelas + ")";
+
+  $("historyTable").innerHTML =
+    '<tr><td colspan="7">Memuat riwayat...</td></tr>';
+
+  try {
+    const result = await api("riwayat_siswa", {siswa_id:id});
+    const history = result.data || [];
+
+    if (!history.length) {
+      $("historyTable").innerHTML =
+        '<tr><td colspan="7" class="empty">Belum ada riwayat belajar.</td></tr>';
+      return;
+    }
+
+    $("historyTable").innerHTML = history.map(item => `
+      <tr>
+        <td>${formatDate(item.created_at)}</td>
+        <td>${escapeHTML(item.subject)}</td>
+        <td>${escapeHTML(item.topic)}</td>
+        <td>${item.correct_answers ?? 0}</td>
+        <td>${item.total_questions ?? 0}</td>
+        <td><strong>${escapeHTML(item.score ?? 0)}</strong></td>
+        <td>
+          <button class="action-btn"
+            onclick="openAnswers(${Number(item.id)})">
+            Periksa Jawaban
+          </button>
+        </td>
+      </tr>
+    `).join("");
+
+  } catch (error) {
+    $("historyTable").innerHTML =
+      `<tr><td colspan="7">${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+async function openAnswers(sessionId) {
+  $("answerDetail").classList.remove("hidden");
+  $("answerContent").innerHTML = "Memuat jawaban siswa...";
+
+  try {
+    const result = await api("detail_jawaban", {
+      session_id:sessionId
+    });
+
+    const answers = result.data || [];
+
+    if (!answers.length) {
+      $("answerContent").innerHTML =
+        '<div class="empty">Belum ada detail jawaban.</div>';
+      return;
+    }
+
+    $("answerContent").innerHTML = answers.map((item,index) => `
+      <div class="question">
+        <strong>Soal ${item.question_number || index+1}</strong>
+        <p>${escapeHTML(item.question)}</p>
+        <div class="answer-box">
+          <strong>Jawaban siswa:</strong><br>
+          ${escapeHTML(item.student_answer || "-")}
+        </div>
+        <div class="answer-box">
+          <strong>Kunci jawaban:</strong><br>
+          ${escapeHTML(item.correct_answer || "-")}
+        </div>
+        <div class="answer-box">
+          <strong>Status:</strong>
+          ${item.is_correct ? "Benar" : "Salah"}
+          <br>
+          <strong>Penjelasan:</strong><br>
+          ${escapeHTML(item.explanation || "-")}
+          <br>
+          <strong>Umpan balik:</strong><br>
+          ${escapeHTML(item.feedback || "-")}
+        </div>
+      </div>
+    `).join("");
+
+  } catch (error) {
+    $("answerContent").textContent = error.message;
+  }
+}
+
+function closeStudentDetail() {
+  $("studentDetail").classList.add("hidden");
+  $("answerDetail").classList.add("hidden");
+}
+
+function closeAnswerDetail() {
+  $("answerDetail").classList.add("hidden");
+}
+
+async function loadBanks() {
+  $("bankTable").innerHTML =
+    '<tr><td colspan="6">Memuat bank soal...</td></tr>';
+  $("bankDetail").classList.add("hidden");
+
+  try {
+    const result = await api("bank_soal");
+    const banks = result.data || [];
+
+    if (!banks.length) {
+      $("bankTable").innerHTML =
+        '<tr><td colspan="6" class="empty">Belum ada bank soal.</td></tr>';
+      return;
+    }
+
+    $("bankTable").innerHTML = banks.map(bank => `
+      <tr>
+        <td>${escapeHTML(bank.title)}</td>
+        <td>${escapeHTML(bank.subject)}</td>
+        <td>${escapeHTML(bank.topic)}</td>
+        <td>${escapeHTML(bank.difficulty)}</td>
+        <td>${formatDate(bank.created_at)}</td>
+        <td>
+          <button class="action-btn"
+            onclick="openBank(${Number(bank.id)})">
+            Lihat Soal
+          </button>
+        </td>
+      </tr>
+    `).join("");
+
+  } catch (error) {
+    $("bankTable").innerHTML =
+      `<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`;
+  }
+}
+
+async function openBank(id) {
+  $("bankDetail").classList.remove("hidden");
+  $("bankQuestions").innerHTML = "Memuat soal...";
+
+  try {
+    const result = await api("detail_bank_soal", {bank_id:id});
+    const questions = result.data || [];
+
+    if (!questions.length) {
+      $("bankQuestions").innerHTML =
+        '<div class="empty">Belum ada soal dalam bank ini.</div>';
+      return;
+    }
+
+    $("bankQuestions").innerHTML = questions.map((item,index) => {
+      let options = item.options;
+
+      if (typeof options === "string") {
+        try { options = JSON.parse(options); } catch {}
+      }
+
+      let optionsHTML = "";
+      if (Array.isArray(options)) {
+        optionsHTML = options.map(option =>
+          `<div>${escapeHTML(option)}</div>`
+        ).join("");
+      } else if (options && typeof options === "object") {
+        optionsHTML = Object.entries(options).map(([key,value]) =>
+          `<div>${escapeHTML(key)}. ${escapeHTML(value)}</div>`
+        ).join("");
+      }
+
+      return `
+        <div class="question">
+          <strong>Soal ${item.question_number || index+1}</strong>
+          <p>${escapeHTML(item.question_text)}</p>
+          ${optionsHTML}
+          <div class="answer-box">
+            <strong>Kunci jawaban:</strong>
+            ${escapeHTML(item.correct_answer || "-")}
+            <br>
+            <strong>Penjelasan:</strong>
+            ${escapeHTML(item.explanation || "-")}
+          </div>
+        </div>
+      `;
+    }).join("");
+
+  } catch (error) {
+    $("bankQuestions").textContent = error.message;
+  }
+}
+
+function closeBankDetail() {
+  $("bankDetail").classList.add("hidden");
+}
+
+function formatDate(value) {
+  if (!value) return "-";
+  const date = new Date(value);
+  if (Number.isNaN(date.getTime())) return "-";
+  return date.toLocaleString("id-ID", {
+    dateStyle:"short",
+    timeStyle:"short"
+  });
+}
+
+async function logoutGuru() {
+  const confirmed = confirm("Apakah Bapak yakin ingin keluar?");
+  if (!confirmed) return;
+
+  await supabaseClient.auth.signOut();
+  currentSession = null;
+  selectedStudent = null;
+  showLogin();
+  $("password").value = "";
+  $("loginError").textContent = "";
+}
+
+$("loginForm").addEventListener("submit", loginGuru);
+$("logoutBtn").addEventListener("click", logoutGuru);
+
+document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
+  button.addEventListener("click", () => showPage(button.dataset.page));
+});
+
+// Memeriksa sesi login ketika halaman dibuka kembali.
+(async function initialize() {
+  const {data,error} = await supabaseClient.auth.getSession();
+
+  if (error || !data.session) {
+    showLogin();
+    return;
+  }
+
+  currentSession = data.session;
+
+  try {
+    const result = await api("ringkasan");
+    $("guruName").textContent = result.guru || "Administrator";
+    showApp();
+    showPage("dashboard");
+    renderSummary(result.ringkasan);
+  } catch {
+    await supabaseClient.auth.signOut();
+    currentSession = null;
+    showLogin();
+  }
+})();
+</script>
+</body>
+</html>
