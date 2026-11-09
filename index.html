@@ -333,7 +333,9 @@
       </select>
 
       <label for="latihanMateri">Materi</label>
-      <input id="latihanMateri" placeholder="Contoh: Energi terbarukan">
+      <input id="latihanMateri" placeholder="Semua Topik / TIK / JIK / Data dan Informasi / DSI">
+
+      <p style="color:#64756b;font-size:13px;line-height:1.5">Untuk Informatika dengan jenis Pilihan Ganda, sistem mengambil soal dari bank tetap sekolah. Isi materi dengan Semua Topik, TIK, JIK, Data dan Informasi, atau DSI. Mata pelajaran lain tetap menggunakan pembuatan soal AI seperti sebelumnya.</p>
 
       <label for="jenisSoal">Jenis Soal</label>
       <select id="jenisSoal">
@@ -521,14 +523,14 @@
         }
 
         // Samakan format opsi dari Worker: {label, text} menjadi {key, text}.
-        // Worker menyimpan kunci jawaban sebagai huruf A/B/C/D.
+        // Kunci jawaban A–E tetap disimpan di server hingga latihan dikumpulkan.
         data.questions = data.questions.map((question, index) => {
           const normalizedType = String(question.type || "").toLowerCase();
           const isEssay = normalizedType === "esai" || normalizedType === "essay";
           const normalizedOptions = Array.isArray(question.options)
-            ? question.options.slice(0, 4).map((option, optionIndex) => {
+            ? question.options.slice(0, 5).map((option, optionIndex) => {
                 const key = String(
-                  option?.key || option?.label || ["A", "B", "C", "D"][optionIndex]
+                  option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]
                 ).trim().toUpperCase();
                 const text = typeof option === "string"
                   ? option
@@ -591,7 +593,7 @@
     const inputArea = wrapper.querySelector("#quizInputArea");
     if (q.type === "pilihan_ganda") {
       (Array.isArray(q.options) ? q.options : []).forEach((option, optionIndex) => {
-        const optionKey = String(option?.key || option?.label || ["A", "B", "C", "D"][optionIndex]);
+        const optionKey = String(option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]);
         const optionText = String(option?.text || option?.value || option?.content || "");
         const label = document.createElement("label");
         label.className = "quiz-option";
@@ -657,7 +659,7 @@
       nextButton.textContent = "Sedang menilai...";
     }
 
-    showThinking(hasilSoal, "AI sedang memeriksa jawaban dan menyiapkan pembahasan...");
+    showThinking(hasilSoal, "Sistem sedang memeriksa jawaban dan menyiapkan pembahasan...");
 
     try {
       if (!quizData || !quizData.quizId) {
