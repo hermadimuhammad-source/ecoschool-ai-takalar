@@ -325,6 +325,7 @@
       <button type="button" class="active" data-teacher-tab="dashboard">Ringkasan</button>
       <button type="button" data-teacher-tab="students">Data Siswa</button>
       <button type="button" data-teacher-tab="history">Riwayat Belajar</button>
+      <button type="button" data-teacher-tab="progress">Progres Belajar</button>
     </div>
 
     <div id="teacherPanelDashboard">
@@ -362,6 +363,17 @@
       <div id="teacherHistoryTable" class="teacher-table-wrap">Memuat riwayat belajar...</div>
       <div id="teacherAnswerDetail"></div>
     </div>
+
+    <div id="teacherPanelProgress" class="hidden">
+      <h3>Progres Belajar Siswa</h3>
+      <p class="teacher-muted">Menampilkan progres setiap materi. Siswa yang belum memiliki progres tetap ditampilkan.</p>
+      <div class="teacher-filter">
+        <input id="teacherProgressSearch" type="search" placeholder="Cari nama siswa atau materi...">
+        <select id="teacherProgressClassFilter"><option value="">Semua kelas</option></select>
+      </div>
+      <div id="teacherProgressTable" class="teacher-table-wrap">Memuat progres belajar...</div>
+    </div>
+
     <div id="teacherDashboardStatus" class="status hidden" role="status" aria-live="polite"></div>
   </section>
 
@@ -1170,6 +1182,7 @@
   let teacherAccessToken = "";
   let teacherStudentsCache = [];
   let teacherHistoryCache = [];
+  let teacherProgressCache = [];
 
   const teacherLoginCard = document.getElementById("teacherLoginCard");
   const teacherDashboard = document.getElementById("teacherDashboard");
@@ -1369,6 +1382,63 @@
       teacherTable(["Siswa", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Waktu", "Detail"], rows);
   }
 
+  async function loadTeacherProgress() {
+    const target = document.getElementById("teacherProgressTable");
+    target.textContent = "Memuat progres belajar...";
+    try {
+      const data = await teacherApi("/progres", {});
+      if (!data.success || !Array.isArray(data.progres)) {
+        throw new Error(data.error || "Data progres belajar tidak valid.");
+      }
+
+      teacherProgressCache = data.progres;
+      const classes = [...new Set(
+        teacherProgressCache.map(item => String(item.kelas || "").trim()).filter(Boolean)
+      )].sort();
+      const classFilter = document.getElementById("teacherProgressClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+
+      renderTeacherProgress();
+    } catch (error) {
+      target.textContent = "Progres belajar belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherProgress() {
+    const search = document.getElementById("teacherProgressSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherProgressClassFilter").value;
+    const filtered = teacherProgressCache.filter(item => {
+      const searchable = [item.nama_siswa, item.kelas, item.materi].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) &&
+        (!kelas || String(item.kelas || "") === kelas);
+    });
+
+    const rows = filtered.map((item, index) => {
+      const student = escapeHtml(item.nama_siswa || "-") +
+        "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>";
+      const materi = item.memiliki_progres
+        ? escapeHtml(item.materi || "-")
+        : "<span class='teacher-muted'>Belum ada progres</span>";
+      const updated = item.diperbarui_pada ? escapeHtml(teacherDate(item.diperbarui_pada)) : "-";
+      return "<tr><td>" + (index + 1) + "</td><td>" + student +
+        "</td><td>" + materi + "</td><td>" + teacherNumber(item.misi_selesai) +
+        "</td><td>" + teacherNumber(item.total_poin) + "</td><td>" +
+        escapeHtml(item.skor_terakhir == null ? "-" : item.skor_terakhir) +
+        "</td><td>" + updated + "</td></tr>";
+    });
+
+    document.getElementById("teacherProgressTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length +
+      " dari " + teacherProgressCache.length + " baris progres.</p>" +
+      teacherTable(
+        ["No.", "Nama Siswa / Kelas", "Materi", "Misi Selesai", "Total Poin", "Skor Terakhir", "Diperbarui"],
+        rows
+      );
+  }
+
   async function loadTeacherAnswers(sessionId, button) {
     const detail = document.getElementById("teacherAnswerDetail");
     detail.innerHTML = '<div class="teacher-detail">Memuat detail jawaban sesi ' + escapeHtml(sessionId) + '...</div>';
@@ -1430,10 +1500,12 @@
       document.getElementById("teacherPanelDashboard").classList.toggle("hidden", tab !== "dashboard");
       document.getElementById("teacherPanelStudents").classList.toggle("hidden", tab !== "students");
       document.getElementById("teacherPanelHistory").classList.toggle("hidden", tab !== "history");
+      document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
       hideTeacherStatus();
       if (tab === "dashboard") await loadTeacherDashboard();
       if (tab === "students") await loadTeacherStudents();
       if (tab === "history") await loadTeacherHistory();
+      if (tab === "progress") await loadTeacherProgress();
     });
   });
 
@@ -1441,6 +1513,8 @@
   document.getElementById("teacherClassFilter").addEventListener("change", renderTeacherStudents);
   document.getElementById("teacherHistorySearch").addEventListener("input", renderTeacherHistory);
   document.getElementById("teacherHistoryLimit").addEventListener("change", () => loadTeacherHistory());
+  document.getElementById("teacherProgressSearch").addEventListener("input", renderTeacherProgress);
+  document.getElementById("teacherProgressClassFilter").addEventListener("change", renderTeacherProgress);
 
   document.getElementById("teacherHistoryTable").addEventListener("click", function(event) {
     const button = event.target.closest("button[data-session-id]");
@@ -1451,6 +1525,7 @@
     teacherAccessToken = "";
     teacherStudentsCache = [];
     teacherHistoryCache = [];
+    teacherProgressCache = [];
     teacherDashboard.classList.add("hidden");
     teacherLoginCard.classList.add("hidden");
     teacherLoginForm.reset();
