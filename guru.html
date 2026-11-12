@@ -1,774 +1,1541 @@
 <!DOCTYPE html>
 <html lang="id">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Dashboard Guru - EcoSchool AI</title>
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-<style>
-:root {
-  --primary:#176b52;
-  --dark:#123c32;
-  --bg:#f3f6f5;
-  --white:#fff;
-  --muted:#718078;
-  --border:#e3eae6;
-  --shadow:0 5px 20px rgba(20,60,45,.07);
-}
-*{box-sizing:border-box}
-body{
-  margin:0;font-family:Arial,sans-serif;background:var(--bg);
-  color:#20352d;
-}
-button,input{font:inherit}
-button{cursor:pointer}
-.hidden{display:none!important}
-.login-page{
-  min-height:100vh;display:flex;align-items:center;
-  justify-content:center;padding:20px;
-  background:linear-gradient(135deg,#123c32,#208361);
-}
-.login-card{
-  width:100%;max-width:420px;background:white;
-  padding:35px;border-radius:20px;box-shadow:var(--shadow);
-}
-.logo{
-  width:60px;height:60px;border-radius:16px;
-  background:#e3f4ec;color:var(--primary);
-  display:grid;place-items:center;font-size:30px;
-  margin-bottom:20px;
-}
-.login-card h1{font-size:24px;margin:0 0 8px}
-.login-card p{color:var(--muted);line-height:1.5}
-.field{margin:18px 0}
-.field label{display:block;font-size:13px;font-weight:bold;margin-bottom:8px}
-.field input{
-  width:100%;padding:13px;border:1px solid var(--border);
-  border-radius:9px;outline:none;
-}
-.field input:focus{border-color:var(--primary)}
-.primary-btn{
-  border:0;background:var(--primary);color:white;
-  padding:13px 18px;border-radius:9px;font-weight:bold;
-}
-.primary-btn:hover{background:var(--dark)}
-.full{width:100%}
-.error{color:#c0392b;font-size:13px;margin-top:12px}
-.layout{min-height:100vh;display:flex}
-.sidebar{
-  width:245px;background:var(--dark);color:white;
-  padding:24px 15px;flex-shrink:0;
-}
-.brand{padding:5px 12px 25px}
-.brand strong{font-size:19px;display:block}
-.brand small{color:#b8d5c8}
-.nav-title{
-  color:#9fc2b2;font-size:11px;font-weight:bold;
-  padding:18px 12px 8px;text-transform:uppercase;
-}
-.nav-btn{
-  width:100%;padding:12px;border:0;background:transparent;
-  color:#dcebe4;text-align:left;border-radius:8px;
-  margin:3px 0;font-size:14px;
-}
-.nav-btn:hover,.nav-btn.active{background:#28634f;color:white}
-.main{flex:1;min-width:0}
-.topbar{
-  background:white;padding:17px 25px;border-bottom:1px solid var(--border);
-  display:flex;align-items:center;justify-content:space-between;gap:15px;
-}
-.topbar h2{margin:0;font-size:19px}
-.user-info{font-size:13px;color:var(--muted)}
-.content{padding:25px;max-width:1400px;margin:auto}
-.page-title{margin:0 0 7px;font-size:24px}
-.subtitle{color:var(--muted);margin:0 0 23px;font-size:14px}
-.stats{
-  display:grid;grid-template-columns:repeat(4,minmax(0,1fr));
-  gap:16px;margin-bottom:25px;
-}
-.stat{
-  background:white;padding:21px;border-radius:13px;
-  box-shadow:var(--shadow);border:1px solid var(--border);
-}
-.stat span{font-size:13px;color:var(--muted)}
-.stat strong{display:block;font-size:29px;margin-top:12px;color:var(--primary)}
-.panel{
-  background:white;border:1px solid var(--border);
-  border-radius:13px;padding:20px;margin-bottom:20px;
-  box-shadow:var(--shadow);
-}
-.panel h3{margin:0 0 17px;font-size:17px}
-.table-wrap{overflow-x:auto}
-table{width:100%;border-collapse:collapse;min-width:600px}
-th,td{
-  padding:12px 11px;border-bottom:1px solid var(--border);
-  text-align:left;font-size:13px;vertical-align:top;
-}
-th{background:#f6f9f7;color:#53645b}
-tr:last-child td{border-bottom:0}
-.action-btn{
-  border:0;background:#e5f3ec;color:var(--primary);
-  padding:8px 11px;border-radius:7px;font-size:12px;font-weight:bold;
-}
-.action-btn:hover{background:#d1eade}
-.back-btn{margin-bottom:15px}
-.badge{
-  display:inline-block;padding:5px 9px;border-radius:20px;
-  font-size:11px;background:#e5f3ec;color:var(--primary);
-}
-.muted{color:var(--muted)}
-.notice{
-  padding:13px;border-radius:8px;background:#fff8e6;
-  color:#805d17;font-size:13px;margin-bottom:15px;
-}
-.empty{padding:25px;text-align:center;color:var(--muted)}
-.question{
-  padding:15px 0;border-bottom:1px solid var(--border);
-  line-height:1.6;
-}
-.question:last-child{border:0}
-.answer-box{
-  background:#f5f8f6;border-radius:8px;padding:11px;
-  margin-top:9px;font-size:13px;
-}
-.mobile-menu{display:none}
-@media(max-width:900px){
-  .stats{grid-template-columns:repeat(2,1fr)}
-  .sidebar{width:205px}
-}
-@media(max-width:650px){
-  .layout{display:block}
-  .sidebar{width:100%;padding:12px}
-  .brand{padding:8px}
-  .nav-title{padding-top:10px}
-  .nav-btn{width:auto;display:inline-block;padding:10px}
-  .topbar{padding:14px}
-  .content{padding:15px}
-  .stats{gap:10px}
-  .stat{padding:15px}
-  .stat strong{font-size:23px}
-}
-</style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>EcoSchool AI | SMK Negeri 2 Takalar</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+      background: #f0f7f3;
+      color: #20352b;
+    }
+    header {
+      background: #126b45;
+      color: white;
+      padding: 25px 16px;
+      text-align: center;
+    }
+    header h1 { margin: 0 0 10px; font-size: 25px; }
+    header p { margin: 5px 0; }
+    .notice {
+      background: #fff2cc;
+      color: #795600;
+      padding: 12px;
+      text-align: center;
+      font-weight: bold;
+    }
+    main {
+      max-width: 850px;
+      margin: 24px auto;
+      padding: 0 15px;
+    }
+    .card {
+      background: white;
+      border-radius: 14px;
+      padding: 22px;
+      margin-bottom: 18px;
+      box-shadow: 0 3px 12px #0000000d;
+    }
+    label {
+      display: block;
+      margin: 14px 0 7px;
+      font-weight: bold;
+    }
+    select, input, textarea, button {
+      width: 100%;
+      padding: 12px;
+      border-radius: 8px;
+      font-size: 16px;
+    }
+    select, input, textarea {
+      border: 1px solid #cbd8cf;
+      background: white;
+    }
+    button {
+      margin-top: 14px;
+      border: none;
+      background: #16804f;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+    button:hover { background: #0d5e39; }
+    button:disabled { opacity: .65; cursor: wait; }
+    .secondary { background: #64756b; }
+    .secondary:hover { background: #435248; }
+    .hidden { display: none !important; }
+    .status {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 8px;
+      white-space: pre-wrap;
+      line-height: 1.5;
+    }
+    .status.error { background: #fde8e7; color: #8c211b; }
+    .status.success { background: #e4f5e9; color: #165b32; }
+    #hasil {
+      white-space: pre-wrap;
+      line-height: 1.7;
+      margin-top: 18px;
+    }
+    .student-badge {
+      background: #e7f4eb;
+      padding: 12px;
+      border-radius: 8px;
+      line-height: 1.6;
+    }
+    .ai-answer-content {
+      white-space: normal;
+      overflow-wrap: anywhere;
+    }
+    .ai-answer-content p {
+      line-height: 1.7;
+      margin: 12px 0;
+    }
+    .ai-answer-content li { margin-bottom: 7px; }
+
+    /* TIGA TOMBOL UTAMA */
+    .main-menu {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin: 20px 0;
+    }
+    .main-menu button {
+      margin: 0;
+      min-height: 48px;
+    }
+    .main-menu button.active {
+      background: #0d5e39;
+      outline: 3px solid #cce8d6;
+    }
+    .main-menu .exit-button {
+      background: #64756b;
+    }
+    .main-menu .exit-button:hover {
+      background: #435248;
+    }
+    .panel-content { margin-top: 18px; }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      color: #52665a;
+      font-size: 14px;
+    }
+
+    @media(max-width:600px) {
+      .main-menu {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* PENYEGARAN VISUAL ECOSCHOOL */
+    body {
+      background:
+        linear-gradient(135deg, rgba(238,248,241,.94), rgba(225,242,231,.90)),
+        url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1800&q=85") center/cover fixed;
+    }
+    header {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(120deg, #075c3b, #138653 60%, #37a66d);
+      box-shadow: 0 8px 24px #064b3026;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      width: 240px; height: 240px;
+      right: -65px; top: -125px;
+      border: 2px solid #ffffff30;
+      border-radius: 50%;
+      box-shadow: 0 0 0 24px #ffffff0d, 0 0 0 48px #ffffff0a;
+      pointer-events: none;
+    }
+    .card {
+      border: 1px solid #ffffffb8;
+      box-shadow: 0 12px 35px #174c3020;
+      backdrop-filter: blur(8px);
+    }
+    button { transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 16px #0b593326; }
+    .hero-strip {
+      padding: 20px; border-radius: 16px; color: white; margin: 16px 0 20px;
+      background: linear-gradient(110deg, #075c3bdf, #168453c9),
+        url("https://images.unsplash.com/photo-1509062522246-3755977927d7?auto=format&fit=crop&w=1200&q=80") center/cover;
+    }
+    .quiz-shell { margin-top: 18px; }
+    .quiz-progress { height: 9px; background: #e4eee7; border-radius: 99px; overflow: hidden; margin: 12px 0 20px; }
+    .quiz-progress > span { display:block; height:100%; background:linear-gradient(90deg,#15945b,#8acb55); transition:width .45s ease; }
+    .quiz-card {
+      position: relative; overflow: hidden; padding: 22px; border-radius: 18px;
+      background: linear-gradient(135deg,#fffffffa,#f0faf3f5);
+      border: 1px solid #d8eadf; box-shadow: 0 10px 28px #164d2b18;
+      animation: quizEnter .45s ease both;
+    }
+    .quiz-card::before {
+      content:""; position:absolute; width:170px;height:170px;right:-65px;top:-85px;
+      border-radius:50%;background:#d8f1df80;pointer-events:none;
+    }
+    .quiz-meta { display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px; position:relative; }
+    .quiz-chip { background:#e1f3e7;color:#12633e;padding:6px 11px;border-radius:99px;font-size:12px;font-weight:bold; }
+    .quiz-question { font-size:18px;line-height:1.65;font-weight:700;position:relative;margin:12px 0 18px; }
+    .quiz-option {
+      display:flex;align-items:flex-start;gap:11px;padding:13px;margin:10px 0;
+      border:1.5px solid #d8e5dc;border-radius:12px;background:#fff;cursor:pointer;
+      transition:all .2s ease;line-height:1.5;
+    }
+    .quiz-option:hover { border-color:#24945b;background:#f1faf4;transform:translateX(3px); }
+    .quiz-option input { width:auto;margin:3px 0 0;accent-color:#16804f; }
+    .quiz-option:has(input:checked) { border-color:#16804f;background:#eaf7ee;box-shadow:0 0 0 3px #16804f15; }
+    .quiz-answer { width:100%;min-height:120px;resize:vertical; }
+    .quiz-actions { display:flex;gap:10px;flex-wrap:wrap;margin-top:18px; }
+    .quiz-actions button { flex:1;min-width:130px;margin:0; }
+    .quiz-actions .light-button { background:#e4f2e8;color:#145d3a; }
+    .quiz-result { padding:22px;border-radius:18px;background:#fff;border:1px solid #d8eadf;animation:quizEnter .5s ease both; }
+    .score-circle {
+      width:116px;height:116px;border-radius:50%;margin:8px auto 16px;display:grid;place-items:center;
+      background:conic-gradient(#16804f var(--score),#e5eee8 0);position:relative;
+    }
+    .score-circle::before { content:"";position:absolute;inset:10px;border-radius:50%;background:#fff; }
+    .score-circle strong { position:relative;font-size:29px;color:#145d3a; }
+    .review-item { padding:14px 0;border-bottom:1px solid #e5eee8;line-height:1.6; }
+    .review-item:last-child { border-bottom:0; }
+    .correct-text { color:#167342;font-weight:bold; }
+    .wrong-text { color:#a43a31;font-weight:bold; }
+    .thinking { display:flex;align-items:center;gap:10px;padding:14px;color:#17613e;font-weight:bold; }
+    .thinking-dots span { display:inline-block;width:7px;height:7px;background:#16804f;border-radius:50%;margin:0 2px;animation:bounce 1s infinite; }
+    .thinking-dots span:nth-child(2){animation-delay:.15s}.thinking-dots span:nth-child(3){animation-delay:.3s}
+    @keyframes quizEnter { from{opacity:0;transform:translateY(15px) scale(.99)} to{opacity:1;transform:translateY(0) scale(1)} }
+    @keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-7px);opacity:1} }
+    @media(max-width:600px) {
+      body { background-attachment:scroll; }
+      .quiz-card,.quiz-result { padding:16px; }
+      .quiz-question { font-size:16px; }
+    }
+
+    /* DASHBOARD GURU */
+    .teacher-entry { margin-top: 10px; background: #365b48; }
+    .teacher-entry:hover { background: #244b37; }
+    .teacher-auth, .teacher-dashboard { max-width: 1100px; margin-left:auto; margin-right:auto; }
+    .teacher-topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
+    .teacher-topbar button { width:auto; min-width:130px; }
+    .teacher-nav { display:flex; flex-wrap:wrap; gap:8px; margin:18px 0; }
+    .teacher-nav button { width:auto; flex:1; min-width:120px; margin:0; background:#64756b; }
+    .teacher-nav button.active { background:#126b45; }
+    .teacher-stats { display:grid; grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; margin:18px 0; }
+    .teacher-stat { background:#edf7f0; border:1px solid #d7eadc; border-radius:12px; padding:16px; }
+    .teacher-stat small { display:block; color:#5b7062; margin-bottom:8px; }
+    .teacher-stat strong { font-size:25px; color:#126b45; }
+    .teacher-table-wrap { overflow-x:auto; }
+    .teacher-table { width:100%; border-collapse:collapse; min-width:650px; font-size:14px; }
+    .teacher-table th,.teacher-table td { padding:11px 10px; border-bottom:1px solid #e3ece5; text-align:left; vertical-align:top; }
+    .teacher-table th { background:#edf7f0; color:#24583c; }
+    .teacher-table td button { width:auto; margin:0; padding:8px 11px; font-size:13px; }
+    .teacher-filter { display:grid; grid-template-columns:1fr 190px; gap:10px; margin:14px 0; }
+    .teacher-filter input,.teacher-filter select { margin:0; }
+    .teacher-detail { background:#f3f8f4; padding:15px; border-radius:10px; margin-top:14px; line-height:1.6; }
+    .teacher-answer { border:1px solid #e0ebe3; border-radius:10px; padding:14px; margin:12px 0; line-height:1.6; }
+    .teacher-answer p { margin:7px 0; }
+    .teacher-muted { color:#64756b; font-size:13px; }
+    .teacher-action { background:#64756b; }
+    @media(max-width:700px) {
+      .teacher-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .teacher-filter { grid-template-columns:1fr; }
+    }
+    @media(max-width:420px) {
+      .teacher-stats { grid-template-columns:1fr 1fr; gap:8px; }
+      .teacher-stat { padding:12px; }
+      .teacher-stat strong { font-size:21px; }
+    }
+
+  </style>
 </head>
+
 <body>
 
-<!-- HALAMAN LOGIN -->
-<section id="loginPage" class="login-page">
-  <div class="login-card">
-    <div class="logo">🌿</div>
-    <h1>EcoSchool AI</h1>
-    <p>Portal khusus guru SMK Negeri 2 Takalar. Silakan masuk menggunakan akun guru.</p>
+<header>
+  <h1>🌱 EcoSchool AI</h1>
+  <p><strong>Tutor Belajar Adaptif</strong></p>
+  <p>SMK Negeri 2 Takalar</p>
+  <p>Teman belajar siswa kelas X</p>
+</header>
+
+<div class="notice">
+  ⚠️ WEBSITE DALAM TAHAP UJI COBA
+</div>
+
+<main>
+
+  <!-- LOGIN SISWA -->
+  <section class="card" id="loginCard">
+    <h2>Login Siswa</h2> <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
 
     <form id="loginForm">
-      <div class="field">
-        <label>Email Guru</label>
-        <input id="email" type="email" required autocomplete="username"
-          placeholder="Masukkan email guru">
-      </div>
-      <div class="field">
-        <label>Password</label>
-        <input id="password" type="password" required
-          autocomplete="current-password" placeholder="Masukkan password">
-      </div>
-      <button id="loginBtn" class="primary-btn full" type="submit">
-        Masuk ke Dashboard
-      </button>
-      <div id="loginError" class="error"></div>
+      <label for="namaSiswa">Nama lengkap</label>
+      <input id="namaSiswa" autocomplete="name" required
+        maxlength="120" placeholder="Masukkan nama sesuai data sekolah">
+
+      <label for="kelasSiswa">Kelas</label>
+      <input id="kelasSiswa" required maxlength="40"
+        placeholder="Contoh: X RPL 1">
+
+      <label for="kodeAkses">Kode akses siswa</label>
+      <input id="kodeAkses" type="password"
+        autocomplete="current-password" required maxlength="200"
+        placeholder="Masukkan kode akses">
+
+      <button id="loginButton" type="submit">Login</button>
+      <div id="loginStatus" class="status hidden"
+        role="status" aria-live="polite"></div>
     </form>
-  </div>
-</section>
+    <button type="button" id="openTeacherLogin" class="teacher-entry">👩‍🏫 Login Guru / Dashboard Guru</button>
+  </section>
 
-<!-- APLIKASI DASHBOARD -->
-<section id="appPage" class="layout hidden">
-  <aside class="sidebar">
-    <div class="brand">
-      <strong>🌿 EcoSchool AI</strong>
-      <small>Dashboard Guru</small>
+  <!-- LOGIN GURU TERPISAH DARI LOGIN SISWA -->
+  <section class="card teacher-auth hidden" id="teacherLoginCard">
+    <h2>👩‍🏫 Login Guru</h2>
+    <p>Masuk menggunakan email dan password akun guru yang terdaftar di EcoSchool AI.</p>
+    <form id="teacherLoginForm">
+      <label for="teacherEmail">Email Guru</label>
+      <input id="teacherEmail" type="email" autocomplete="username" required maxlength="254" placeholder="Masukkan email guru">
+      <label for="teacherPassword">Password</label>
+      <input id="teacherPassword" type="password" autocomplete="current-password" required maxlength="200" placeholder="Masukkan password guru">
+      <button id="teacherLoginButton" type="submit">Login Guru</button>
+      <div id="teacherLoginStatus" class="status hidden" role="status" aria-live="polite"></div>
+    </form>
+    <button type="button" id="backToStudentLogin" class="secondary">← Kembali ke Login Siswa</button>
+  </section>
+
+  <!-- DASHBOARD GURU -->
+  <section class="card teacher-dashboard hidden" id="teacherDashboard">
+    <div class="teacher-topbar">
+      <div>
+        <h2 style="margin:0 0 6px">📊 Dashboard Guru</h2>
+        <div class="teacher-muted">EcoSchool AI · SMK Negeri 2 Takalar</div>
+        <div style="margin-top:8px">Login sebagai <strong id="teacherActiveName">Guru</strong></div>
+      </div>
+      <button type="button" id="teacherLogoutButton" class="secondary">🚪 Keluar</button>
     </div>
 
-    <div class="nav-title">Menu Utama</div>
-    <button class="nav-btn active" data-page="dashboard">▦ Dashboard</button>
-    <button class="nav-btn" data-page="siswa">👨‍🎓 Data Siswa</button>
-    <button class="nav-btn" data-page="bank">📚 Bank Soal</button>
-
-    <div class="nav-title">Akun</div>
-    <button id="logoutBtn" class="nav-btn">↪ Keluar</button>
-  </aside>
-
-  <main class="main">
-    <header class="topbar">
-      <h2 id="topTitle">Dashboard</h2>
-      <div class="user-info" id="guruName">Guru</div>
-    </header>
-
-    <div class="content">
-      <div id="messageArea"></div>
-
-      <!-- DASHBOARD -->
-      <section id="dashboardPage">
-        <h1 class="page-title">Dashboard Guru</h1>
-        <p class="subtitle">Ringkasan aktivitas pembelajaran EcoSchool AI.</p>
-
-        <div class="stats">
-          <div class="stat">
-            <span>Total Siswa</span>
-            <strong id="statSiswa">-</strong>
-          </div>
-          <div class="stat">
-            <span>Sesi Belajar</span>
-            <strong id="statSesi">-</strong>
-          </div>
-          <div class="stat">
-            <span>Hasil Kuis</span>
-            <strong id="statKuis">-</strong>
-          </div>
-          <div class="stat">
-            <span>Bank Soal</span>
-            <strong id="statBank">-</strong>
-          </div>
-        </div>
-
-        <div class="panel">
-          <h3>Selamat Datang</h3>
-          <p class="muted">
-            Gunakan menu Data Siswa untuk melihat aktivitas belajar,
-            nilai, serta jawaban masing-masing siswa.
-          </p>
-          <button class="primary-btn" onclick="showPage('siswa')">
-            Lihat Data Siswa
-          </button>
-        </div>
-      </section>
-
-      <!-- DATA SISWA -->
-      <section id="siswaPage" class="hidden">
-        <h1 class="page-title">Data Siswa</h1>
-        <p class="subtitle">Daftar siswa yang terdaftar di EcoSchool AI.</p>
-
-        <div class="panel">
-          <h3>Daftar Siswa</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>No.</th><th>Nama</th><th>Kelas</th>
-                  <th>Status</th><th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="studentTable">
-                <tr><td colspan="5">Memuat data...</td></tr>
-              </tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="studentDetail" class="hidden">
-          <button class="action-btn back-btn" onclick="closeStudentDetail()">
-            ← Kembali ke daftar siswa
-          </button>
-          <div class="panel">
-            <h3 id="studentTitle">Riwayat Belajar</h3>
-            <div class="table-wrap">
-              <table>
-                <thead>
-                  <tr>
-                    <th>Tanggal</th><th>Mata Pelajaran</th>
-                    <th>Topik</th><th>Benar</th><th>Jumlah Soal</th>
-                    <th>Nilai</th><th>Aksi</th>
-                  </tr>
-                </thead>
-                <tbody id="historyTable"></tbody>
-              </table>
-            </div>
-          </div>
-        </div>
-
-        <div id="answerDetail" class="panel hidden">
-          <button class="action-btn back-btn" onclick="closeAnswerDetail()">
-            ← Kembali ke riwayat
-          </button>
-          <h3>Detail Jawaban Siswa</h3>
-          <div id="answerContent"></div>
-        </div>
-      </section>
-
-      <!-- BANK SOAL -->
-      <section id="bankPage" class="hidden">
-        <h1 class="page-title">Bank Soal</h1>
-        <p class="subtitle">Kumpulan soal yang dibuat melalui EcoSchool AI.</p>
-
-        <div class="panel">
-          <h3>Daftar Bank Soal</h3>
-          <div class="table-wrap">
-            <table>
-              <thead>
-                <tr>
-                  <th>Judul</th><th>Mata Pelajaran</th>
-                  <th>Topik</th><th>Tingkat</th><th>Tanggal</th><th>Aksi</th>
-                </tr>
-              </thead>
-              <tbody id="bankTable"></tbody>
-            </table>
-          </div>
-        </div>
-
-        <div id="bankDetail" class="panel hidden">
-          <button class="action-btn back-btn" onclick="closeBankDetail()">
-            ← Kembali ke bank soal
-          </button>
-          <h3>Isi Bank Soal</h3>
-          <div id="bankQuestions"></div>
-        </div>
-      </section>
+    <div class="teacher-nav" aria-label="Menu Dashboard Guru">
+      <button type="button" class="active" data-teacher-tab="dashboard">Ringkasan</button>
+      <button type="button" data-teacher-tab="students">Data Siswa</button>
+      <button type="button" data-teacher-tab="history">Riwayat Belajar</button>
+      <button type="button" data-teacher-tab="progress">Progres Belajar</button>
     </div>
-  </main>
-</section>
+
+    <div id="teacherPanelDashboard">
+      <h3>Ringkasan Pembelajaran</h3>
+      <div class="teacher-stats">
+        <div class="teacher-stat"><small>Total Siswa</small><strong id="statStudents">-</strong></div>
+        <div class="teacher-stat"><small>Total Sesi Belajar</small><strong id="statSessions">-</strong></div>
+        <div class="teacher-stat"><small>Bank Soal</small><strong id="statBanks">-</strong></div>
+        <div class="teacher-stat"><small>Hasil Kuis</small><strong id="statQuizzes">-</strong></div>
+      </div>
+      <h3>Aktivitas Belajar Terbaru</h3>
+      <div id="teacherLatestSessions" class="teacher-table-wrap"><p>Memuat aktivitas terbaru...</p></div>
+    </div>
+
+    <div id="teacherPanelStudents" class="hidden">
+      <h3>Data Siswa</h3>
+      <div class="teacher-filter">
+        <input id="teacherStudentSearch" type="search" placeholder="Cari nama atau NIS siswa...">
+        <select id="teacherClassFilter"><option value="">Semua kelas</option></select>
+      </div>
+      <div id="teacherStudentsTable" class="teacher-table-wrap">Memuat data siswa...</div>
+    </div>
+
+    <div id="teacherPanelHistory" class="hidden">
+      <h3>Riwayat Belajar Siswa</h3>
+      <div class="teacher-filter">
+        <input id="teacherHistorySearch" type="search" placeholder="Cari nama siswa, kelas, atau materi...">
+        <select id="teacherHistoryLimit">
+          <option value="10">10 riwayat</option>
+          <option value="25">25 riwayat</option>
+          <option value="50" selected>50 riwayat</option>
+          <option value="100">100 riwayat</option>
+        </select>
+      </div>
+      <div id="teacherHistoryTable" class="teacher-table-wrap">Memuat riwayat belajar...</div>
+      <div id="teacherAnswerDetail"></div>
+    </div>
+
+    <div id="teacherPanelProgress" class="hidden">
+      <h3>Progres Belajar Siswa</h3>
+      <p class="teacher-muted">Menampilkan progres setiap materi. Siswa yang belum memiliki progres tetap ditampilkan.</p>
+      <div class="teacher-filter">
+        <input id="teacherProgressSearch" type="search" placeholder="Cari nama siswa atau materi...">
+        <select id="teacherProgressClassFilter"><option value="">Semua kelas</option></select>
+      </div>
+      <div id="teacherProgressTable" class="teacher-table-wrap">Memuat progres belajar...</div>
+    </div>
+
+    <div id="teacherDashboardStatus" class="status hidden" role="status" aria-live="polite"></div>
+  </section>
+
+  <!-- PANEL UTAMA SISWA -->
+  <section class="card hidden" id="belajarCard">
+
+    <div class="student-badge">
+      Login sebagai <strong id="namaAktif"></strong><br>
+      Kelas: <strong id="kelasAktif"></strong>
+    </div>
+
+    <!-- TIGA TOMBOL UTAMA -->
+    <div class="main-menu" aria-label="Menu utama siswa">
+      <button id="btnMulaiBelajar" class="active" type="button">
+        📖 Mulai Belajar
+      </button>
+
+      <button id="btnBankSoal" type="button">
+        📚 Bank Soal
+      </button>
+
+      <button id="logoutButton" class="exit-button" type="button">
+        🚪 Keluar
+      </button>
+    </div>
+
+    <!-- PANEL MULAI BELAJAR -->
+    <div id="ruangBelajarPanel" class="panel-content">
+
+      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+
+      <div class="hero-strip">
+        <h2>🌿 Ruang Belajar</h2>
+        <p>Belajar lebih menyenangkan, pahami konsep, dan temukan pengetahuan baru bersama EcoSchool AI.</p>
+      </div>
+      <p>Mulai dengan memilih mata pelajaran, materi, lalu tuliskan hal yang ingin kamu pahami.</p>
+
+      <label for="mapel">Pilih mata pelajaran</label>
+      <select id="mapel">
+        <option value="IPAS">IPAS</option>
+        <option value="Matematika">Matematika</option>
+        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+        <option value="Bahasa Inggris">Bahasa Inggris</option>
+        <option value="Informatika">Informatika</option>
+      </select>
+
+      <label for="materi">Materi yang ingin dipelajari</label>
+      <input id="materi" placeholder="Contoh: Energi terbarukan">
+
+      <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
+      <textarea id="pertanyaan" rows="4"
+        placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+
+      <button id="belajarButton" type="button">
+        Mulai Belajar dengan AI
+      </button>
+
+      <div id="hasil" aria-live="polite"></div>
+    </div>
+
+    <!-- PANEL BANK SOAL -->
+    <div id="bankSoalCard" class="panel-content hidden">
+
+      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+
+      <h2>📚 Bank Soal EcoSchool AI</h2>
+      <p>Buat latihan sesuai mata pelajaran, materi, jenis soal, dan tingkat kesulitan yang kamu inginkan.</p>
+
+      <label for="latihanMapel">Mata Pelajaran</label>
+      <select id="latihanMapel">
+        <option value="IPAS">IPAS</option>
+        <option value="Matematika">Matematika</option>
+        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+        <option value="Bahasa Inggris">Bahasa Inggris</option>
+        <option value="Informatika">Informatika</option>
+      </select>
+
+      <label for="latihanMateri">Materi</label>
+      <input id="latihanMateri" placeholder="Semua Topik / TIK / JIK / Data dan Informasi / DSI">
+
+      <p style="color:#64756b;font-size:13px;line-height:1.5">Untuk Informatika dengan jenis Pilihan Ganda, sistem mengambil soal dari bank tetap sekolah. Isi materi dengan Semua Topik, TIK, JIK, Data dan Informasi, atau DSI. Mata pelajaran lain tetap menggunakan pembuatan soal AI seperti sebelumnya.</p>
+
+      <label for="jenisSoal">Jenis Soal</label>
+      <select id="jenisSoal">
+        <option value="pilihan_ganda">Pilihan Ganda</option>
+        <option value="esai">Soal Esai</option>
+        <option value="campuran">Campuran</option>
+      </select>
+
+      <label for="tingkatKesulitan">Tingkat Kesulitan</label>
+      <select id="tingkatKesulitan">
+        <option value="mudah">Mudah</option>
+        <option value="sedang" selected>Sedang</option>
+        <option value="sulit">Sulit</option>
+        <option value="hots">HOTS</option>
+      </select>
+
+      <label for="jumlahSoal">Jumlah Soal</label>
+      <input id="jumlahSoal" type="number" min="1" max="30" value="10">
+
+      <p style="color:#64756b;font-size:13px;line-height:1.5">
+        Jumlah maksimal per satu sesi adalah 30 soal agar kualitas soal dan pembahasan tetap terjaga. Siswa dapat membuat sesi latihan baru kapan saja.
+      </p>
+
+      <button id="buatSoalButton" type="button">
+        ✨ Buat Latihan
+      </button>
+
+      <div id="hasilSoal" aria-live="polite"></div>
+    </div>
+
+  </section>
+</main>
+
+<footer>
+  SMK Negeri 2 Takalar · EcoSchool AI · Versi Uji Coba
+</footer>
 
 <script>
-const SUPABASE_URL = "https://mnhiijtjyxluvslsssmp.supabase.co";
-const SUPABASE_KEY = "sb_publishable_XWRlRU7krKutg017zS7iGA_T291QmcR";
-const DATA_GURU_URL = SUPABASE_URL + "/functions/v1/data-guru";
+  const LOGIN_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/login-siswa";
 
-const supabaseClient = window.supabase.createClient(
-  SUPABASE_URL,
-  SUPABASE_KEY,
-  {
-    auth: {
-      persistSession: true,
-      autoRefreshToken: true,
-      detectSessionInUrl: true
-    }
-  }
-);
+  const DATA_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/data-siswa";
 
-let currentSession = null;
-let students = [];
-let selectedStudent = null;
+  const WORKER_URL =
+    "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat";
 
-const $ = id => document.getElementById(id);
+  const SESSION_KEY = "ecoschool_siswa_token";
 
-function escapeHTML(value) {
-  return String(value ?? "").replace(/[&<>"']/g, char => ({
-    "&":"&amp;",
-    "<":"&lt;",
-    ">":"&gt;",
-    '"':"&quot;",
-    "'":"&#039;"
-  })[char]);
-}
+  const loginCard = document.getElementById("loginCard");
+  const belajarCard = document.getElementById("belajarCard");
+  const loginForm = document.getElementById("loginForm");
+  const loginButton = document.getElementById("loginButton");
+  const loginStatus = document.getElementById("loginStatus");
+  const belajarButton = document.getElementById("belajarButton");
+  const hasil = document.getElementById("hasil");
 
-function showMessage(message, type = "error") {
-  const color = type === "error" ? "#a93226" : "#176b52";
-  $("messageArea").innerHTML =
-    `<div class="notice" style="color:${color}">${escapeHTML(message)}</div>`;
-  window.scrollTo({top:0,behavior:"smooth"});
-}
+  const ruangBelajarPanel = document.getElementById("ruangBelajarPanel");
+  const bankSoalCard = document.getElementById("bankSoalCard");
+  const btnMulaiBelajar = document.getElementById("btnMulaiBelajar");
+  const btnBankSoal = document.getElementById("btnBankSoal");
 
-function clearMessage() {
-  $("messageArea").innerHTML = "";
-}
+  // PERPINDAHAN ANTARMENU
+  function pilihMenu(menu) {
+    const tampilkanBank = menu === "bank";
 
-function showLogin() {
-  $("loginPage").classList.remove("hidden");
-  $("appPage").classList.add("hidden");
-}
+    ruangBelajarPanel.classList.toggle("hidden", tampilkanBank);
+    bankSoalCard.classList.toggle("hidden", !tampilkanBank);
 
-function showApp() {
-  $("loginPage").classList.add("hidden");
-  $("appPage").classList.remove("hidden");
-}
-
-async function api(action, extra = {}) {
-  if (!currentSession?.access_token) {
-    throw new Error("Sesi login tidak tersedia. Silakan login kembali.");
+    btnMulaiBelajar.classList.toggle("active", !tampilkanBank);
+    btnBankSoal.classList.toggle("active", tampilkanBank);
   }
 
-  const response = await fetch(DATA_GURU_URL, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "apikey": SUPABASE_KEY,
-      "Authorization": "Bearer " + currentSession.access_token
-    },
-    body: JSON.stringify({action, ...extra})
+  btnMulaiBelajar.addEventListener("click", function() {
+    pilihMenu("belajar");
   });
 
-  let result;
-  try {
-    result = await response.json();
-  } catch {
-    throw new Error("Respons backend tidak dapat dibaca.");
+  btnBankSoal.addEventListener("click", function() {
+    pilihMenu("bank");
+  });
+
+  // BANK SOAL AI INTERAKTIF
+  const GENERATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/generate-questions";
+  const EVALUATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/evaluate-answers";
+  const hasilSoal = document.getElementById("hasilSoal");
+  let quizData = null;
+  let quizIndex = 0;
+  let quizAnswers = [];
+
+  function showThinking(target, message) {
+    target.innerHTML = '<div class="thinking">' + message +
+      '<span class="thinking-dots"><span></span><span></span><span></span></span></div>';
   }
 
-  if (!response.ok || !result.success) {
-    throw new Error(result.message || "Permintaan data gagal.");
-  }
-
-  return result;
-}
-
-async function loginGuru(event) {
-  event.preventDefault();
-  clearMessage();
-
-  const button = $("loginBtn");
-  button.disabled = true;
-  button.textContent = "Memeriksa akun...";
-
-  try {
-    const {data, error} = await supabaseClient.auth.signInWithPassword({
-      email: $("email").value.trim(),
-      password: $("password").value
+  async function postWorker(url, payload) {
+    const token = sessionStorage.getItem(SESSION_KEY);
+    if (!token) throw new Error("Sesi login tidak ditemukan. Silakan login kembali.");
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(payload)
     });
-
-    if (error) throw error;
-
-    currentSession = data.session;
-
-    // Backend memastikan akun benar-benar terdaftar sebagai guru aktif.
-    const result = await api("ringkasan");
-
-    $("guruName").textContent = result.guru || "Administrator";
-    showApp();
-    showPage("dashboard");
-    renderSummary(result.ringkasan);
-
-  } catch (error) {
-    await supabaseClient.auth.signOut();
-    currentSession = null;
-    $("loginError").textContent =
-      error.message || "Login gagal. Periksa akun guru.";
-  } finally {
-    button.disabled = false;
-    button.textContent = "Masuk ke Dashboard";
+    return await readJsonResponse(response);
   }
-}
 
-function renderSummary(data) {
-  $("statSiswa").textContent = data.jumlah_siswa ?? 0;
-  $("statSesi").textContent = data.jumlah_sesi_belajar ?? 0;
-  $("statKuis").textContent = data.jumlah_hasil_kuis ?? 0;
-  $("statBank").textContent = data.jumlah_bank_soal ?? 0;
-}
+  document.getElementById("buatSoalButton").addEventListener("click", async function() {
+    const subject = document.getElementById("latihanMapel").value;
+    const topic = document.getElementById("latihanMateri").value.trim();
+    const type = document.getElementById("jenisSoal").value;
+    const difficulty = document.getElementById("tingkatKesulitan").value;
+    const totalCount = Number(document.getElementById("jumlahSoal").value);
 
-async function loadDashboard() {
-  try {
-    const result = await api("ringkasan");
-    renderSummary(result.ringkasan);
-  } catch (error) {
-    showMessage(error.message);
-  }
-}
-
-function showPage(page) {
-  clearMessage();
-
-  ["dashboard","siswa","bank"].forEach(name => {
-    $(name + "Page").classList.toggle("hidden", name !== page);
-  });
-
-  document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
-    button.classList.toggle("active", button.dataset.page === page);
-  });
-
-  const titles = {
-    dashboard:"Dashboard",
-    siswa:"Data Siswa",
-    bank:"Bank Soal"
-  };
-  $("topTitle").textContent = titles[page] || "Dashboard";
-
-  if (page === "dashboard") loadDashboard();
-  if (page === "siswa") loadStudents();
-  if (page === "bank") loadBanks();
-}
-
-async function loadStudents() {
-  $("studentTable").innerHTML =
-    '<tr><td colspan="5">Memuat data siswa...</td></tr>';
-
-  $("studentDetail").classList.add("hidden");
-  $("answerDetail").classList.add("hidden");
-
-  try {
-    const result = await api("daftar_siswa");
-    students = result.data || [];
-
-    if (!students.length) {
-      $("studentTable").innerHTML =
-        '<tr><td colspan="5" class="empty">Belum ada data siswa.</td></tr>';
+    if (!topic) {
+      hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
       return;
     }
 
-    $("studentTable").innerHTML = students.map((student,index) => `
-      <tr>
-        <td>${index+1}</td>
-        <td>${escapeHTML(student.nama)}</td>
-        <td>${escapeHTML(student.kelas)}</td>
-        <td><span class="badge">${student.aktif ? "Aktif" : "Nonaktif"}</span></td>
-        <td>
-          <button class="action-btn"
-            onclick="openStudent(${Number(student.id)})">
-            Lihat Riwayat
-          </button>
-        </td>
-      </tr>
-    `).join("");
-
-  } catch (error) {
-    $("studentTable").innerHTML =
-      `<tr><td colspan="5">${escapeHTML(error.message)}</td></tr>`;
-  }
-}
-
-async function openStudent(id) {
-  const student = students.find(item => Number(item.id) === Number(id));
-  if (!student) return;
-
-  selectedStudent = student;
-  $("studentDetail").classList.remove("hidden");
-  $("answerDetail").classList.add("hidden");
-  $("studentTitle").textContent =
-    "Riwayat Belajar: " + student.nama + " (" + student.kelas + ")";
-
-  $("historyTable").innerHTML =
-    '<tr><td colspan="7">Memuat riwayat...</td></tr>';
-
-  try {
-    const result = await api("riwayat_siswa", {siswa_id:id});
-    const history = result.data || [];
-
-    if (!history.length) {
-      $("historyTable").innerHTML =
-        '<tr><td colspan="7" class="empty">Belum ada riwayat belajar.</td></tr>';
+    if (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30) {
+      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
       return;
     }
 
-    $("historyTable").innerHTML = history.map(item => `
-      <tr>
-        <td>${formatDate(item.created_at)}</td>
-        <td>${escapeHTML(item.subject)}</td>
-        <td>${escapeHTML(item.topic)}</td>
-        <td>${item.correct_answers ?? 0}</td>
-        <td>${item.total_questions ?? 0}</td>
-        <td><strong>${escapeHTML(item.score ?? 0)}</strong></td>
-        <td>
-          <button class="action-btn"
-            onclick="openAnswers(${Number(item.id)})">
-            Periksa Jawaban
-          </button>
-        </td>
-      </tr>
-    `).join("");
+    const button = this;
+    button.disabled = true;
+    button.textContent = "Sedang membuat soal...";
+    quizData = null;
+    quizAnswers = [];
+    quizIndex = 0;
 
-  } catch (error) {
-    $("historyTable").innerHTML =
-      `<tr><td colspan="7">${escapeHTML(error.message)}</td></tr>`;
-  }
-}
+    const allQuestions = [];
+    let quizId = null;
+    let batchIndex = 0;
 
-async function openAnswers(sessionId) {
-  $("answerDetail").classList.remove("hidden");
-  $("answerContent").innerHTML = "Memuat jawaban siswa...";
+    try {
+      while (allQuestions.length < totalCount) {
+        const remaining = totalCount - allQuestions.length;
+        const batchCount = Math.min(3, remaining);
 
-  try {
-    const result = await api("detail_jawaban", {
-      session_id:sessionId
+        showThinking(
+          hasilSoal,
+          "EcoSchool AI sedang menyusun soal " +
+          (allQuestions.length + 1) + "–" +
+          (allQuestions.length + batchCount) + " dari " + totalCount + "..."
+        );
+
+        const payload = {
+          subject,
+          topic,
+          type,
+          difficulty,
+          count: batchCount,
+          totalCount,
+          batchIndex
+        };
+
+        if (quizId) payload.quizId = quizId;
+
+        const data = await postWorker(GENERATE_URL, payload);
+
+        if (!data.success) {
+          throw new Error(data.error || "Soal belum berhasil dibuat.");
+        }
+
+        if (data.quizId) quizId = data.quizId;
+
+        // Worker mengembalikan pending=true untuk batch yang belum selesai.
+        // Daftar soal lengkap dikirim setelah seluruh batch selesai.
+        if (data.pending) {
+          if (!quizId) {
+            throw new Error("ID latihan tidak diterima dari server.");
+          }
+          batchIndex++;
+          continue;
+        }
+
+        if (!Array.isArray(data.questions) || data.questions.length !== totalCount) {
+          throw new Error(
+            "Jumlah soal yang diterima tidak sesuai. Diminta " +
+            totalCount + ", diterima " +
+            (Array.isArray(data.questions) ? data.questions.length : 0) + "."
+          );
+        }
+
+        // Samakan format opsi dari Worker: {label, text} menjadi {key, text}.
+        // Kunci jawaban A–E tetap disimpan di server hingga latihan dikumpulkan.
+        data.questions = data.questions.map((question, index) => {
+          const normalizedType = String(question.type || "").toLowerCase();
+          const isEssay = normalizedType === "esai" || normalizedType === "essay";
+          const normalizedOptions = Array.isArray(question.options)
+            ? question.options.slice(0, 5).map((option, optionIndex) => {
+                const key = String(
+                  option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]
+                ).trim().toUpperCase();
+                const text = typeof option === "string"
+                  ? option
+                  : String(option?.text || option?.value || option?.content || "");
+                return { key, text };
+              })
+            : [];
+          return {
+            ...question,
+            number: question.number || index + 1,
+            type: isEssay ? "esai" : "pilihan_ganda",
+            options: normalizedOptions
+          };
+        });
+
+        quizData = data;
+        quizData.quizId = quizId || data.quizId;
+        quizIndex = 0;
+        quizAnswers = new Array(data.questions.length).fill("");
+        renderQuestion();
+        return;
+      }
+
+      throw new Error("Pembuatan soal belum selesai. Silakan coba kembali.");
+    } catch (error) {
+      hasilSoal.textContent =
+        "Maaf, latihan belum berhasil dibuat.\n" + error.message;
+    } finally {
+      button.disabled = false;
+      button.textContent = "✨ Buat Latihan";
+    }
+  });
+
+  function renderQuestion() {
+    if (!quizData) return;
+    const q = quizData.questions[quizIndex];
+    const total = quizData.questions.length;
+    const progress = Math.round((quizIndex / total) * 100);
+    const wrapper = document.createElement("div");
+    wrapper.className = "quiz-shell";
+    wrapper.innerHTML = `
+      <div class="quiz-progress" aria-label="Kemajuan latihan"><span style="width:${progress}%"></span></div>
+      <section class="quiz-card">
+        <div class="quiz-meta">
+          <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
+          <span class="quiz-chip">${escapeHtml(quizData.difficulty.toUpperCase())}</span>
+          <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
+        </div>
+        <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+        <p>${escapeHtml(quizData.instructions || "Bacalah soal dengan teliti.")}</p>
+        <div class="quiz-question">${escapeHtml(q.question)}</div>
+        <div id="quizInputArea"></div>
+        <div class="quiz-actions">
+          <button type="button" id="quizPrev" class="light-button">← Sebelumnya</button>
+          <button type="button" id="quizNext">${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}</button>
+        </div>
+      </section>`;
+    hasilSoal.replaceChildren(wrapper);
+
+    const inputArea = wrapper.querySelector("#quizInputArea");
+    if (q.type === "pilihan_ganda") {
+      (Array.isArray(q.options) ? q.options : []).forEach((option, optionIndex) => {
+        const optionKey = String(option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]);
+        const optionText = String(option?.text || option?.value || option?.content || "");
+        const label = document.createElement("label");
+        label.className = "quiz-option";
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "jawabanQuiz";
+        radio.value = optionKey;
+        radio.checked = String(quizAnswers[quizIndex] || "") === optionKey;
+        radio.addEventListener("change", () => {
+          if (radio.checked) quizAnswers[quizIndex] = optionKey;
+        });
+        const text = document.createElement("span");
+        text.textContent = optionKey + ". " + optionText;
+        label.append(radio, text);
+        inputArea.appendChild(label);
+      });
+    } else {
+      const textarea = document.createElement("textarea");
+      textarea.className = "quiz-answer";
+      textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
+      textarea.value = quizAnswers[quizIndex] || "";
+      textarea.addEventListener("input", () => { quizAnswers[quizIndex] = textarea.value; });
+      inputArea.appendChild(textarea);
+    }
+
+    wrapper.querySelector("#quizPrev").disabled = quizIndex === 0;
+    wrapper.querySelector("#quizPrev").addEventListener("click", () => {
+      saveCurrentAnswer();
+      if (quizIndex > 0) { quizIndex--; renderQuestion(); }
     });
+    wrapper.querySelector("#quizNext").addEventListener("click", () => {
+      saveCurrentAnswer();
+      if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
+        alert("Pilih salah satu jawaban terlebih dahulu."); return;
+      }
+      if (q.type === "esai" && !String(quizAnswers[quizIndex]).trim()) {
+        alert("Tuliskan jawaban terlebih dahulu."); return;
+      }
+      if (quizIndex < total - 1) { quizIndex++; renderQuestion(); }
+      else submitQuiz();
+    });
+  }
 
-    const answers = result.data || [];
+  function saveCurrentAnswer() {
+    const q = quizData.questions[quizIndex];
+    if (q.type === "esai") {
+      const textarea = hasilSoal.querySelector("textarea");
+      if (textarea) quizAnswers[quizIndex] = textarea.value.trim();
+    } else {
+      const selected = hasilSoal.querySelector('input[name="jawabanQuiz"]:checked');
+      if (selected) quizAnswers[quizIndex] = selected.value;
+    }
+  }
 
-    if (!answers.length) {
-      $("answerContent").innerHTML =
-        '<div class="empty">Belum ada detail jawaban.</div>';
-      return;
+  function escapeHtml(value) {
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[char]);
+  }async function submitQuiz() {
+    const nextButton = hasilSoal.querySelector("#quizNext");
+    if (nextButton) {
+      nextButton.disabled = true;
+      nextButton.textContent = "Sedang menilai...";
     }
 
-    $("answerContent").innerHTML = answers.map((item,index) => `
-      <div class="question">
-        <strong>Soal ${item.question_number || index+1}</strong>
-        <p>${escapeHTML(item.question)}</p>
-        <div class="answer-box">
-          <strong>Jawaban siswa:</strong><br>
-          ${escapeHTML(item.student_answer || "-")}
-        </div>
-        <div class="answer-box">
-          <strong>Kunci jawaban:</strong><br>
-          ${escapeHTML(item.correct_answer || "-")}
-        </div>
-        <div class="answer-box">
-          <strong>Status:</strong>
-          ${item.is_correct ? "Benar" : "Salah"}
-          <br>
-          <strong>Penjelasan:</strong><br>
-          ${escapeHTML(item.explanation || "-")}
-          <br>
-          <strong>Umpan balik:</strong><br>
-          ${escapeHTML(item.feedback || "-")}
-        </div>
+    showThinking(hasilSoal, "Sistem sedang memeriksa jawaban dan menyiapkan pembahasan...");
+
+    try {
+      if (!quizData || !quizData.quizId) {
+        throw new Error("ID latihan tidak ditemukan. Silakan buat latihan baru.");
+      }
+
+      const answers = quizData.questions.map((question, index) => ({
+        id: question.id,
+        answer: String(quizAnswers[index] ?? "")
+      }));
+
+      const data = await postWorker(EVALUATE_URL, {
+        quizId: quizData.quizId,
+        answers
+      });
+
+      if (!data.success || !Array.isArray(data.results)) {
+        throw new Error(data.error || "Penilaian belum berhasil diproses.");
+      }
+
+      renderQuizResult(data);
+    } catch (error) {
+      hasilSoal.textContent =
+        "Penilaian belum berhasil.\n" + error.message +
+        "\nJawabanmu masih tersimpan di halaman ini. Silakan coba penilaian kembali.";
+
+      const retry = document.createElement("button");
+      retry.textContent = "Coba Penilaian Lagi";
+      retry.addEventListener("click", submitQuiz);
+      hasilSoal.appendChild(retry);
+    }
+  }
+
+  function renderQuizResult(data) {
+    const total = Number(data.totalQuestions ?? data.total ?? quizData.questions.length);
+    const correctCount = Array.isArray(data.results)
+      ? data.results.filter(item => item && item.correct).length
+      : 0;
+    const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+
+    const result = document.createElement("section");
+    result.className = "quiz-result";
+    result.innerHTML = `
+      <h2 style="text-align:center">🏆 Latihan Selesai!</h2>
+      <div class="score-circle" style="--score:${score}%">
+        <strong>${score}</strong>
       </div>
-    `).join("");
+      <p style="text-align:center"><strong>${escapeHtml(data.grade || "")}</strong></p>
+      <p style="text-align:center"><strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong></p>
+      <p style="text-align:center">Jawaban tepat: ${correctCount} dari ${total} soal</p>
+      <h3>📖 Pembahasan Jawaban</h3>
+      <div id="quizReview"></div>
+      <button type="button" id="ulangQuiz">↻ Buat Latihan Baru</button>`;
 
-  } catch (error) {
-    $("answerContent").textContent = error.message;
+    const review = result.querySelector("#quizReview");
+
+    data.results.forEach((item, index) => {
+      const q = quizData.questions[index];
+      if (!q || !item) return;
+
+      const row = document.createElement("div");
+      row.className = "review-item";
+
+      const status = item.correct ? "✓ Tepat" : "✗ Perlu diperbaiki";
+      const answerText = q.type === "pilihan_ganda"
+        ? (q.options.find(option =>
+            String(option.key || option.label).toUpperCase() === String(item.correctAnswer).toUpperCase()
+          )?.text || item.correctAnswer)
+        : item.correctAnswer;
+
+      const heading = document.createElement("strong");
+      heading.textContent = "Soal " + (index + 1) + " — " + status;
+      heading.className = item.correct ? "correct-text" : "wrong-text";
+
+      const question = document.createElement("p");
+      question.textContent = q.question;
+
+      const studentAnswer = document.createElement("p");
+      studentAnswer.textContent = "Jawabanmu: " + (item.studentAnswer || "(tidak dijawab)");
+
+      const correct = document.createElement("p");
+      correct.textContent = "Acuan jawaban: " + (answerText || "-");
+
+      const feedback = document.createElement("p");
+      feedback.textContent = "Umpan balik: " + (item.feedback || "-");
+
+      const explanation = document.createElement("p");
+      explanation.textContent = "Pembahasan: " +
+        (item.explanation || "Pelajari kembali materi terkait.");
+
+      row.append(heading, question, studentAnswer, correct, feedback, explanation);
+      review.appendChild(row);
+    });
+
+    hasilSoal.replaceChildren(result);
+    result.querySelector("#ulangQuiz").addEventListener("click", () => {
+      quizData = null;
+      quizAnswers = [];
+      quizIndex = 0;
+      hasilSoal.replaceChildren();
+      document.getElementById("latihanMateri").focus();
+    });
   }
-}
 
-function closeStudentDetail() {
-  $("studentDetail").classList.add("hidden");
-  $("answerDetail").classList.add("hidden");
-}
+  function showStatus(element, message, type) {
+    element.textContent = message;
+    element.className = "status " + (type || "");
+    element.classList.remove("hidden");
+  }
 
-function closeAnswerDetail() {
-  $("answerDetail").classList.add("hidden");
-}
+  function hideStatus(element) {
+    element.textContent = "";
+    element.className = "status hidden";
+  }
 
-async function loadBanks() {
-  $("bankTable").innerHTML =
-    '<tr><td colspan="6">Memuat bank soal...</td></tr>';
-  $("bankDetail").classList.add("hidden");
+  function showLogin() {
+    loginCard.classList.remove("hidden");
+    belajarCard.classList.add("hidden");
+  }
 
-  try {
-    const result = await api("bank_soal");
-    const banks = result.data || [];
+  function showLearning(siswa) {
+    document.getElementById("namaAktif").textContent = siswa.nama;
+    document.getElementById("kelasAktif").textContent = siswa.kelas;
 
-    if (!banks.length) {
-      $("bankTable").innerHTML =
-        '<tr><td colspan="6" class="empty">Belum ada bank soal.</td></tr>';
+    loginCard.classList.add("hidden");
+    belajarCard.classList.remove("hidden");
+
+    pilihMenu("belajar");
+    hideStatus(loginStatus);
+  }
+
+  async function readJsonResponse(response) {
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server memberikan respons yang tidak dapat dibaca.");
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || data.message ||
+        ("Permintaan gagal (" + response.status + ").")
+      );
+    }
+
+    return data;
+  }
+
+  // LOGIN SISWA
+  loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    hideStatus(loginStatus);
+
+    const nama = document.getElementById("namaSiswa").value.trim();
+    const kelas = document.getElementById("kelasSiswa").value.trim();
+    const kode_akses = document.getElementById("kodeAkses").value;
+
+    if (!nama || !kelas || !kode_akses) {
+      showStatus(loginStatus, "Lengkapi nama, kelas, dan kode akses.", "error");
       return;
     }
 
-    $("bankTable").innerHTML = banks.map(bank => `
-      <tr>
-        <td>${escapeHTML(bank.title)}</td>
-        <td>${escapeHTML(bank.subject)}</td>
-        <td>${escapeHTML(bank.topic)}</td>
-        <td>${escapeHTML(bank.difficulty)}</td>
-        <td>${formatDate(bank.created_at)}</td>
-        <td>
-          <button class="action-btn"
-            onclick="openBank(${Number(bank.id)})">
-            Lihat Soal
-          </button>
-        </td>
-      </tr>
-    `).join("");
+    loginButton.disabled = true;
+    loginButton.textContent = "Memeriksa login...";
 
-  } catch (error) {
-    $("bankTable").innerHTML =
-      `<tr><td colspan="6">${escapeHTML(error.message)}</td></tr>`;
-  }
-}
+    try {
+      const response = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, kelas, kode_akses })
+      });
 
-async function openBank(id) {
-  $("bankDetail").classList.remove("hidden");
-  $("bankQuestions").innerHTML = "Memuat soal...";
+      const data = await readJsonResponse(response);
 
-  try {
-    const result = await api("detail_bank_soal", {bank_id:id});
-    const questions = result.data || [];
+      if (!data.token || !data.siswa) {
+        throw new Error("Respons login belum lengkap. Silakan coba kembali.");
+      }
 
-    if (!questions.length) {
-      $("bankQuestions").innerHTML =
-        '<div class="empty">Belum ada soal dalam bank ini.</div>';
-      return;
+      sessionStorage.setItem(SESSION_KEY, data.token);
+      document.getElementById("kodeAkses").value = "";
+
+      showLearning(data.siswa);
+      hasil.textContent = "";
+
+    } catch (error) {
+      showStatus(
+        loginStatus,
+        "Login belum berhasil.\n" + error.message +
+        "\nPeriksa nama, kelas, dan kode akses, lalu coba lagi.",
+        "error"
+      );
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = "Login";
     }
-
-    $("bankQuestions").innerHTML = questions.map((item,index) => {
-      let options = item.options;
-
-      if (typeof options === "string") {
-        try { options = JSON.parse(options); } catch {}
-      }
-
-      let optionsHTML = "";
-      if (Array.isArray(options)) {
-        optionsHTML = options.map(option =>
-          `<div>${escapeHTML(option)}</div>`
-        ).join("");
-      } else if (options && typeof options === "object") {
-        optionsHTML = Object.entries(options).map(([key,value]) =>
-          `<div>${escapeHTML(key)}. ${escapeHTML(value)}</div>`
-        ).join("");
-      }
-
-      return `
-        <div class="question">
-          <strong>Soal ${item.question_number || index+1}</strong>
-          <p>${escapeHTML(item.question_text)}</p>
-          ${optionsHTML}
-          <div class="answer-box">
-            <strong>Kunci jawaban:</strong>
-            ${escapeHTML(item.correct_answer || "-")}
-            <br>
-            <strong>Penjelasan:</strong>
-            ${escapeHTML(item.explanation || "-")}
-          </div>
-        </div>
-      `;
-    }).join("");
-
-  } catch (error) {
-    $("bankQuestions").textContent = error.message;
-  }
-}
-
-function closeBankDetail() {
-  $("bankDetail").classList.add("hidden");
-}
-
-function formatDate(value) {
-  if (!value) return "-";
-  const date = new Date(value);
-  if (Number.isNaN(date.getTime())) return "-";
-  return date.toLocaleString("id-ID", {
-    dateStyle:"short",
-    timeStyle:"short"
   });
-}
 
-async function logoutGuru() {
-  const confirmed = confirm("Apakah Bapak yakin ingin keluar?");
-  if (!confirmed) return;
+  // MEMERIKSA SESI TERSIMPAN
+  async function validateExistingSession() {
+    const existingSessionToken = sessionStorage.getItem(SESSION_KEY);
 
-  await supabaseClient.auth.signOut();
-  currentSession = null;
-  selectedStudent = null;
-  showLogin();
-  $("password").value = "";
-  $("loginError").textContent = "";
-}
+    if (!existingSessionToken) {
+      showLogin();
+      return;
+    }
 
-$("loginForm").addEventListener("submit", loginGuru);
-$("logoutBtn").addEventListener("click", logoutGuru);
+    try {
+      const response = await fetch(DATA_URL, {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + existingSessionToken
+        }
+      });
 
-document.querySelectorAll(".nav-btn[data-page]").forEach(button => {
-  button.addEventListener("click", () => showPage(button.dataset.page));
-});
+      const data = await readJsonResponse(response);
 
-// Memeriksa sesi login ketika halaman dibuka kembali.
-(async function initialize() {
-  const {data,error} = await supabaseClient.auth.getSession();
+      if (!data.siswa) {
+        throw new Error("Data sesi tidak tersedia.");
+      }
 
-  if (error || !data.session) {
-    showLogin();
-    return;
+      showLearning(data.siswa);
+
+    } catch {
+      sessionStorage.removeItem(SESSION_KEY);
+      showLogin();
+
+      showStatus(
+        loginStatus,
+        "Sesi login sudah berakhir atau tidak valid. Silakan login kembali.",
+        "error"
+      );
+    }
   }
 
-  currentSession = data.session;
+  // KELUAR
+  document.getElementById("logoutButton").addEventListener("click", function() {
+    sessionStorage.removeItem(SESSION_KEY);
 
-  try {
-    const result = await api("ringkasan");
-    $("guruName").textContent = result.guru || "Administrator";
-    showApp();
-    showPage("dashboard");
-    renderSummary(result.ringkasan);
-  } catch {
-    await supabaseClient.auth.signOut();
-    currentSession = null;
+    document.getElementById("materi").value = "";
+    document.getElementById("pertanyaan").value = "";
+    hasil.textContent = "";
+
     showLogin();
+
+    showStatus(loginStatus, "Anda sudah keluar dari akun.", "success");
+  });
+
+  // RUANG BELAJAR AI
+  belajarButton.addEventListener("click", belajar);
+
+  async function belajar() {
+    const sessionToken = sessionStorage.getItem(SESSION_KEY);
+    const mapel = document.getElementById("mapel").value;
+    const materi = document.getElementById("materi").value.trim();
+    const pertanyaan = document.getElementById("pertanyaan").value.trim();
+
+    if (!sessionToken) {
+      showLogin();
+      showStatus(loginStatus, "Silakan login kembali sebelum mulai belajar.", "error");
+      return;
+    }
+
+    if (!materi || !pertanyaan) {
+      hasil.textContent = "Silakan isi materi dan pertanyaan terlebih dahulu.";
+      return;
+    }
+
+    belajarButton.disabled = true;
+    belajarButton.textContent = "Sedang menyiapkan jawaban AI...";
+    hasil.textContent = "EcoSchool AI sedang berpikir. Mohon tunggu.";
+
+    try {
+      const sessionResponse = await fetch(DATA_URL, {
+        method: "GET",
+        headers: {
+          "Authorization": "Bearer " + sessionToken
+        }
+      });
+
+      const sessionData = await readJsonResponse(sessionResponse);
+
+      if (!sessionData.siswa) {
+        throw new Error("Identitas siswa tidak dapat diverifikasi.");
+      }
+
+      const tutorResponse = await fetch(WORKER_URL, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + sessionToken
+        },
+        body: JSON.stringify({
+          question:
+            "Mata pelajaran: " + mapel +
+            "\nMateri: " + materi +
+            "\n\nPertanyaan siswa: " + pertanyaan +
+            "\n\nJawab dalam bahasa Indonesia yang mudah dipahami siswa kelas X SMK. Berikan penjelasan akurat dan contoh yang benar. Sesuaikan jawaban dengan mata pelajaran dan materi yang dipilih."
+        })
+      });
+
+      const tutorData = await readJsonResponse(tutorResponse);
+
+      if (!tutorData.success) {
+        throw new Error(tutorData.error || "AI belum dapat menjawab.");
+      }
+
+      if (typeof tutorData.answer !== "string" || !tutorData.answer.trim()) {
+        throw new Error("Jawaban AI kosong. Silakan coba lagi.");
+      }
+
+      hasil.replaceChildren();
+
+      const heading = document.createElement("h3");
+      heading.textContent = "EcoSchool AI — " + mapel;
+      hasil.appendChild(heading);
+
+      const subheading = document.createElement("p");
+      subheading.textContent = "Materi: " + materi;
+      hasil.appendChild(subheading);
+
+      const content = document.createElement("div");
+      content.className = "ai-answer-content";
+
+      const lines = tutorData.answer.split("\n");
+      let list = null;
+
+      for (const rawLine of lines) {
+        const line = rawLine.trim();
+
+        if (!line) {
+          list = null;
+          continue;
+        }
+
+        const headingMatch = line.match(/^#{1,6}\s+(.+)$/);
+        const numberedMatch = line.match(/^\d+[.)]\s+(.+)$/);
+        const bulletMatch = line.match(/^[-*•]\s+(.+)$/);
+
+        if (headingMatch) {
+          list = null;
+
+          const answerHeading = document.createElement("h3");
+          answerHeading.textContent = headingMatch[1].replace(/\*\*/g, "");
+          content.appendChild(answerHeading);
+
+        } else if (numberedMatch) {
+          if (!list || list.tagName !== "OL") {
+            list = document.createElement("ol");
+            content.appendChild(list);
+          }
+
+          const item = document.createElement("li");
+          item.textContent = numberedMatch[1].replace(/\*\*/g, "");
+          list.appendChild(item);
+
+        } else if (bulletMatch) {
+          if (!list || list.tagName !== "UL") {
+            list = document.createElement("ul");
+            content.appendChild(list);
+          }
+
+          const item = document.createElement("li");
+          item.textContent = bulletMatch[1].replace(/\*\*/g, "");
+          list.appendChild(item);
+
+        } else {
+          list = null;
+
+          const paragraph = document.createElement("p");
+          paragraph.textContent = line
+            .replace(/^#{1,6}\s*/, "")
+            .replace(/\*\*/g, "")
+            .replace(/^\*(.+)\*$/, "$1");
+
+          content.appendChild(paragraph);
+        }
+      }
+
+      hasil.appendChild(content);
+
+    } catch (error) {
+      hasil.textContent =
+        "Maaf, jawaban belum berhasil dimuat.\n\nPenyebab: " +
+        error.message +
+        "\n\nSilakan coba kembali beberapa saat lagi.";
+
+    } finally {
+      belajarButton.disabled = false;
+      belajarButton.textContent = "Mulai Belajar dengan AI";
+    }
   }
-})();
+
+
+  // =========================================================
+  // DASHBOARD GURU - API WORKER TERPISAH DARI SESI SISWA
+  // Token guru hanya disimpan di memori halaman, bukan localStorage.
+  // =========================================================
+  const TEACHER_API = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/guru";
+  let teacherAccessToken = "";
+  let teacherStudentsCache = [];
+  let teacherHistoryCache = [];
+  let teacherProgressCache = [];
+
+  const teacherLoginCard = document.getElementById("teacherLoginCard");
+  const teacherDashboard = document.getElementById("teacherDashboard");
+  const teacherLoginForm = document.getElementById("teacherLoginForm");
+  const teacherLoginStatus = document.getElementById("teacherLoginStatus");
+  const teacherDashboardStatus = document.getElementById("teacherDashboardStatus");
+
+  function teacherStatus(message, type, target = teacherDashboardStatus) {
+    target.textContent = message;
+    target.className = "status " + (type || "");
+    target.classList.remove("hidden");
+  }
+
+  function hideTeacherStatus(target = teacherDashboardStatus) {
+    target.textContent = "";
+    target.className = "status hidden";
+  }
+
+  async function teacherApi(path, payload = {}, needsAuth = true) {
+    const headers = { "Content-Type": "application/json" };
+    if (needsAuth) {
+      if (!teacherAccessToken) throw new Error("Sesi guru tidak ditemukan. Silakan login kembali.");
+      headers.Authorization = "Bearer " + teacherAccessToken;
+    }
+    const response = await fetch(TEACHER_API + path, {
+      method: "POST",
+      headers,
+      body: JSON.stringify(payload)
+    });
+    return await readJsonResponse(response);
+  }
+
+  function teacherDate(value) {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleString("id-ID", { dateStyle: "medium", timeStyle: "short" });
+  }
+
+  function teacherNumber(value) {
+    const number = Number(value);
+    return Number.isFinite(number) ? number.toLocaleString("id-ID") : "-";
+  }
+
+  function teacherTable(headers, rows) {
+    if (!rows.length) return '<p class="teacher-muted">Belum ada data untuk ditampilkan.</p>';
+    return '<table class="teacher-table"><thead><tr>' +
+      headers.map(h => "<th>" + escapeHtml(h) + "</th>").join("") +
+      '</tr></thead><tbody>' + rows.join("") + '</tbody></table>';
+  }
+
+  function openTeacherLogin() {
+    loginCard.classList.add("hidden");
+    belajarCard.classList.add("hidden");
+    teacherDashboard.classList.add("hidden");
+    teacherLoginCard.classList.remove("hidden");
+    hideStatus(loginStatus);
+    hideTeacherStatus(teacherLoginStatus);
+  }
+
+  document.getElementById("openTeacherLogin").addEventListener("click", openTeacherLogin);
+
+  document.getElementById("backToStudentLogin").addEventListener("click", function() {
+    teacherLoginCard.classList.add("hidden");
+    showLogin();
+  });
+
+  teacherLoginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
+    hideTeacherStatus(teacherLoginStatus);
+    const email = document.getElementById("teacherEmail").value.trim();
+    const password = document.getElementById("teacherPassword").value;
+    const button = document.getElementById("teacherLoginButton");
+    button.disabled = true;
+    button.textContent = "Memeriksa akun guru...";
+    try {
+      const data = await teacherApi("/login", { email, password }, false);
+      if (!data.success || !data.access_token || !data.guru) {
+        throw new Error(data.error || "Respons login guru belum lengkap.");
+      }
+      teacherAccessToken = data.access_token;
+      document.getElementById("teacherPassword").value = "";
+      document.getElementById("teacherActiveName").textContent = data.guru.nama || "Guru";
+      teacherLoginCard.classList.add("hidden");
+      teacherDashboard.classList.remove("hidden");
+      await loadTeacherDashboard();
+    } catch (error) {
+      teacherStatus("Login guru belum berhasil.\n" + error.message, "error", teacherLoginStatus);
+    } finally {
+      button.disabled = false;
+      button.textContent = "Login Guru";
+    }
+  });
+
+  async function loadTeacherDashboard() {
+    hideTeacherStatus();
+    document.getElementById("teacherLatestSessions").textContent = "Memuat aktivitas terbaru...";
+    try {
+      const data = await teacherApi("/dashboard", {});
+      if (!data.success) throw new Error(data.error || "Dashboard tidak dapat dimuat.");
+      const stats = data.statistik || {};
+      document.getElementById("statStudents").textContent = teacherNumber(stats.totalSiswa);
+      document.getElementById("statSessions").textContent = teacherNumber(stats.totalSesiBelajar);
+      document.getElementById("statBanks").textContent = teacherNumber(stats.totalBankSoal);
+      document.getElementById("statQuizzes").textContent = teacherNumber(stats.totalHasilKuis);
+      const sessions = Array.isArray(data.sesiTerbaru) ? data.sesiTerbaru : [];
+      const rows = sessions.map(item => {
+        const cells = [
+          escapeHtml(item.nama_siswa || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>",
+          escapeHtml(item.subject || "-"),
+          escapeHtml(item.topic || "-"),
+          escapeHtml(item.score == null ? "-" : item.score),
+          escapeHtml(teacherDate(item.created_at || item.started_at))
+        ];
+        return "<tr>" + cells.map(value => "<td>" + value + "</td>").join("") + "</tr>";
+      });
+      document.getElementById("teacherLatestSessions").innerHTML = teacherTable(
+        ["Siswa", "Mata Pelajaran", "Materi", "Nilai", "Waktu"], rows
+      );
+    } catch (error) {
+      teacherStatus("Dashboard belum berhasil dimuat.\n" + error.message, "error");
+      document.getElementById("teacherLatestSessions").textContent = "Data aktivitas belum dapat dimuat.";
+    }
+  }
+
+  async function loadTeacherStudents() {
+    const target = document.getElementById("teacherStudentsTable");
+    target.textContent = "Memuat data siswa...";
+    try {
+      const data = await teacherApi("/siswa", {});
+      if (!data.success || !Array.isArray(data.siswa)) throw new Error(data.error || "Data siswa tidak valid.");
+      teacherStudentsCache = data.siswa;
+      const classes = [...new Set(teacherStudentsCache.map(s => String(s.kelas || "").trim()).filter(Boolean))].sort();
+      const classFilter = document.getElementById("teacherClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+      renderTeacherStudents();
+    } catch (error) {
+      target.textContent = "Data siswa belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherStudents() {
+    const search = document.getElementById("teacherStudentSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherClassFilter").value;
+    const filtered = teacherStudentsCache.filter(s => {
+      const searchable = [s.nama, s.kelas, s.nis, s.nisn].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) && (!kelas || String(s.kelas || "") === kelas);
+    });
+    const rows = filtered.map((s, index) => {
+      const status = s.aktif === false ? "Nonaktif" : "Aktif";
+      return "<tr><td>" + (index + 1) + "</td><td>" + escapeHtml(s.nama || "-") +
+        "</td><td>" + escapeHtml(s.kelas || "-") + "</td><td>" +
+        escapeHtml(s.nis || "-") + "</td><td>" + status + "</td></tr>";
+    });
+    document.getElementById("teacherStudentsTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherStudentsCache.length + " siswa.</p>" +
+      teacherTable(["No.", "Nama Siswa", "Kelas", "NIS", "Status"], rows);
+  }
+
+  async function loadTeacherHistory(studentId = null) {
+    const target = document.getElementById("teacherHistoryTable");
+    target.textContent = "Memuat riwayat belajar...";
+    document.getElementById("teacherAnswerDetail").replaceChildren();
+    try {
+      const limit = Number(document.getElementById("teacherHistoryLimit").value) || 50;
+      const payload = { limit };
+      if (studentId !== null && studentId !== undefined) payload.siswaId = studentId;
+      const data = await teacherApi("/riwayat", payload);
+      if (!data.success || !Array.isArray(data.riwayat)) throw new Error(data.error || "Riwayat tidak valid.");
+      teacherHistoryCache = data.riwayat;
+      renderTeacherHistory();
+    } catch (error) {
+      target.textContent = "Riwayat belajar belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherHistory() {
+    const search = document.getElementById("teacherHistorySearch").value.trim().toLowerCase();
+    const filtered = teacherHistoryCache.filter(item =>
+      [item.nama_siswa, item.kelas, item.subject, item.topic, item.grade, item.status]
+        .join(" ").toLowerCase().includes(search)
+    );
+    const rows = filtered.map(item => {
+      const student = escapeHtml(item.nama_siswa || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>";
+      const details = escapeHtml(item.subject || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.topic || "-") + "</span>";
+      return "<tr><td>" + student + "</td><td>" + details + "</td><td>" +
+        teacherNumber(item.total_questions) + "</td><td>" + teacherNumber(item.correct_answers) +
+        "</td><td>" + escapeHtml(item.score == null ? "-" : item.score) +
+        "</td><td>" + escapeHtml(teacherDate(item.created_at || item.started_at)) +
+        "</td><td><button type='button' data-session-id='" + escapeHtml(item.id) + "'>Lihat Jawaban</button></td></tr>";
+    });
+    document.getElementById("teacherHistoryTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherHistoryCache.length + " riwayat yang dimuat.</p>" +
+      teacherTable(["Siswa", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Waktu", "Detail"], rows);
+  }
+
+  async function loadTeacherProgress() {
+    const target = document.getElementById("teacherProgressTable");
+    target.textContent = "Memuat progres belajar...";
+    try {
+      const data = await teacherApi("/progres", {});
+      if (!data.success || !Array.isArray(data.progres)) {
+        throw new Error(data.error || "Data progres belajar tidak valid.");
+      }
+
+      teacherProgressCache = data.progres;
+      const classes = [...new Set(
+        teacherProgressCache.map(item => String(item.kelas || "").trim()).filter(Boolean)
+      )].sort();
+      const classFilter = document.getElementById("teacherProgressClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+
+      renderTeacherProgress();
+    } catch (error) {
+      target.textContent = "Progres belajar belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherProgress() {
+    const search = document.getElementById("teacherProgressSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherProgressClassFilter").value;
+    const filtered = teacherProgressCache.filter(item => {
+      const searchable = [item.nama_siswa, item.kelas, item.materi].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) &&
+        (!kelas || String(item.kelas || "") === kelas);
+    });
+
+    const rows = filtered.map((item, index) => {
+      const student = escapeHtml(item.nama_siswa || "-") +
+        "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>";
+      const materi = item.memiliki_progres
+        ? escapeHtml(item.materi || "-")
+        : "<span class='teacher-muted'>Belum ada progres</span>";
+      const updated = item.diperbarui_pada ? escapeHtml(teacherDate(item.diperbarui_pada)) : "-";
+      return "<tr><td>" + (index + 1) + "</td><td>" + student +
+        "</td><td>" + materi + "</td><td>" + teacherNumber(item.misi_selesai) +
+        "</td><td>" + teacherNumber(item.total_poin) + "</td><td>" +
+        escapeHtml(item.skor_terakhir == null ? "-" : item.skor_terakhir) +
+        "</td><td>" + updated + "</td></tr>";
+    });
+
+    document.getElementById("teacherProgressTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length +
+      " dari " + teacherProgressCache.length + " baris progres.</p>" +
+      teacherTable(
+        ["No.", "Nama Siswa / Kelas", "Materi", "Misi Selesai", "Total Poin", "Skor Terakhir", "Diperbarui"],
+        rows
+      );
+  }
+
+  async function loadTeacherAnswers(sessionId, button) {
+    const detail = document.getElementById("teacherAnswerDetail");
+    detail.innerHTML = '<div class="teacher-detail">Memuat detail jawaban sesi ' + escapeHtml(sessionId) + '...</div>';
+    if (button) button.disabled = true;
+    try {
+      const data = await teacherApi("/jawaban", { sessionId });
+      if (!data.success) throw new Error(data.error || "Detail jawaban tidak tersedia.");
+      const session = data.sesi || {};
+      const student = data.siswa || {};
+      const answers = Array.isArray(data.jawaban) ? data.jawaban : [];
+      const summary = document.createElement("div");
+      summary.className = "teacher-detail";
+      const heading = document.createElement("h3");
+      heading.textContent = "Detail Sesi Belajar #" + session.id;
+      const identity = document.createElement("p");
+      identity.textContent = "Siswa: " + (student.nama || "-") + " · Kelas: " + (student.kelas || "-");
+      const meta = document.createElement("p");
+      meta.textContent = "Mata pelajaran: " + (session.subject || "-") +
+        " · Materi: " + (session.topic || "-") +
+        " · Nilai: " + (session.score == null ? "-" : session.score) +
+        " · Benar: " + (session.correct_answers ?? "-") +
+        " · Salah: " + (session.wrong_answers ?? "-");
+      summary.append(heading, identity, meta);
+      const answersHeading = document.createElement("h4");
+      answersHeading.textContent = "Jawaban Siswa (" + answers.length + ")";
+      summary.appendChild(answersHeading);
+      answers.forEach((answer, index) => {
+        const box = document.createElement("article");
+        box.className = "teacher-answer";
+        const title = document.createElement("strong");
+        title.textContent = "Soal " + (answer.question_number || index + 1) +
+          (answer.is_correct === true ? " — Tepat" : answer.is_correct === false ? " — Belum tepat" : "");
+        const question = document.createElement("p");
+        question.textContent = answer.question || "-";
+        const studentAnswer = document.createElement("p");
+        studentAnswer.textContent = "Jawaban siswa: " + (answer.student_answer || "(tidak dijawab)");
+        const correctAnswer = document.createElement("p");
+        correctAnswer.textContent = "Kunci/acuan jawaban: " + (answer.correct_answer || "-");
+        const feedback = document.createElement("p");
+        feedback.textContent = "Umpan balik: " + (answer.feedback || "-");
+        const explanation = document.createElement("p");
+        explanation.textContent = "Pembahasan: " + (answer.explanation || "-");
+        box.append(title, question, studentAnswer, correctAnswer, feedback, explanation);
+        summary.appendChild(box);
+      });
+      detail.replaceChildren(summary);
+      detail.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      detail.textContent = "Detail jawaban gagal dimuat: " + error.message;
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
+  document.querySelectorAll("[data-teacher-tab]").forEach(button => {
+    button.addEventListener("click", async function() {
+      const tab = this.dataset.teacherTab;
+      document.querySelectorAll("[data-teacher-tab]").forEach(item => item.classList.toggle("active", item === this));
+      document.getElementById("teacherPanelDashboard").classList.toggle("hidden", tab !== "dashboard");
+      document.getElementById("teacherPanelStudents").classList.toggle("hidden", tab !== "students");
+      document.getElementById("teacherPanelHistory").classList.toggle("hidden", tab !== "history");
+      document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
+      hideTeacherStatus();
+      if (tab === "dashboard") await loadTeacherDashboard();
+      if (tab === "students") await loadTeacherStudents();
+      if (tab === "history") await loadTeacherHistory();
+      if (tab === "progress") await loadTeacherProgress();
+    });
+  });
+
+  document.getElementById("teacherStudentSearch").addEventListener("input", renderTeacherStudents);
+  document.getElementById("teacherClassFilter").addEventListener("change", renderTeacherStudents);
+  document.getElementById("teacherHistorySearch").addEventListener("input", renderTeacherHistory);
+  document.getElementById("teacherHistoryLimit").addEventListener("change", () => loadTeacherHistory());
+  document.getElementById("teacherProgressSearch").addEventListener("input", renderTeacherProgress);
+  document.getElementById("teacherProgressClassFilter").addEventListener("change", renderTeacherProgress);
+
+  document.getElementById("teacherHistoryTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-session-id]");
+    if (button) loadTeacherAnswers(button.dataset.sessionId, button);
+  });
+
+  document.getElementById("teacherLogoutButton").addEventListener("click", function() {
+    teacherAccessToken = "";
+    teacherStudentsCache = [];
+    teacherHistoryCache = [];
+    teacherProgressCache = [];
+    teacherDashboard.classList.add("hidden");
+    teacherLoginCard.classList.add("hidden");
+    teacherLoginForm.reset();
+    loginCard.classList.remove("hidden");
+    hideTeacherStatus(teacherLoginStatus);
+    teacherStatus("Anda telah keluar dari Dashboard Guru.", "success", loginStatus);
+  });
+
+
+  validateExistingSession();
 </script>
 </body>
 </html>
