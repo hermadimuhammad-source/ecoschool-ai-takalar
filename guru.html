@@ -326,6 +326,7 @@
       <button type="button" data-teacher-tab="students">Data Siswa</button>
       <button type="button" data-teacher-tab="history">Riwayat Belajar</button>
       <button type="button" data-teacher-tab="progress">Progres Belajar</button>
+      <button type="button" data-teacher-tab="monitoring">Pengawasan Kuis</button>
     </div>
 
     <div id="teacherPanelDashboard">
@@ -362,6 +363,17 @@
       </div>
       <div id="teacherHistoryTable" class="teacher-table-wrap">Memuat riwayat belajar...</div>
       <div id="teacherAnswerDetail"></div>
+    </div>
+
+    <div id="teacherPanelMonitoring" class="hidden">
+      <h3>Catatan Pengawasan Kuis</h3>
+      <p class="teacher-muted">Catatan ini menunjukkan halaman kuis menjadi tidak aktif. Periksa konteksnya terlebih dahulu; catatan bukan bukti pasti kecurangan.</p>
+      <div class="teacher-filter">
+        <input id="teacherMonitoringSearch" type="search" placeholder="Cari nama siswa atau kelas...">
+        <select id="teacherMonitoringClassFilter"><option value="">Semua kelas</option></select>
+        <button type="button" id="teacherMonitoringRefresh">Muat Ulang</button>
+      </div>
+      <div id="teacherMonitoringTable" class="teacher-table-wrap">Memuat catatan pengawasan...</div>
     </div>
 
     <div id="teacherPanelProgress" class="hidden">
@@ -1183,6 +1195,7 @@
   let teacherStudentsCache = [];
   let teacherHistoryCache = [];
   let teacherProgressCache = [];
+  let teacherMonitoringCache = [];
 
   const teacherLoginCard = document.getElementById("teacherLoginCard");
   const teacherDashboard = document.getElementById("teacherDashboard");
@@ -1439,6 +1452,50 @@
       );
   }
 
+
+  async function loadTeacherMonitoring() {
+    const target = document.getElementById("teacherMonitoringTable");
+    target.textContent = "Memuat catatan pengawasan kuis...";
+    try {
+      const data = await teacherApi("/pelanggaran", { limit: 500 });
+      if (!data.success || !Array.isArray(data.pelanggaran)) {
+        throw new Error(data.error || "Data pengawasan kuis tidak valid.");
+      }
+      teacherMonitoringCache = data.pelanggaran;
+      const classes = [...new Set(teacherMonitoringCache.map(item => String(item.student_class || "").trim()).filter(Boolean))].sort();
+      const classFilter = document.getElementById("teacherMonitoringClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+      renderTeacherMonitoring();
+    } catch (error) {
+      target.textContent = "Catatan pengawasan belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherMonitoring() {
+    const search = document.getElementById("teacherMonitoringSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherMonitoringClassFilter").value;
+    const filtered = teacherMonitoringCache.filter(item => {
+      const searchable = [item.student_name, item.student_class].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) && (!kelas || String(item.student_class || "") === kelas);
+    });
+    const rows = filtered.map((item, index) => {
+      const student = escapeHtml(item.student_name || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.student_class || "-") + "</span>";
+      const severity = Number(item.occurrence_count) >= 3
+        ? "<strong style='color:#b42318'>Peringatan serius</strong>"
+        : "Peringatan";
+      return "<tr><td>" + (index + 1) + "</td><td>" + student + "</td><td>" +
+        teacherNumber(item.occurrence_count) + "</td><td>" + severity + "</td><td>" +
+        escapeHtml(teacherDate(item.occurred_at)) + "</td><td><code>" +
+        escapeHtml(String(item.quiz_id || "").slice(0, 8)) + "</code></td></tr>";
+    });
+    document.getElementById("teacherMonitoringTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherMonitoringCache.length + " catatan.</p>" +
+      teacherTable(["No.", "Nama Siswa / Kelas", "Frekuensi", "Tingkat", "Waktu", "ID Kuis"], rows);
+  }
+
   async function loadTeacherAnswers(sessionId, button) {
     const detail = document.getElementById("teacherAnswerDetail");
     detail.innerHTML = '<div class="teacher-detail">Memuat detail jawaban sesi ' + escapeHtml(sessionId) + '...</div>';
@@ -1501,11 +1558,13 @@
       document.getElementById("teacherPanelStudents").classList.toggle("hidden", tab !== "students");
       document.getElementById("teacherPanelHistory").classList.toggle("hidden", tab !== "history");
       document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
+      document.getElementById("teacherPanelMonitoring").classList.toggle("hidden", tab !== "monitoring");
       hideTeacherStatus();
       if (tab === "dashboard") await loadTeacherDashboard();
       if (tab === "students") await loadTeacherStudents();
       if (tab === "history") await loadTeacherHistory();
       if (tab === "progress") await loadTeacherProgress();
+      if (tab === "monitoring") await loadTeacherMonitoring();
     });
   });
 
@@ -1515,6 +1574,9 @@
   document.getElementById("teacherHistoryLimit").addEventListener("change", () => loadTeacherHistory());
   document.getElementById("teacherProgressSearch").addEventListener("input", renderTeacherProgress);
   document.getElementById("teacherProgressClassFilter").addEventListener("change", renderTeacherProgress);
+  document.getElementById("teacherMonitoringSearch").addEventListener("input", renderTeacherMonitoring);
+  document.getElementById("teacherMonitoringClassFilter").addEventListener("change", renderTeacherMonitoring);
+  document.getElementById("teacherMonitoringRefresh").addEventListener("click", loadTeacherMonitoring);
 
   document.getElementById("teacherHistoryTable").addEventListener("click", function(event) {
     const button = event.target.closest("button[data-session-id]");
@@ -1526,6 +1588,7 @@
     teacherStudentsCache = [];
     teacherHistoryCache = [];
     teacherProgressCache = [];
+    teacherMonitoringCache = [];
     teacherDashboard.classList.add("hidden");
     teacherLoginCard.classList.add("hidden");
     teacherLoginForm.reset();
