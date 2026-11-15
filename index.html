@@ -336,6 +336,7 @@
       <button type="button" data-teacher-tab="progress">Progres Belajar</button>
       <button type="button" data-teacher-tab="monitoring">Pengawasan Kuis</button>
       <button type="button" data-teacher-tab="print">Cetak Hasil Kuis</button>
+      <button type="button" data-teacher-tab="recap">Rekap Nilai</button>
     </div>
 
     <div id="teacherPanelDashboard">
@@ -395,6 +396,20 @@
       </div>
       <div id="teacherPrintTable" class="teacher-table-wrap">Klik menu ini untuk memuat hasil kuis...</div>
       <p class="teacher-muted">Catatan: daftar menampilkan maksimal 100 hasil kuis terbaru. Gunakan fitur cetak pada setiap hasil untuk mencetak atau menyimpan sebagai PDF.</p>
+    </div>
+
+    <div id="teacherPanelRecap" class="hidden">
+      <h3>📊 Rekap Nilai Kuis Siswa</h3>
+      <p class="teacher-muted">Rekap dihitung dari hasil kuis yang tersimpan. Nilai rata-rata, tertinggi, dan jumlah pengerjaan ditampilkan per siswa.</p>
+      <div class="teacher-filter">
+        <input id="teacherRecapSearch" type="search" placeholder="Cari nama siswa atau kelas...">
+        <select id="teacherRecapClassFilter"><option value="">Semua kelas</option></select>
+        <button type="button" id="teacherRecapRefresh">Muat Ulang Rekap</button>
+        <button type="button" id="teacherRecapPrint">Cetak Rekap</button>
+      </div>
+      <div id="teacherRecapSummary" class="teacher-stats"></div>
+      <div id="teacherRecapTable" class="teacher-table-wrap">Klik menu ini untuk memuat rekap nilai...</div>
+      <p class="teacher-muted">Catatan: rekap menggunakan maksimal 100 hasil kuis terbaru yang dikirim oleh server.</p>
     </div>
 
     <div id="teacherPanelProgress" class="hidden">
@@ -1281,6 +1296,7 @@
   let teacherProgressCache = [];
   let teacherMonitoringCache = [];
   let teacherPrintCache = [];
+  let teacherRecapCache = [];
 
   const teacherLoginCard = document.getElementById("teacherLoginCard");
   const teacherDashboard = document.getElementById("teacherDashboard");
@@ -1533,6 +1549,95 @@
       teacherTable(["Siswa / Kelas", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Predikat", "Waktu", "Aksi"], rows);
   }
 
+  async function loadTeacherGradeRecap() {
+    const target = document.getElementById("teacherRecapTable");
+    target.textContent = "Memuat rekap nilai siswa...";
+    try {
+      const data = await teacherApi("/riwayat", { limit: 100 });
+      if (!data.success || !Array.isArray(data.riwayat)) {
+        throw new Error(data.error || "Data rekap nilai tidak valid.");
+      }
+      teacherRecapCache = data.riwayat;
+      const classes = [...new Set(teacherRecapCache.map(item => String(item.kelas || "").trim()).filter(Boolean))].sort();
+      const classFilter = document.getElementById("teacherRecapClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+      renderTeacherGradeRecap();
+    } catch (error) {
+      target.textContent = "Rekap nilai gagal dimuat: " + error.message;
+      document.getElementById("teacherRecapSummary").innerHTML = "";
+    }
+  }
+
+  function getTeacherGradeRecapRows() {
+    const grouped = new Map();
+    teacherRecapCache.forEach(item => {
+      const name = String(item.nama_siswa || "Tidak diketahui").trim();
+      const kelas = String(item.kelas || "-").trim();
+      const key = name.toLowerCase() + "||" + kelas.toLowerCase();
+      if (!grouped.has(key)) grouped.set(key, { nama: name, kelas, scores: [], attempts: 0, latest: null });
+      const row = grouped.get(key);
+      row.attempts++;
+      const score = Number(item.score);
+      if (item.score !== null && item.score !== undefined && item.score !== "" && Number.isFinite(score)) row.scores.push(score);
+      const dateValue = item.completed_at || item.created_at || item.started_at;
+      const date = dateValue ? new Date(dateValue) : null;
+      if (date && !Number.isNaN(date.getTime()) && (!row.latest || date > row.latest)) row.latest = date;
+    });
+    return [...grouped.values()].map(row => ({
+      ...row,
+      average: row.scores.length ? row.scores.reduce((a,b) => a+b, 0) / row.scores.length : null,
+      highest: row.scores.length ? Math.max(...row.scores) : null
+    })).sort((a,b) => a.kelas.localeCompare(b.kelas, "id") || a.nama.localeCompare(b.nama, "id"));
+  }
+
+  function renderTeacherGradeRecap() {
+    const search = document.getElementById("teacherRecapSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherRecapClassFilter").value;
+    const filtered = getTeacherGradeRecapRows().filter(row =>
+      (!search || (row.nama + " " + row.kelas).toLowerCase().includes(search)) &&
+      (!kelas || row.kelas === kelas)
+    );
+    const scores = filtered.filter(row => row.average !== null).map(row => row.average);
+    const overall = scores.length ? scores.reduce((a,b) => a+b, 0) / scores.length : null;
+    document.getElementById("teacherRecapSummary").innerHTML =
+      '<div class="teacher-stat"><small>Siswa pada rekap</small><strong>' + filtered.length + '</strong></div>' +
+      '<div class="teacher-stat"><small>Total pengerjaan kuis</small><strong>' + filtered.reduce((sum,row) => sum + row.attempts, 0) + '</strong></div>' +
+      '<div class="teacher-stat"><small>Rata-rata nilai siswa</small><strong>' + (overall === null ? '-' : overall.toFixed(2).replace('.', ',')) + '</strong></div>';
+    const rows = filtered.map(row => '<tr><td>' + escapeHtml(row.nama) + '</td><td>' + escapeHtml(row.kelas) +
+      '</td><td>' + row.attempts + '</td><td>' + (row.average === null ? '-' : row.average.toFixed(2).replace('.', ',')) +
+      '</td><td>' + (row.highest === null ? '-' : row.highest.toLocaleString('id-ID')) +
+      '</td><td>' + escapeHtml(row.latest ? teacherDate(row.latest.toISOString()) : '-') + '</td></tr>');
+    document.getElementById("teacherRecapTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + ' siswa dari ' + getTeacherGradeRecapRows().length + ' siswa yang memiliki hasil kuis pada data yang dimuat.</p>' +
+      teacherTable(["Nama Siswa", "Kelas", "Jumlah Kuis", "Rata-rata Nilai", "Nilai Tertinggi", "Pengerjaan Terakhir"], rows);
+  }
+
+  function printTeacherGradeRecap() {
+    const search = document.getElementById("teacherRecapSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherRecapClassFilter").value;
+    const filtered = getTeacherGradeRecapRows().filter(row =>
+      (!search || (row.nama + " " + row.kelas).toLowerCase().includes(search)) &&
+      (!kelas || row.kelas === kelas)
+    );
+    if (!filtered.length) {
+      teacherStatus("Tidak ada data rekap untuk dicetak.", "error");
+      return;
+    }
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      teacherStatus("Jendela cetak diblokir browser. Izinkan pop-up untuk situs EcoSchool AI, lalu coba lagi.", "error");
+      return;
+    }
+    const rows = filtered.map((row,index) => '<tr><td>' + (index+1) + '</td><td>' + escapeHtml(row.nama) + '</td><td>' + escapeHtml(row.kelas) + '</td><td>' + row.attempts + '</td><td>' + (row.average === null ? '-' : row.average.toFixed(2).replace('.', ',')) + '</td><td>' + (row.highest === null ? '-' : row.highest.toLocaleString('id-ID')) + '</td><td>' + escapeHtml(row.latest ? teacherDate(row.latest.toISOString()) : '-') + '</td></tr>').join("");
+    printWindow.document.open();
+    printWindow.document.write('<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Rekap Nilai Kuis - SMK Negeri 2 Takalar</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#172b21}h1,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #999;padding:8px;text-align:left;font-size:12px}th{background:#eaf2ec}.actions{text-align:center;margin:20px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><h1>SMK NEGERI 2 TAKALAR</h1><p>REKAP NILAI KUIS — ECOSCHOOL AI</p><p>Dicetak: ' + escapeHtml(teacherDate(new Date().toISOString())) + '</p><table><thead><tr><th>No.</th><th>Nama Siswa</th><th>Kelas</th><th>Jumlah Kuis</th><th>Rata-rata Nilai</th><th>Nilai Tertinggi</th><th>Pengerjaan Terakhir</th></tr></thead><tbody>' + rows + '</tbody></table><div class="actions"><button onclick="window.print()">Cetak / Simpan sebagai PDF</button></div></body></html>');
+    printWindow.document.close();
+    printWindow.focus();
+  }
+
   async function printTeacherQuizResult(sessionId, button) {
     // Buka jendela cetak langsung dari klik pengguna agar tidak diblokir browser.
     const printWindow = window.open("", "_blank");
@@ -1776,6 +1881,7 @@
       document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
       document.getElementById("teacherPanelMonitoring").classList.toggle("hidden", tab !== "monitoring");
       document.getElementById("teacherPanelPrint").classList.toggle("hidden", tab !== "print");
+      document.getElementById("teacherPanelRecap").classList.toggle("hidden", tab !== "recap");
       hideTeacherStatus();
       if (tab === "dashboard") await loadTeacherDashboard();
       if (tab === "students") await loadTeacherStudents();
@@ -1783,6 +1889,7 @@
       if (tab === "progress") await loadTeacherProgress();
       if (tab === "monitoring") await loadTeacherMonitoring();
       if (tab === "print") await loadTeacherPrintResults();
+      if (tab === "recap") await loadTeacherGradeRecap();
     });
   });
 
@@ -1798,6 +1905,10 @@
   document.getElementById("teacherPrintSearch").addEventListener("input", renderTeacherPrintResults);
   document.getElementById("teacherPrintClassFilter").addEventListener("change", renderTeacherPrintResults);
   document.getElementById("teacherPrintRefresh").addEventListener("click", loadTeacherPrintResults);
+  document.getElementById("teacherRecapSearch").addEventListener("input", renderTeacherGradeRecap);
+  document.getElementById("teacherRecapClassFilter").addEventListener("change", renderTeacherGradeRecap);
+  document.getElementById("teacherRecapRefresh").addEventListener("click", loadTeacherGradeRecap);
+  document.getElementById("teacherRecapPrint").addEventListener("click", printTeacherGradeRecap);
 
   document.getElementById("teacherPrintTable").addEventListener("click", function(event) {
     const button = event.target.closest("button[data-print-session-id]");
@@ -1816,6 +1927,7 @@
     teacherProgressCache = [];
     teacherMonitoringCache = [];
     teacherPrintCache = [];
+    teacherRecapCache = [];
     teacherDashboard.classList.add("hidden");
     teacherLoginCard.classList.add("hidden");
     teacherLoginForm.reset();
