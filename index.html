@@ -335,6 +335,7 @@
       <button type="button" data-teacher-tab="history">Riwayat Belajar</button>
       <button type="button" data-teacher-tab="progress">Progres Belajar</button>
       <button type="button" data-teacher-tab="monitoring">Pengawasan Kuis</button>
+      <button type="button" data-teacher-tab="print">Cetak Hasil Kuis</button>
     </div>
 
     <div id="teacherPanelDashboard">
@@ -382,6 +383,18 @@
         <button type="button" id="teacherMonitoringRefresh">Muat Ulang</button>
       </div>
       <div id="teacherMonitoringTable" class="teacher-table-wrap">Memuat catatan pengawasan...</div>
+    </div>
+
+    <div id="teacherPanelPrint" class="hidden">
+      <h3>🖨️ Cetak Hasil Kuis</h3>
+      <p class="teacher-muted">Pilih hasil kuis siswa untuk melihat dan mencetak laporan nilai beserta rincian jawaban. Data diambil dari riwayat kuis yang tersimpan.</p>
+      <div class="teacher-filter">
+        <input id="teacherPrintSearch" type="search" placeholder="Cari nama siswa, kelas, atau materi...">
+        <select id="teacherPrintClassFilter"><option value="">Semua kelas</option></select>
+        <button type="button" id="teacherPrintRefresh">Muat Ulang Hasil Kuis</button>
+      </div>
+      <div id="teacherPrintTable" class="teacher-table-wrap">Klik menu ini untuk memuat hasil kuis...</div>
+      <p class="teacher-muted">Catatan: daftar menampilkan maksimal 100 hasil kuis terbaru. Gunakan fitur cetak pada setiap hasil untuk mencetak atau menyimpan sebagai PDF.</p>
     </div>
 
     <div id="teacherPanelProgress" class="hidden">
@@ -1267,6 +1280,7 @@
   let teacherHistoryCache = [];
   let teacherProgressCache = [];
   let teacherMonitoringCache = [];
+  let teacherPrintCache = [];
 
   const teacherLoginCard = document.getElementById("teacherLoginCard");
   const teacherDashboard = document.getElementById("teacherDashboard");
@@ -1468,6 +1482,135 @@
       teacherTable(["Siswa", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Waktu", "Detail"], rows);
   }
 
+  async function loadTeacherPrintResults() {
+    const target = document.getElementById("teacherPrintTable");
+    target.textContent = "Memuat hasil kuis siswa...";
+    try {
+      const data = await teacherApi("/riwayat", { limit: 100 });
+      if (!data.success || !Array.isArray(data.riwayat)) {
+        throw new Error(data.error || "Data hasil kuis tidak valid.");
+      }
+      teacherPrintCache = data.riwayat;
+      const classes = [...new Set(
+        teacherPrintCache.map(item => String(item.kelas || "").trim()).filter(Boolean)
+      )].sort();
+      const classFilter = document.getElementById("teacherPrintClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+      renderTeacherPrintResults();
+    } catch (error) {
+      target.textContent = "Hasil kuis belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherPrintResults() {
+    const search = document.getElementById("teacherPrintSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherPrintClassFilter").value;
+    const filtered = teacherPrintCache.filter(item => {
+      const searchable = [item.nama_siswa, item.kelas, item.subject, item.topic, item.grade]
+        .join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) &&
+        (!kelas || String(item.kelas || "") === kelas);
+    });
+    const rows = filtered.map(item => {
+      const student = escapeHtml(item.nama_siswa || "-") +
+        "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>";
+      const material = escapeHtml(item.subject || "-") +
+        "<br><span class='teacher-muted'>" + escapeHtml(item.topic || "-") + "</span>";
+      return "<tr><td>" + student + "</td><td>" + material + "</td><td>" +
+        teacherNumber(item.total_questions) + "</td><td>" + teacherNumber(item.correct_answers) +
+        "</td><td><strong>" + escapeHtml(item.score == null ? "-" : item.score) +
+        "</strong></td><td>" + escapeHtml(item.grade || "-") + "</td><td>" +
+        escapeHtml(teacherDate(item.completed_at || item.created_at || item.started_at)) +
+        "</td><td><button type='button' data-print-session-id='" + escapeHtml(item.id) +
+        "'>Cetak</button></td></tr>";
+    });
+    document.getElementById("teacherPrintTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " +
+      teacherPrintCache.length + " hasil kuis yang dimuat.</p>" +
+      teacherTable(["Siswa / Kelas", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Predikat", "Waktu", "Aksi"], rows);
+  }
+
+  async function printTeacherQuizResult(sessionId, button) {
+    // Buka jendela cetak langsung dari klik pengguna agar tidak diblokir browser.
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      teacherStatus("Jendela cetak diblokir browser. Izinkan pop-up untuk situs EcoSchool AI, lalu coba lagi.", "error");
+      return;
+    }
+    if (button) button.disabled = true;
+    try {
+      const data = await teacherApi("/jawaban", { sessionId });
+      if (!data.success) throw new Error(data.error || "Rincian hasil kuis tidak tersedia.");
+      const session = data.sesi || {};
+      const student = data.siswa || {};
+      const answers = Array.isArray(data.jawaban) ? data.jawaban : [];
+      const answerRows = answers.map((answer, index) => {
+        const correct = answer.is_correct === true;
+        const incorrect = answer.is_correct === false;
+        const status = correct ? "Benar" : incorrect ? "Belum tepat" : "Perlu diperiksa";
+        const statusClass = correct ? "correct" : incorrect ? "wrong" : "neutral";
+        return `<article class="question">
+          <h3>Soal ${escapeHtml(answer.question_number || index + 1)} <span class="${statusClass}">${status}</span></h3>
+          <p class="question-text">${escapeHtml(answer.question || "-")}</p>
+          <p><strong>Jawaban siswa:</strong> ${escapeHtml(answer.student_answer || "(tidak dijawab)")}</p>
+          <p><strong>Kunci/acuan jawaban:</strong> ${escapeHtml(answer.correct_answer || "-")}</p>
+          <p><strong>Umpan balik:</strong> ${escapeHtml(answer.feedback || "-")}</p>
+          <p><strong>Pembahasan:</strong> ${escapeHtml(answer.explanation || "-")}</p>
+        </article>`;
+      }).join("");
+      const reportHtml = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hasil Kuis - ${escapeHtml(student.nama || "Siswa")}</title>
+<style>
+  body{font-family:Arial,sans-serif;color:#172b21;margin:28px;line-height:1.5}
+  .header{text-align:center;border-bottom:2px solid #176b45;padding-bottom:14px;margin-bottom:20px}
+  h1{font-size:22px;margin:0 0 5px;color:#176b45} .sub{margin:3px 0;color:#52665a}
+  .identity,.summary{border:1px solid #d7e5da;border-radius:8px;padding:14px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+  .score{font-size:30px;font-weight:bold;color:#176b45}
+  .question{padding:12px 0;border-bottom:1px solid #dce7df;break-inside:avoid}
+  .question h3{font-size:16px;margin:0 0 8px}.question p{margin:6px 0}
+  .correct{color:#167342;font-size:13px}.wrong{color:#a43a31;font-size:13px}.neutral{color:#725b12;font-size:13px}
+  .question-text{font-weight:bold}.footer{margin-top:28px;text-align:right;font-size:12px;color:#64756b}
+  .print-actions{text-align:center;margin:18px 0}.print-actions button{padding:10px 22px;background:#176b45;color:white;border:0;border-radius:6px;font-weight:bold;cursor:pointer}
+  @media print{body{margin:12mm}.print-actions{display:none}.question{break-inside:avoid}}
+  @media(max-width:600px){body{margin:14px}.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="header"><h1>SMK NEGERI 2 TAKALAR</h1><p class="sub">LAPORAN HASIL KUIS — ECOSCHOOL AI</p></div>
+<section class="identity"><div class="grid">
+  <div><strong>Nama Siswa:</strong> ${escapeHtml(student.nama || "-")}</div>
+  <div><strong>Kelas:</strong> ${escapeHtml(student.kelas || "-")}</div>
+  <div><strong>Mata Pelajaran:</strong> ${escapeHtml(session.subject || "-")}</div>
+  <div><strong>Materi:</strong> ${escapeHtml(session.topic || "-")}</div>
+  <div><strong>Tanggal:</strong> ${escapeHtml(teacherDate(session.completed_at || session.created_at || session.started_at))}</div>
+  <div><strong>ID Sesi:</strong> ${escapeHtml(session.id || sessionId)}</div>
+</div></section>
+<section class="summary"><div class="grid">
+  <div><div class="sub">NILAI</div><div class="score">${escapeHtml(session.score == null ? "-" : session.score)}</div></div>
+  <div><div class="sub">PREDIKAT</div><strong>${escapeHtml(session.grade || "-")}</strong></div>
+  <div><strong>Jumlah soal:</strong> ${escapeHtml(session.total_questions ?? answers.length)}</div>
+  <div><strong>Jawaban benar:</strong> ${escapeHtml(session.correct_answers ?? "-")}</div>
+  <div><strong>Jawaban salah:</strong> ${escapeHtml(session.wrong_answers ?? "-")}</div>
+</div><p><strong>Ringkasan:</strong> ${escapeHtml(session.summary || "-")}</p></section>
+<h2>Rincian Jawaban</h2>${answerRows || "<p>Rincian jawaban belum tersedia.</p>"}
+<div class="footer">Dicetak dari EcoSchool AI · SMK Negeri 2 Takalar</div>
+<div class="print-actions"><button onclick="window.print()">Cetak / Simpan sebagai PDF</button></div>
+</body></html>`;
+      printWindow.document.open();
+      printWindow.document.write(reportHtml);
+      printWindow.document.close();
+      printWindow.focus();
+    } catch (error) {
+      printWindow.close();
+      teacherStatus("Hasil kuis gagal disiapkan untuk dicetak: " + error.message, "error");
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
   async function loadTeacherProgress() {
     const target = document.getElementById("teacherProgressTable");
     target.textContent = "Memuat progres belajar...";
@@ -1632,12 +1775,14 @@
       document.getElementById("teacherPanelHistory").classList.toggle("hidden", tab !== "history");
       document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
       document.getElementById("teacherPanelMonitoring").classList.toggle("hidden", tab !== "monitoring");
+      document.getElementById("teacherPanelPrint").classList.toggle("hidden", tab !== "print");
       hideTeacherStatus();
       if (tab === "dashboard") await loadTeacherDashboard();
       if (tab === "students") await loadTeacherStudents();
       if (tab === "history") await loadTeacherHistory();
       if (tab === "progress") await loadTeacherProgress();
       if (tab === "monitoring") await loadTeacherMonitoring();
+      if (tab === "print") await loadTeacherPrintResults();
     });
   });
 
@@ -1650,6 +1795,14 @@
   document.getElementById("teacherMonitoringSearch").addEventListener("input", renderTeacherMonitoring);
   document.getElementById("teacherMonitoringClassFilter").addEventListener("change", renderTeacherMonitoring);
   document.getElementById("teacherMonitoringRefresh").addEventListener("click", loadTeacherMonitoring);
+  document.getElementById("teacherPrintSearch").addEventListener("input", renderTeacherPrintResults);
+  document.getElementById("teacherPrintClassFilter").addEventListener("change", renderTeacherPrintResults);
+  document.getElementById("teacherPrintRefresh").addEventListener("click", loadTeacherPrintResults);
+
+  document.getElementById("teacherPrintTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-print-session-id]");
+    if (button) printTeacherQuizResult(button.dataset.printSessionId, button);
+  });
 
   document.getElementById("teacherHistoryTable").addEventListener("click", function(event) {
     const button = event.target.closest("button[data-session-id]");
@@ -1662,6 +1815,7 @@
     teacherHistoryCache = [];
     teacherProgressCache = [];
     teacherMonitoringCache = [];
+    teacherPrintCache = [];
     teacherDashboard.classList.add("hidden");
     teacherLoginCard.classList.add("hidden");
     teacherLoginForm.reset();
