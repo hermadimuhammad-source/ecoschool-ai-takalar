@@ -493,7 +493,7 @@
       <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
 
       <h2>📚 Bank Soal EcoSchool AI</h2>
-      <p>Buat latihan sesuai mata pelajaran, materi, jenis soal, dan tingkat kesulitan yang kamu inginkan.</p>
+      <p>Buat latihan sesuai mata pelajaran dan materi. Untuk jenis Campuran, sistem otomatis membuat tepat 10 soal: 6 pilihan ganda dan 4 esai, dengan 4 soal Sedang, 3 Sulit, dan 3 HOTS.</p>
 
       <label for="latihanMapel">Mata Pelajaran</label>
       <select id="latihanMapel">
@@ -595,6 +595,19 @@
   const EVALUATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/evaluate-answers";
   const MONITORING_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/quiz-monitoring";
   const hasilSoal = document.getElementById("hasilSoal");
+  const jenisSoalInput = document.getElementById("jenisSoal");
+  const tingkatKesulitanInput = document.getElementById("tingkatKesulitan");
+  const jumlahSoalInput = document.getElementById("jumlahSoal");
+
+  function updateMixedQuizControls() {
+    const isMixed = jenisSoalInput.value === "campuran";
+    if (isMixed) jumlahSoalInput.value = "10";
+    jumlahSoalInput.disabled = isMixed;
+    tingkatKesulitanInput.disabled = isMixed;
+  }
+  jenisSoalInput.addEventListener("change", updateMixedQuizControls);
+  updateMixedQuizControls();
+
   let quizData = null;
   let quizIndex = 0;
   let quizAnswers = [];
@@ -657,14 +670,15 @@
     const topic = document.getElementById("latihanMateri").value.trim();
     const type = document.getElementById("jenisSoal").value;
     const difficulty = document.getElementById("tingkatKesulitan").value;
-    const totalCount = Number(document.getElementById("jumlahSoal").value);
+    const requestedCount = Number(document.getElementById("jumlahSoal").value);
+    const totalCount = type === "campuran" ? 10 : requestedCount;
 
     if (!topic) {
       hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
       return;
     }
 
-    if (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30) {
+    if (type !== "campuran" && (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30)) {
       hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
       return;
     }
@@ -789,7 +803,7 @@
       <section class="quiz-card">
         <div class="quiz-meta">
           <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
-          <span class="quiz-chip">${escapeHtml(quizData.difficulty.toUpperCase())}</span>
+          <span class="quiz-chip">${escapeHtml((q.difficulty || quizData.difficulty || "").toUpperCase())}</span>
           <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
         </div>
         <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
