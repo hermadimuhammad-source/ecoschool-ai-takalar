@@ -666,203 +666,450 @@
   }
 
   document.getElementById("buatSoalButton").addEventListener("click", async function() {
-    const subject = document.getElementById("latihanMapel").value;
-    const topic = document.getElementById("latihanMateri").value.trim();
-    const type = document.getElementById("jenisSoal").value;
-    const difficulty = document.getElementById("tingkatKesulitan").value;
-    const requestedCount = Number(document.getElementById("jumlahSoal").value);
-    const totalCount = type === "campuran" ? 10 : requestedCount;
+  const subject = document.getElementById("latihanMapel").value;
+  const topic = document.getElementById("latihanMateri").value.trim();
+  const type = document.getElementById("jenisSoal").value;
+  const difficulty = document.getElementById("tingkatKesulitan").value;
+  const requestedCount = Number(document.getElementById("jumlahSoal").value);
+  const totalCount = type === "campuran" ? 10 : requestedCount;
 
-    if (!topic) {
-      hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
-      return;
-    }
+  if (!topic) {
+    hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
+    return;
+  }
 
-    if (type !== "campuran" && (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30)) {
-      hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
-      return;
-    }
+  if (
+    type !== "campuran" &&
+    (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30)
+  ) {
+    hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
+    return;
+  }
 
-    const button = this;
-    button.disabled = true;
-    button.textContent = "Sedang membuat soal...";
-    quizData = null;
-    quizMonitoringActive = false;
-    quizMonitoringNotices = [];
-    quizMonitoringRequestPending = false;
-    quizAnswers = [];
-    quizIndex = 0;
+  const button = this;
+  button.disabled = true;
+  button.textContent = "Sedang membuat soal...";
 
-    const allQuestions = [];
-    let quizId = null;
-    let batchIndex = 0;
+  quizData = null;
+  quizMonitoringActive = false;
+  quizMonitoringNotices = [];
+  quizMonitoringRequestPending = false;
+  quizAnswers = [];
+  quizIndex = 0;
 
-    try {
-      while (allQuestions.length < totalCount) {
-        const remaining = totalCount - allQuestions.length;
-        const batchCount = Math.min(3, remaining);
+  let quizId = null;
+  let batchIndex = 0;
 
-        showThinking(
-          hasilSoal,
-          "EcoSchool AI sedang menyusun soal " +
-          (allQuestions.length + 1) + "–" +
-          (allQuestions.length + batchCount) + " dari " + totalCount + "..."
-        );
+  function normalizeIncomingQuestion(question, index) {
+    const normalizedType = String(question.type || "").toLowerCase();
+    const isEssay =
+      normalizedType === "esai" ||
+      normalizedType === "essay";
 
-        const payload = {
-          subject,
-          topic,
-          type,
-          difficulty,
-          count: batchCount,
-          totalCount,
-          batchIndex
-        };
+    const normalizedOptions = Array.isArray(question.options)
+      ? question.options.slice(0, 5).map((option, optionIndex) => {
+          const key = String(
+            option?.key ||
+            option?.label ||
+            ["A", "B", "C", "D", "E"][optionIndex]
+          ).trim().toUpperCase();
 
-        if (quizId) payload.quizId = quizId;
+          const text = typeof option === "string"
+            ? option
+            : String(
+                option?.text ||
+                option?.value ||
+                option?.content ||
+                ""
+              );
 
-        const data = await postWorker(GENERATE_URL, payload);
+          return { key, text };
+        })
+      : [];
 
-        if (!data.success) {
-          throw new Error(data.error || "Soal belum berhasil dibuat.");
-        }
+    return {
+      ...question,
+      number: Number(question.number) || index + 1,
+      type: isEssay ? "esai" : "pilihan_ganda",
+      options: normalizedOptions
+    };
+  }
 
-        if (data.quizId) quizId = data.quizId;
+  function appendQuestions(incomingQuestions) {
+    if (!Array.isArray(incomingQuestions)) return;
 
-        // Worker mengembalikan pending=true untuk batch yang belum selesai.
-        // Daftar soal lengkap dikirim setelah seluruh batch selesai.
-        if (data.pending) {
-          if (!quizId) {
-            throw new Error("ID latihan tidak diterima dari server.");
-          }
-          batchIndex++;
-          continue;
-        }
+    const existingNumbers = new Set(
+      quizData.questions.map(question => Number(question.number))
+    );
 
-        if (!Array.isArray(data.questions) || data.questions.length !== totalCount) {
-          throw new Error(
-            "Jumlah soal yang diterima tidak sesuai. Diminta " +
-            totalCount + ", diterima " +
-            (Array.isArray(data.questions) ? data.questions.length : 0) + "."
-          );
-        }
+    incomingQuestions.forEach((question, index) => {
+      const normalized = normalizeIncomingQuestion(
+        question,
+        quizData.questions.length + index + 1
+      );
 
-        // Samakan format opsi dari Worker: {label, text} menjadi {key, text}.
-        // Kunci jawaban A–E tetap disimpan di server hingga latihan dikumpulkan.
-        data.questions = data.questions.map((question, index) => {
-          const normalizedType = String(question.type || "").toLowerCase();
-          const isEssay = normalizedType === "esai" || normalizedType === "essay";
-          const normalizedOptions = Array.isArray(question.options)
-            ? question.options.slice(0, 5).map((option, optionIndex) => {
-                const key = String(
-                  option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]
-                ).trim().toUpperCase();
-                const text = typeof option === "string"
-                  ? option
-                  : String(option?.text || option?.value || option?.content || "");
-                return { key, text };
-              })
-            : [];
-          return {
-            ...question,
-            number: question.number || index + 1,
-            type: isEssay ? "esai" : "pilihan_ganda",
-            options: normalizedOptions
-          };
-        });
+      const number = Number(normalized.number);
 
-        quizData = data;
-        quizData.quizId = quizId || data.quizId;
-        quizMonitoringActive = true;
-        quizMonitoringNotices = [];
-        quizIndex = 0;
-        quizAnswers = new Array(data.questions.length).fill("");
-        renderQuestion();
-        return;
+      if (!existingNumbers.has(number)) {
+        quizData.questions.push(normalized);
+        existingNumbers.add(number);
+      }
+    });
+
+    quizData.questions.sort(
+      (a, b) => Number(a.number) - Number(b.number)
+    );
+  }
+
+  try {
+    while (true) {
+      const remaining = totalCount - (
+        quizData ? quizData.questions.length : 0
+      );
+
+      const batchCount = Math.min(3, remaining);
+
+      const payload = {
+        subject,
+        topic,
+        type,
+        difficulty,
+        count: batchCount,
+        totalCount,
+        batchIndex
+      };
+
+      if (quizId) {
+        payload.quizId = quizId;
       }
 
-      throw new Error("Pembuatan soal belum selesai. Silakan coba kembali.");
-    } catch (error) {
-      hasilSoal.textContent =
-        "Maaf, latihan belum berhasil dibuat.\n" + error.message;
-    } finally {
-      button.disabled = false;
-      button.textContent = "✨ Buat Latihan";
+      if (!quizData) {
+        showThinking(
+          hasilSoal,
+          "EcoSchool AI sedang menyusun tiga soal pertama..."
+        );
+      }
+
+      const data = await postWorker(GENERATE_URL, payload);
+
+      if (!data.success) {
+        throw new Error(data.error || "Soal belum berhasil dibuat.");
+      }
+
+      if (data.quizId) {
+        quizId = data.quizId;
+      }
+
+      if (!quizId) {
+        throw new Error("ID latihan tidak diterima dari server.");
+      }
+
+      if (!quizData) {
+        quizData = {
+          ...data,
+          quizId,
+          questions: [],
+          expectedTotal: totalCount,
+          generationComplete: false
+        };
+
+        quizAnswers = new Array(totalCount).fill("");
+        quizIndex = 0;
+      }
+
+      // Respons akhir dapat membawa seluruh soal.
+      // Respons pending membawa batchQuestions.
+      const incomingQuestions = data.pending
+        ? data.batchQuestions
+        : (
+            Array.isArray(data.questions)
+              ? data.questions
+              : data.batchQuestions
+          );
+
+      if (!Array.isArray(incomingQuestions) || incomingQuestions.length === 0) {
+        throw new Error(
+          "Server belum mengirimkan soal. Silakan coba kembali."
+        );
+      }
+
+      appendQuestions(incomingQuestions);
+
+      quizData.title = data.title || quizData.title;
+      quizData.instructions = data.instructions || quizData.instructions;
+      quizData.completed = quizData.questions.length;
+      quizData.total = totalCount;
+      quizData.expectedTotal = totalCount;
+      quizData.generationComplete = !data.pending;
+
+      // Aktifkan monitoring begitu soal pertama tampil.
+      if (!quizMonitoringActive) {
+        quizMonitoringActive = true;
+        quizMonitoringNotices = [];
+      }
+
+      // Tampilkan soal pertama segera, lalu perbarui
+      // tampilan setiap kali batch baru diterima.
+      renderQuestion();
+
+      if (quizData.generationComplete) {
+        break;
+      }
+
+      if (quizData.questions.length >= totalCount) {
+        quizData.generationComplete = true;
+        renderQuestion();
+        break;
+      }
+
+      batchIndex = Number(data.nextBatch) || (batchIndex + 1);
     }
-  });
 
-  function renderQuestion() {
-    if (!quizData) return;
-    const q = quizData.questions[quizIndex];
-    const total = quizData.questions.length;
-    const progress = Math.round((quizIndex / total) * 100);
-    const wrapper = document.createElement("div");
-    wrapper.className = "quiz-shell";
-    wrapper.innerHTML = `
-      <div class="quiz-progress" aria-label="Kemajuan latihan"><span style="width:${progress}%"></span></div>
-      <section class="quiz-card">
-        <div class="quiz-meta">
-          <span class="quiz-chip">${escapeHtml(quizData.subject)}</span>
-          <span class="quiz-chip">${escapeHtml((q.difficulty || quizData.difficulty || "").toUpperCase())}</span>
-          <span class="quiz-chip">Soal ${quizIndex + 1} dari ${total}</span>
-        </div>
-        <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
-        <p>${escapeHtml(quizData.instructions || "Bacalah soal dengan teliti.")}</p>
-        <div class="quiz-question">${escapeHtml(q.question)}</div>
-        <div id="quizInputArea"></div>
-        <div class="quiz-actions">
-          <button type="button" id="quizPrev" class="light-button">← Sebelumnya</button>
-          <button type="button" id="quizNext">${quizIndex === total - 1 ? "Selesaikan Latihan ✓" : "Soal Berikutnya →"}</button>
-        </div>
-      </section>`;
-    hasilSoal.replaceChildren(wrapper);
+    quizData.generationComplete = true;
+    quizData.completed = quizData.questions.length;
 
-    const inputArea = wrapper.querySelector("#quizInputArea");
-    if (q.type === "pilihan_ganda") {
-      (Array.isArray(q.options) ? q.options : []).forEach((option, optionIndex) => {
-        const optionKey = String(option?.key || option?.label || ["A", "B", "C", "D", "E"][optionIndex]);
-        const optionText = String(option?.text || option?.value || option?.content || "");
+    if (quizData.questions.length !== totalCount) {
+      throw new Error(
+        "Jumlah soal belum lengkap. Diterima " +
+        quizData.questions.length +
+        " dari " + totalCount + " soal."
+      );
+    }
+
+    renderQuestion();
+
+  } catch (error) {
+    console.error("Pembuatan latihan:", error);
+
+    if (quizData && quizData.questions.length > 0) {
+      quizData.generationError = error.message;
+
+      // Pertahankan soal yang sudah diterima dan jawaban siswa.
+      renderQuestion();
+
+      alert(
+        "Pembuatan soal berikutnya mengalami kendala.\n" +
+        "Soal yang sudah diterima tetap tersedia.\n\n" +
+        error.message
+      );
+    } else {
+      hasilSoal.textContent =
+        "Maaf, latihan belum berhasil dibuat.\n" +
+        error.message;
+    }
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Buat Latihan";
+  }
+});
+
+function renderQuestion() {
+  if (!quizData) return;
+
+  const totalAvailable = quizData.questions.length;
+  const totalExpected = Number(
+    quizData.expectedTotal || quizData.total || totalAvailable
+  );
+
+  if (totalAvailable === 0) return;
+
+  if (quizIndex >= totalAvailable) {
+    quizIndex = totalAvailable - 1;
+  }
+
+  const q = quizData.questions[quizIndex];
+  if (!q) return;
+
+  const generationComplete =
+    quizData.generationComplete === true &&
+    totalAvailable >= totalExpected;
+
+  const isLastAvailable = quizIndex === totalAvailable - 1;
+  const isLastExpected = quizIndex === totalExpected - 1;
+
+  const progress = Math.round(
+    ((quizIndex + 1) / totalExpected) * 100
+  );
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "quiz-shell";
+
+  let nextButtonText = "Soal Berikutnya →";
+  let nextButtonDisabled = false;
+
+  if (isLastAvailable && !generationComplete) {
+    nextButtonText = "Menyiapkan soal berikutnya...";
+    nextButtonDisabled = true;
+  } else if (isLastExpected && generationComplete) {
+    nextButtonText = "Selesaikan Latihan ✓";
+  }
+
+  wrapper.innerHTML = `
+    <div class="quiz-progress" aria-label="Kemajuan latihan">
+      <span style="width:${progress}%"></span>
+    </div>
+
+    <section class="quiz-card">
+      <div class="quiz-meta">
+        <span class="quiz-chip">
+          ${escapeHtml(quizData.subject || "")}
+        </span>
+
+        <span class="quiz-chip">
+          ${escapeHtml(
+            (q.difficulty || quizData.difficulty || "").toUpperCase()
+          )}
+        </span>
+
+        <span class="quiz-chip">
+          Soal ${quizIndex + 1} dari ${totalExpected}
+        </span>
+      </div>
+
+      <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+
+      <p>
+        ${escapeHtml(
+          quizData.instructions || "Bacalah soal dengan teliti."
+        )}
+      </p>
+
+      <div class="quiz-question">
+        ${escapeHtml(q.question)}
+      </div>
+
+      <div id="quizInputArea"></div>
+
+      <div class="quiz-actions">
+        <button
+          type="button"
+          id="quizPrev"
+          class="light-button"
+        >
+          ← Sebelumnya
+        </button>
+
+        <button
+          type="button"
+          id="quizNext"
+          ${nextButtonDisabled ? "disabled" : ""}
+        >
+          ${nextButtonText}
+        </button>
+      </div>
+
+      ${
+        !generationComplete
+          ? `<p class="quiz-generation-status">
+              EcoSchool AI sedang menyiapkan soal berikutnya.
+              Jawabanmu tetap tersimpan.
+            </p>`
+          : ""
+      }
+    </section>
+  `;
+
+  hasilSoal.replaceChildren(wrapper);
+
+  const inputArea = wrapper.querySelector("#quizInputArea");
+
+  if (q.type === "pilihan_ganda") {
+    (Array.isArray(q.options) ? q.options : []).forEach(
+      (option, optionIndex) => {
+        const optionKey = String(
+          option?.key ||
+          option?.label ||
+          ["A", "B", "C", "D", "E"][optionIndex]
+        );
+
+        const optionText = String(
+          option?.text ||
+          option?.value ||
+          option?.content ||
+          ""
+        );
+
         const label = document.createElement("label");
         label.className = "quiz-option";
+
         const radio = document.createElement("input");
         radio.type = "radio";
         radio.name = "jawabanQuiz";
         radio.value = optionKey;
-        radio.checked = String(quizAnswers[quizIndex] || "") === optionKey;
+
+        radio.checked =
+          String(quizAnswers[quizIndex] || "") === optionKey;
+
         radio.addEventListener("change", () => {
-          if (radio.checked) quizAnswers[quizIndex] = optionKey;
+          if (radio.checked) {
+            quizAnswers[quizIndex] = optionKey;
+          }
         });
+
         const text = document.createElement("span");
         text.textContent = optionKey + ". " + optionText;
+
         label.append(radio, text);
         inputArea.appendChild(label);
-      });
-    } else {
-      const textarea = document.createElement("textarea");
-      textarea.className = "quiz-answer";
-      textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
-      textarea.value = quizAnswers[quizIndex] || "";
-      textarea.addEventListener("input", () => { quizAnswers[quizIndex] = textarea.value; });
-      inputArea.appendChild(textarea);
+      }
+    );
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.className = "quiz-answer";
+    textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
+    textarea.value = quizAnswers[quizIndex] || "";
+
+    textarea.addEventListener("input", () => {
+      quizAnswers[quizIndex] = textarea.value;
+    });
+
+    inputArea.appendChild(textarea);
+  }
+
+  wrapper.querySelector("#quizPrev").disabled = quizIndex === 0;
+
+  wrapper.querySelector("#quizPrev").addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (quizIndex > 0) {
+      quizIndex--;
+      renderQuestion();
+    }
+  });
+
+  wrapper.querySelector("#quizNext").addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
+      alert("Pilih salah satu jawaban terlebih dahulu.");
+      return;
     }
 
-    wrapper.querySelector("#quizPrev").disabled = quizIndex === 0;
-    wrapper.querySelector("#quizPrev").addEventListener("click", () => {
-      saveCurrentAnswer();
-      if (quizIndex > 0) { quizIndex--; renderQuestion(); }
-    });
-    wrapper.querySelector("#quizNext").addEventListener("click", () => {
-      saveCurrentAnswer();
-      if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
-        alert("Pilih salah satu jawaban terlebih dahulu."); return;
-      }
-      if (q.type === "esai" && !String(quizAnswers[quizIndex]).trim()) {
-        alert("Tuliskan jawaban terlebih dahulu."); return;
-      }
-      if (quizIndex < total - 1) { quizIndex++; renderQuestion(); }
-      else submitQuiz();
-    });
-  }
+    if (
+      q.type === "esai" &&
+      !String(quizAnswers[quizIndex] || "").trim()
+    ) {
+      alert("Tuliskan jawaban terlebih dahulu.");
+      return;
+    }
+
+    if (quizIndex < totalAvailable - 1) {
+      quizIndex++;
+      renderQuestion();
+      return;
+    }
+
+    if (!generationComplete) {
+      alert("EcoSchool AI masih menyiapkan soal berikutnya. Silakan tunggu.");
+      return;
+    }
+
+    if (isLastExpected) {
+      submitQuiz();
+    }
+  });
+}
 
   function saveCurrentAnswer() {
     const q = quizData.questions[quizIndex];
@@ -880,47 +1127,100 @@
       "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
     })[char]);
   }async function submitQuiz() {
-    quizMonitoringActive = false;
-    const nextButton = hasilSoal.querySelector("#quizNext");
-    if (nextButton) {
-      nextButton.disabled = true;
-      nextButton.textContent = "Sedang menilai...";
-    }
+  // Pastikan seluruh soal sudah selesai dibuat.
+  if (!quizData || !quizData.quizId) {
+    alert("ID latihan tidak ditemukan. Silakan buat latihan baru.");
+    return;
+  }
 
-    showThinking(hasilSoal, "Sistem sedang memeriksa jawaban dan menyiapkan pembahasan...");
+  const expectedTotal = Number(
+    quizData.expectedTotal || quizData.total || quizData.questions.length
+  );
 
-    try {
-      if (!quizData || !quizData.quizId) {
-        throw new Error("ID latihan tidak ditemukan. Silakan buat latihan baru.");
-      }
+  if (
+    quizData.generationComplete !== true ||
+    quizData.questions.length !== expectedTotal
+  ) {
+    alert(
+      "EcoSchool AI masih menyiapkan soal.\n" +
+      "Silakan tunggu sampai seluruh soal tersedia."
+    );
+    return;
+  }
 
-      const answers = quizData.questions.map((question, index) => ({
-        id: question.id,
-        answer: String(quizAnswers[index] ?? "")
-      }));
+  if (quizAnswers.length < expectedTotal) {
+    alert("Masih ada data jawaban yang belum siap. Silakan periksa kembali.");
+    return;
+  }
 
-      const data = await postWorker(EVALUATE_URL, {
-        quizId: quizData.quizId,
-        answers
-      });
+  // Pastikan semua jawaban sudah diisi.
+  for (let index = 0; index < quizData.questions.length; index++) {
+    const question = quizData.questions[index];
+    const answer = String(quizAnswers[index] ?? "").trim();
 
-      if (!data.success || !Array.isArray(data.results)) {
-        throw new Error(data.error || "Penilaian belum berhasil diproses.");
-      }
+    if (!answer) {
+      alert(
+        "Jawaban soal nomor " +
+        (Number(question.number) || index + 1) +
+        " belum diisi."
+      );
 
-      renderQuizResult(data);
-    } catch (error) {
-      quizMonitoringActive = true;
-      hasilSoal.textContent =
-        "Penilaian belum berhasil.\n" + error.message +
-        "\nJawabanmu masih tersimpan di halaman ini. Silakan coba penilaian kembali.";
-
-      const retry = document.createElement("button");
-      retry.textContent = "Coba Penilaian Lagi";
-      retry.addEventListener("click", submitQuiz);
-      hasilSoal.appendChild(retry);
+      quizIndex = index;
+      renderQuestion();
+      return;
     }
   }
+
+  quizMonitoringActive = false;
+
+  const nextButton = hasilSoal.querySelector("#quizNext");
+
+  if (nextButton) {
+    nextButton.disabled = true;
+    nextButton.textContent = "Sedang menilai...";
+  }
+
+  showThinking(
+    hasilSoal,
+    "Sistem sedang memeriksa jawaban dan menyiapkan pembahasan..."
+  );
+
+  try {
+    const answers = quizData.questions.map((question, index) => ({
+      id: question.id,
+      answer: String(quizAnswers[index] ?? "")
+    }));
+
+    const data = await postWorker(EVALUATE_URL, {
+      quizId: quizData.quizId,
+      answers
+    });
+
+    if (!data.success || !Array.isArray(data.results)) {
+      throw new Error(
+        data.error || "Penilaian belum berhasil diproses."
+      );
+    }
+
+    renderQuizResult(data);
+
+  } catch (error) {
+    console.error("Penilaian latihan:", error);
+
+    quizMonitoringActive = true;
+
+    hasilSoal.textContent =
+      "Penilaian belum berhasil.\n" +
+      error.message +
+      "\nJawabanmu masih tersimpan di halaman ini. Silakan coba penilaian kembali.";
+
+    const retry = document.createElement("button");
+    retry.textContent = "Coba Penilaian Lagi";
+    retry.addEventListener("click", submitQuiz);
+
+    hasilSoal.appendChild(retry);
+  }
+}
 
   function renderQuizResult(data) {
     quizMonitoringActive = false;
