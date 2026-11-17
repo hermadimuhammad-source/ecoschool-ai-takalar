@@ -291,6 +291,11 @@
       <input id="kelasSiswa" required maxlength="40"
         placeholder="Contoh: X RPL 1">
 
+      <label for="nisSiswa">NIS</label>
+      <input id="nisSiswa" type="text" inputmode="numeric"
+        autocomplete="off" maxlength="30"
+        placeholder="Masukkan NIS siswa">
+
       <label for="kodeAkses">Kode akses siswa</label>
       <input id="kodeAkses" type="password"
         autocomplete="current-password" required maxlength="200"
@@ -1043,6 +1048,7 @@
 
     const nama = document.getElementById("namaSiswa").value.trim();
     const kelas = document.getElementById("kelasSiswa").value.trim();
+    const nis = document.getElementById("nisSiswa").value.trim();
     const kode_akses = document.getElementById("kodeAkses").value;
 
     if (!nama || !kelas || !kode_akses) {
@@ -1057,7 +1063,7 @@
       const response = await fetch(LOGIN_URL, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ nama, kelas, kode_akses })
+        body: JSON.stringify({ nama, kelas, nis, kode_akses })
       });
 
       const data = await readJsonResponse(response);
