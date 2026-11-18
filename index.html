@@ -675,6 +675,10 @@ async function recordQuizTabHidden() {
         "Tetaplah pada halaman kuis selama mengerjakan.";
 
     quizMonitoringNotices.push(notice);
+    if (document.visibilityState === "visible") {
+  alert(quizMonitoringNotices.join("\n\n"));
+  quizMonitoringNotices = [];
+}
 
     console.log("QUIZ_MONITORING_SAVED:", data);
 
