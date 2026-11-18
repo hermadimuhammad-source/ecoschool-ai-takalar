@@ -608,43 +608,90 @@
   jenisSoalInput.addEventListener("change", updateMixedQuizControls);
   updateMixedQuizControls();
 
-  let quizData = null;
-  let quizIndex = 0;
-  let quizAnswers = [];
-  let quizMonitoringActive = false;
-  let quizMonitoringNotices = [];
-  let quizMonitoringRequestPending = false;
+  quizData = null;
+quizMonitoringActive = false;
+quizMonitoringNotices = [];
+quizMonitoringRequestPending = false;
+quizTabSwitchCount = 0;
+quizAnswers = [];
 
-  async function recordQuizTabHidden() {
-    if (!quizMonitoringActive || !quizData?.quizId || quizMonitoringRequestPending) return;
-    quizMonitoringRequestPending = true;
-    try {
-      const data = await postWorker(MONITORING_URL, { quizId: quizData.quizId });
-      if (!data.success) throw new Error(data.error || "Catatan pengawasan tidak tersimpan.");
-      const count = Number(data.occurrenceCount) || 1;
-      const notice = count >= 3
-        ? "Peringatan serius: halaman kuis telah ditinggalkan " + count + " kali. Guru akan meninjau catatan ini."
-        : "Peringatan " + count + ": halaman kuis terdeteksi tidak aktif. Tetaplah pada halaman kuis selama mengerjakan. ";
-      quizMonitoringNotices.push(notice);
-      if (document.visibilityState === "visible") {
-        alert(notice);
-        quizMonitoringNotices = [];
-      }
-    } catch (error) {
-      console.warn("QUIZ_MONITORING_FAILED:", error?.message || error);
-    } finally {
-      quizMonitoringRequestPending = false;
-    }
+async function recordQuizTabHidden() {
+  if (
+    !quizMonitoringActive ||
+    !quizData?.quizId ||
+    quizMonitoringRequestPending
+  ) {
+    return;
   }
 
-  document.addEventListener("visibilitychange", function() {
-    if (document.visibilityState === "hidden") {
-      recordQuizTabHidden();
-    } else if (quizMonitoringNotices.length) {
-      alert(quizMonitoringNotices.join("\n\n"));
+  quizMonitoringRequestPending = true;
+  quizTabSwitchCount++;
+
+  const count = quizTabSwitchCount;
+
+  const eventId = (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  )
+    ? crypto.randomUUID()
+    : "tab-" + Date.now() + "-" + Math.random().toString(36).slice(2);
+
+  try {
+    const token = sessionStorage.getItem(SESSION_KEY);
+
+    if (!token) {
+      throw new Error("Sesi login tidak ditemukan.");
+    }
+
+    const response = await fetch(MONITORING_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        quizId: quizData.quizId,
+        eventId: eventId,
+        eventType: "tab_switch",
+        occurrenceCount: count
+      }),
+      keepalive: true
+    });
+
+    const data = await readJsonResponse(response);
+
+    if (!data.success) {
+      throw new Error(
+        data.error || "Catatan pengawasan tidak tersimpan."
+      );
+    }
+
+    const notice = count >= 3
+      ? "PERINGATAN SERIUS: Halaman kuis telah ditinggalkan " +
+        count + " kali. Guru akan meninjau catatan ini."
+      : "PERINGATAN " + count +
+        ": Halaman kuis terdeteksi tidak aktif. " +
+        "Tetaplah pada halaman kuis selama mengerjakan.";
+
+    quizMonitoringNotices.push(notice);
+
+    if (document.visibilityState === "visible") {
+      alert(notice);
       quizMonitoringNotices = [];
     }
-  });
+
+    console.log("QUIZ_MONITORING_SAVED:", data);
+
+  } catch (error) {
+    console.warn(
+      "QUIZ_MONITORING_FAILED:",
+      error?.message || error
+    );
+
+  } finally {
+    quizMonitoringRequestPending = false;
+  }
+}
 
   function showThinking(target, message) {
     target.innerHTML = '<div class="thinking">' + message +
@@ -690,12 +737,13 @@
   button.disabled = true;
   button.textContent = "Sedang membuat soal...";
 
-  quizData = null;
-  quizMonitoringActive = false;
-  quizMonitoringNotices = [];
-  quizMonitoringRequestPending = false;
-  quizAnswers = [];
-  quizIndex = 0;
+ quizData = null;
+quizMonitoringActive = false;
+quizMonitoringNotices = [];
+quizMonitoringRequestPending = false;
+quizTabSwitchCount = 0;
+quizAnswers = [];
+quizIndex = 0;
 
   let quizId = null;
   let batchIndex = 0;
