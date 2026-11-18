@@ -257,7 +257,14 @@
     #teacherDashboard{--td-bg:#080d1c;--td-panel:#111a2d;--td-panel2:#151f35;--td-line:#25314a;--td-muted:#8d9bb5;--td-text:#edf3ff;display:flex;gap:0;max-width:1500px;width:calc(100% - 36px);min-height:calc(100vh - 48px);margin:24px auto;padding:0;background:var(--td-bg);color:var(--td-text);border:1px solid #1c2941;border-radius:20px;overflow:hidden;box-shadow:0 24px 70px #02061755;font-family:Inter,Arial,sans-serif}
     #teacherDashboard.hidden{display:none!important}#teacherDashboard *{box-sizing:border-box}#teacherDashboard button{font-family:inherit}
     #teacherDashboard .teacher-sidebar{width:248px;flex:0 0 248px;background:#0c1426;border-right:1px solid var(--td-line);padding:25px 16px 18px;display:flex;flex-direction:column;min-height:100%}
-    #teacherDashboard .teacher-brand{display:flex;align-items:center;gap:11px;padding:2px 9px 22px}.teacher-brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#b6ff42,#28d89b);color:#0b1720;font-size:22px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 22px #9dff4640}.teacher-brand strong{display:block;font-size:16px;letter-spacing:.2px}.teacher-brand strong span{color:#a8f34a}.teacher-brand small{display:block;color:#7e8da9;font-size:9px;letter-spacing:2px;margin-top:4px}
+    #teacherDashboard .teacher-brand{display:flex;align-items:center;gap:11px;padding:2px 9px 22px}#teacherDashboard .teacher-school-logo {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  flex: 0 0 42px;
+  display: block;
+  filter: drop-shadow(0 0 8px #9dff4640);
+}teacher-brand strong{display:block;font-size:16px;letter-spacing:.2px}.teacher-brand strong span{color:#a8f34a}.teacher-brand small{display:block;color:#7e8da9;font-size:9px;letter-spacing:2px;margin-top:4px}
     #teacherDashboard .teacher-school-label{margin:0 9px 27px;padding:10px 9px;border:1px solid #28364f;border-radius:8px;color:#9baac4;font-size:9px;letter-spacing:1.15px;text-align:center}#teacherDashboard .teacher-nav-label{padding:0 10px 10px;color:#63728f;font-size:9px;font-weight:800;letter-spacing:1.5px}#teacherDashboard .teacher-report-label{margin-top:25px}
     #teacherDashboard .teacher-nav{display:flex;flex-direction:column;gap:5px;margin:0;padding:0}#teacherDashboard .teacher-nav button{width:100%;min-width:0;display:flex;align-items:center;gap:12px;text-align:left;margin:0;padding:12px 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#9eabc2;font-size:12px;font-weight:600;box-shadow:none;transition:.18s}#teacherDashboard .teacher-nav button:hover{background:#17233a;color:#e9f3ff}#teacherDashboard .teacher-nav button.active{background:linear-gradient(90deg,#18352e,#172d34);border-color:#285849;color:#c9ff79;box-shadow:inset 3px 0 #a9f34d}#teacherDashboard .nav-icon{width:20px;text-align:center;font-size:17px;color:#8e9db8}#teacherDashboard .teacher-nav button.active .nav-icon{color:#baff58}
     #teacherDashboard .teacher-sidebar-bottom{margin-top:auto;padding:17px 10px 3px;border-top:1px solid var(--td-line);display:grid;grid-template-columns:10px 1fr;align-items:center;gap:5px 8px;color:#9eabc2;font-size:11px}#teacherDashboard .teacher-online-dot,#teacherDashboard .teacher-system-pill i,#teacherDashboard .teacher-live-tag i{width:7px;height:7px;background:#8fe84d;border-radius:50%;box-shadow:0 0 10px #8fe84d}#teacherDashboard .teacher-sidebar-bottom small{grid-column:2;color:#64738e;font-size:9px}
@@ -347,7 +354,11 @@
   <section class="teacher-dashboard hidden" id="teacherDashboard">
     <aside class="teacher-sidebar">
       <div class="teacher-brand">
-        <div class="teacher-brand-mark">E</div>
+        <img
+  class="teacher-school-logo"
+  src="https://hermadimuhammad-source.github.io/ecoschool-ai-takalar/assets/logo-smkn2takalar.png.png"
+  alt="Logo SMK Negeri 2 Takalar"
+>
         <div><strong>EcoSchool <span>AI</span></strong><small>TEACHER CONSOLE</small></div>
       </div>
       <div class="teacher-school-label">SMK NEGERI 2 TAKALAR</div>
