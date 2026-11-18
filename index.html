@@ -692,7 +692,40 @@ async function recordQuizTabHidden() {
     quizMonitoringRequestPending = false;
   }
 }
+document.addEventListener("visibilitychange", function() {
+  console.log("QUIZ_VISIBILITY_EVENT:", {
+    state: document.visibilityState,
+    monitoringActive: quizMonitoringActive,
+    quizId: quizData?.quizId,
+    requestPending: quizMonitoringRequestPending
+  });
 
+  if (document.visibilityState === "hidden") {
+    console.log("QUIZ_TAB_HIDDEN: Pemantauan dipanggil.");
+    recordQuizTabHidden();
+  } else if (quizMonitoringNotices.length) {
+    alert(quizMonitoringNotices.join("\n\n"));
+    quizMonitoringNotices = [];
+  }
+});
+  // =====================================================
+// PEMANTAUAN PERPINDAHAN TAB SISWA
+// =====================================================
+document.addEventListener("visibilitychange", function() {
+  console.log("QUIZ_VISIBILITY_EVENT:", {
+    state: document.visibilityState,
+    monitoringActive: quizMonitoringActive,
+    quizId: quizData?.quizId
+  });
+
+  if (document.visibilityState === "hidden") {
+    console.log("QUIZ_TAB_HIDDEN: Pemantauan dipanggil.");
+    recordQuizTabHidden();
+  } else if (quizMonitoringNotices.length > 0) {
+    alert(quizMonitoringNotices.join("\n\n"));
+    quizMonitoringNotices = [];
+  }
+});
   function showThinking(target, message) {
     target.innerHTML = '<div class="thinking">' + message +
       '<span class="thinking-dots"><span></span><span></span><span></span></span></div>';
