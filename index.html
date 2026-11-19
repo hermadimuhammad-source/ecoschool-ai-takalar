@@ -257,14 +257,7 @@
     #teacherDashboard{--td-bg:#080d1c;--td-panel:#111a2d;--td-panel2:#151f35;--td-line:#25314a;--td-muted:#8d9bb5;--td-text:#edf3ff;display:flex;gap:0;max-width:1500px;width:calc(100% - 36px);min-height:calc(100vh - 48px);margin:24px auto;padding:0;background:var(--td-bg);color:var(--td-text);border:1px solid #1c2941;border-radius:20px;overflow:hidden;box-shadow:0 24px 70px #02061755;font-family:Inter,Arial,sans-serif}
     #teacherDashboard.hidden{display:none!important}#teacherDashboard *{box-sizing:border-box}#teacherDashboard button{font-family:inherit}
     #teacherDashboard .teacher-sidebar{width:248px;flex:0 0 248px;background:#0c1426;border-right:1px solid var(--td-line);padding:25px 16px 18px;display:flex;flex-direction:column;min-height:100%}
-    #teacherDashboard .teacher-brand{display:flex;align-items:center;gap:11px;padding:2px 9px 22px}#teacherDashboard .teacher-school-logo {
-  width: 42px;
-  height: 42px;
-  object-fit: contain;
-  flex: 0 0 42px;
-  display: block;
-  filter: drop-shadow(0 0 8px #9dff4640);
-}teacher-brand strong{display:block;font-size:16px;letter-spacing:.2px}.teacher-brand strong span{color:#a8f34a}.teacher-brand small{display:block;color:#7e8da9;font-size:9px;letter-spacing:2px;margin-top:4px}
+    #teacherDashboard .teacher-brand{display:flex;align-items:center;gap:11px;padding:2px 9px 22px}.teacher-brand-mark{width:38px;height:38px;border-radius:12px;background:linear-gradient(140deg,#b6ff42,#28d89b);color:#0b1720;font-size:22px;font-weight:900;display:grid;place-items:center;box-shadow:0 0 22px #9dff4640}.teacher-brand strong{display:block;font-size:16px;letter-spacing:.2px}.teacher-brand strong span{color:#a8f34a}.teacher-brand small{display:block;color:#7e8da9;font-size:9px;letter-spacing:2px;margin-top:4px}
     #teacherDashboard .teacher-school-label{margin:0 9px 27px;padding:10px 9px;border:1px solid #28364f;border-radius:8px;color:#9baac4;font-size:9px;letter-spacing:1.15px;text-align:center}#teacherDashboard .teacher-nav-label{padding:0 10px 10px;color:#63728f;font-size:9px;font-weight:800;letter-spacing:1.5px}#teacherDashboard .teacher-report-label{margin-top:25px}
     #teacherDashboard .teacher-nav{display:flex;flex-direction:column;gap:5px;margin:0;padding:0}#teacherDashboard .teacher-nav button{width:100%;min-width:0;display:flex;align-items:center;gap:12px;text-align:left;margin:0;padding:12px 11px;border:1px solid transparent;border-radius:9px;background:transparent;color:#9eabc2;font-size:12px;font-weight:600;box-shadow:none;transition:.18s}#teacherDashboard .teacher-nav button:hover{background:#17233a;color:#e9f3ff}#teacherDashboard .teacher-nav button.active{background:linear-gradient(90deg,#18352e,#172d34);border-color:#285849;color:#c9ff79;box-shadow:inset 3px 0 #a9f34d}#teacherDashboard .nav-icon{width:20px;text-align:center;font-size:17px;color:#8e9db8}#teacherDashboard .teacher-nav button.active .nav-icon{color:#baff58}
     #teacherDashboard .teacher-sidebar-bottom{margin-top:auto;padding:17px 10px 3px;border-top:1px solid var(--td-line);display:grid;grid-template-columns:10px 1fr;align-items:center;gap:5px 8px;color:#9eabc2;font-size:11px}#teacherDashboard .teacher-online-dot,#teacherDashboard .teacher-system-pill i,#teacherDashboard .teacher-live-tag i{width:7px;height:7px;background:#8fe84d;border-radius:50%;box-shadow:0 0 10px #8fe84d}#teacherDashboard .teacher-sidebar-bottom small{grid-column:2;color:#64738e;font-size:9px}
@@ -274,7 +267,7 @@
     #teacherDashboard .teacher-dashboard-grid{display:grid;grid-template-columns:minmax(0,1.55fr) minmax(270px,1fr);gap:14px;margin-bottom:14px}#teacherDashboard .teacher-widget{min-width:0;background:linear-gradient(145deg,#121c30,#10182a);border:1px solid #26344d;border-radius:13px;padding:17px 18px;box-shadow:0 8px 22px #00000012}#teacherDashboard .widget-heading{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;margin-bottom:14px}#teacherDashboard .widget-heading h3{font-size:13px;color:#edf3ff;margin:0 0 5px}#teacherDashboard .widget-heading p{font-size:10px;color:#7f8da8;margin:0}#teacherDashboard .widget-period{border:1px solid #33435e;border-radius:6px;padding:5px 8px;color:#9eacc5;font-size:8px;letter-spacing:1px}#teacherDashboard .detail-mark{font-size:24px;color:#a8ef57}
     #teacherDashboard .teacher-chart{height:190px;display:flex;align-items:flex-end;justify-content:space-around;gap:12px;padding:15px 8px 0;border-bottom:1px solid #29364d;background:repeating-linear-gradient(to bottom,transparent 0,transparent 45px,#26334a55 46px)}#teacherDashboard .chart-column{height:100%;flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:8px;min-width:0}#teacherDashboard .chart-bar{width:min(34px,70%);min-height:3px;border-radius:6px 6px 2px 2px;background:linear-gradient(180deg,#b8ff55,#29cfa0);box-shadow:0 0 14px #9af34a22;transition:height .25s}#teacherDashboard .chart-value{font-size:9px;color:#a9b6cc}#teacherDashboard .chart-label{font-size:9px;color:#7d8ca6;padding-bottom:8px}#teacherDashboard .teacher-chart-empty{align-self:center;margin:auto;color:#7f8da8;font-size:11px}
     #teacherDashboard .teacher-incident-detail{text-align:center;padding:14px 8px 12px;border-bottom:1px solid #29364d}#teacherDashboard .teacher-empty-icon{width:42px;height:42px;margin:0 auto 8px;display:grid;place-items:center;border-radius:13px;background:#a8f34d14;color:#b8f66c;font-size:23px}#teacherDashboard .teacher-incident-detail strong{font-size:11px;color:#e8efff}#teacherDashboard .teacher-incident-detail p{font-size:10px;line-height:1.6;color:#8291ac;margin:6px auto 0;max-width:250px}#teacherDashboard .teacher-incident-detail .incident-name{font-size:13px;color:#c9ff7b}#teacherDashboard .teacher-incident-detail .incident-metrics{display:flex;justify-content:center;gap:18px;margin-top:10px;color:#9eacc4;font-size:10px}#teacherDashboard .teacher-recent-incidents{display:flex;flex-direction:column;gap:5px;padding-top:10px}#teacherDashboard .incident-pick{width:100%;display:flex;justify-content:space-between;align-items:center;gap:8px;margin:0;padding:7px 8px;background:transparent;color:#aebbd0;border-radius:6px;text-align:left;font-size:10px;font-weight:500}#teacherDashboard .incident-pick:hover{background:#1b2940}#teacherDashboard .incident-pick span:last-child{color:#a9f35a}
-    #teacherDashboard .teacher-latest-widget{margin-bottom:10px}#teacherDashboard .teacher-small-action{width:auto;margin:0;padding:7px 9px;background:#19283b;border:1px solid #2d415a;border-radius:7px;color:#b9f76d;font-size:9px}#teacherDashboard .teacher-refresh{width:auto;margin:0;padding:9px 12px;background:#1a2b3e;border:1px solid #344762;border-radius:8px;color:#c3f77d;font-size:10px;white-space:nowrap}#teacherDashboard .teacher-filter{display:grid;grid-template-columns:minmax(180px,1fr) 190px auto;gap:9px;margin:0 0 14px}#teacherDashboard .teacher-filter input,#teacherDashboard .teacher-filter select{width:100%;min-width:0;margin:0;background:#0d1729;border:1px solid #2d3b54;color:#e2eaff;border-radius:8px;font-size:11px;padding:10px 12px}#teacherDashboard .teacher-filter input::placeholder{color:#687894}#teacherDashboard .teacher-table-wrap{overflow-x:auto}#teacherDashboard .teacher-table{width:100%;min-width:620px;border-collapse:collapse;font-size:10px;color:#c2cde0}#teacherDashboard .teacher-table th,#teacherDashboard .teacher-table td{padding:11px 10px;border-bottom:1px solid #26334a;text-align:left;vertical-align:middle}#teacherDashboard .teacher-table th{background:#19253a;color:#a8f15e;font-size:9px;letter-spacing:.4px;font-weight:700}#teacherDashboard .teacher-table tbody tr:hover{background:#18243a}#teacherDashboard .teacher-table td button{width:auto;margin:0;padding:7px 9px;background:#1c3440;color:#c7ff7d;border:1px solid #31574b;border-radius:6px;font-size:9px}#teacherDashboard .teacher-muted{color:#8190aa;font-size:10px}#teacherDashboard .teacher-detail,#teacherDashboard .teacher-answer{background:#111d31;border:1px solid #2c3c55;color:#d7e1f3;border-radius:10px;padding:14px;margin-top:12px}#teacherDashboard .teacher-answer{line-height:1.6}#teacherDashboard .teacher-answer p{margin:7px 0}#teacherDashboard .teacher-action{background:#24364b;color:#d8e5f7}#teacherDashboard .teacher-panel>.teacher-widget{margin-top:8px}#teacherDashboard .teacher-panel>.teacher-widget .teacher-stats{margin-top:12px}#teacherDashboard .teacher-footer{border-top:1px solid #26334a;margin-top:22px;padding:14px 0 2px;color:#63738e;font-size:9px}#teacherDashboard .teacher-footer span{padding:0 5px;color:#a4ee55}#teacherDashboard #teacherDashboardStatus{background:#18253b;color:#dbe8f9;border:1px solid #354762}#teacherDashboard #teacherDashboardStatus.error{border-color:#713c4a;color:#ffb5bd}#teacherDashboard #teacherDashboardStatus.success{border-color:#315d48;color:#c7ff9a}
+    #teacherDashboard .teacher-history-manager{margin-top:14px}#teacherDashboard .teacher-selected-student{display:flex;flex-direction:column;gap:5px;padding:13px 15px;border:1px solid #34445e;border-radius:9px;background:#0d1729}#teacherDashboard .teacher-selected-student span{font-size:8px;letter-spacing:1.5px;color:#9cafc9;font-weight:800}#teacherDashboard .teacher-selected-student strong{font-size:14px;color:#c9ff79}#teacherDashboard .teacher-selected-student small{font-size:10px;color:#8d9bb5}#teacherDashboard .teacher-history-warning{font-size:10px;line-height:1.6;color:#f2c27c;margin:12px 0}#teacherDashboard .teacher-history-actions{display:flex;flex-wrap:wrap;gap:8px}#teacherDashboard .teacher-history-actions button{width:auto;margin:0;padding:9px 12px;border:1px solid #45536b;border-radius:8px;background:#1a2b3e;color:#dce8f8;font-size:10px;font-weight:700}#teacherDashboard .teacher-history-actions button:disabled{opacity:.5;cursor:not-allowed}#teacherDashboard .teacher-history-actions .teacher-history-delete-all{background:#4a202b;border-color:#8b3c4b;color:#ffd7dc}#teacherDashboard .teacher-history-status{font-size:10px;line-height:1.6;color:#9eacc4;margin:12px 0 0;white-space:pre-line}#teacherDashboard .teacher-history-status.success{color:#bdf58b}#teacherDashboard .teacher-history-status.error{color:#ffabb5}#teacherDashboard .teacher-latest-widget{margin-bottom:10px}#teacherDashboard .teacher-small-action{width:auto;margin:0;padding:7px 9px;background:#19283b;border:1px solid #2d415a;border-radius:7px;color:#b9f76d;font-size:9px}#teacherDashboard .teacher-refresh{width:auto;margin:0;padding:9px 12px;background:#1a2b3e;border:1px solid #344762;border-radius:8px;color:#c3f77d;font-size:10px;white-space:nowrap}#teacherDashboard .teacher-filter{display:grid;grid-template-columns:minmax(180px,1fr) 190px auto;gap:9px;margin:0 0 14px}#teacherDashboard .teacher-filter input,#teacherDashboard .teacher-filter select{width:100%;min-width:0;margin:0;background:#0d1729;border:1px solid #2d3b54;color:#e2eaff;border-radius:8px;font-size:11px;padding:10px 12px}#teacherDashboard .teacher-filter input::placeholder{color:#687894}#teacherDashboard .teacher-table-wrap{overflow-x:auto}#teacherDashboard .teacher-table{width:100%;min-width:620px;border-collapse:collapse;font-size:10px;color:#c2cde0}#teacherDashboard .teacher-table th,#teacherDashboard .teacher-table td{padding:11px 10px;border-bottom:1px solid #26334a;text-align:left;vertical-align:middle}#teacherDashboard .teacher-table th{background:#19253a;color:#a8f15e;font-size:9px;letter-spacing:.4px;font-weight:700}#teacherDashboard .teacher-table tbody tr:hover{background:#18243a}#teacherDashboard .teacher-table td button{width:auto;margin:0;padding:7px 9px;background:#1c3440;color:#c7ff7d;border:1px solid #31574b;border-radius:6px;font-size:9px}#teacherDashboard .teacher-muted{color:#8190aa;font-size:10px}#teacherDashboard .teacher-detail,#teacherDashboard .teacher-answer{background:#111d31;border:1px solid #2c3c55;color:#d7e1f3;border-radius:10px;padding:14px;margin-top:12px}#teacherDashboard .teacher-answer{line-height:1.6}#teacherDashboard .teacher-answer p{margin:7px 0}#teacherDashboard .teacher-action{background:#24364b;color:#d8e5f7}#teacherDashboard .teacher-panel>.teacher-widget{margin-top:8px}#teacherDashboard .teacher-panel>.teacher-widget .teacher-stats{margin-top:12px}#teacherDashboard .teacher-footer{border-top:1px solid #26334a;margin-top:22px;padding:14px 0 2px;color:#63738e;font-size:9px}#teacherDashboard .teacher-footer span{padding:0 5px;color:#a4ee55}#teacherDashboard #teacherDashboardStatus{background:#18253b;color:#dbe8f9;border:1px solid #354762}#teacherDashboard #teacherDashboardStatus.error{border-color:#713c4a;color:#ffb5bd}#teacherDashboard #teacherDashboardStatus.success{border-color:#315d48;color:#c7ff9a}
     @media(max-width:1050px){#teacherDashboard .teacher-sidebar{width:210px;flex-basis:210px}#teacherDashboard .teacher-main{padding:23px 20px}#teacherDashboard .teacher-dashboard-grid{grid-template-columns:1fr}#teacherDashboard .teacher-detail-widget{min-height:220px}}
     @media(max-width:760px){#teacherDashboard{width:calc(100% - 16px);margin:8px auto;display:block;border-radius:14px}#teacherDashboard .teacher-sidebar{width:100%;min-height:0;padding:13px 12px;border-right:0;border-bottom:1px solid var(--td-line)}#teacherDashboard .teacher-brand{padding:2px 5px 12px}#teacherDashboard .teacher-school-label{display:none}#teacherDashboard .teacher-nav-label{display:none}#teacherDashboard .teacher-nav{display:flex;flex-direction:row;overflow-x:auto;gap:6px;padding:3px 0 6px}#teacherDashboard .teacher-nav button{width:auto;flex:0 0 auto;padding:9px 10px;font-size:10px;white-space:nowrap}#teacherDashboard .nav-icon{width:auto}#teacherDashboard .teacher-report-label{margin-top:5px}#teacherDashboard .teacher-sidebar-bottom{display:none}#teacherDashboard .teacher-main{padding:18px 13px}#teacherDashboard .teacher-topbar{align-items:flex-start;flex-direction:column}#teacherDashboard .teacher-user-area{width:100%;flex-wrap:wrap}#teacherDashboard .teacher-topbar h2{font-size:21px}#teacherDashboard .teacher-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#teacherDashboard .teacher-stat{padding:12px}#teacherDashboard .teacher-stat strong{font-size:24px}#teacherDashboard .teacher-filter{grid-template-columns:1fr}#teacherDashboard .teacher-section-heading{align-items:flex-start}#teacherDashboard .teacher-system-pill{margin-right:auto}}
     @media(max-width:420px){#teacherDashboard .teacher-main{padding:15px 10px}#teacherDashboard .teacher-stats{gap:7px}#teacherDashboard .teacher-stat strong{font-size:22px}#teacherDashboard .teacher-stat .stat-top{font-size:9px}#teacherDashboard .teacher-widget{padding:13px 11px}#teacherDashboard .teacher-user-meta{flex:1}}
@@ -354,11 +347,7 @@
   <section class="teacher-dashboard hidden" id="teacherDashboard">
     <aside class="teacher-sidebar">
       <div class="teacher-brand">
-        <img
-  class="teacher-school-logo"
-  src="https://hermadimuhammad-source.github.io/ecoschool-ai-takalar/assets/logo-smkn2takalar.png.png"
-  alt="Logo SMK Negeri 2 Takalar"
->
+        <div class="teacher-brand-mark">E</div>
         <div><strong>EcoSchool <span>AI</span></strong><small>TEACHER CONSOLE</small></div>
       </div>
       <div class="teacher-school-label">SMK NEGERI 2 TAKALAR</div>
@@ -403,7 +392,26 @@
         <section class="teacher-widget teacher-latest-widget"><div class="widget-heading"><div><h3>Aktivitas Belajar Terbaru</h3><p>Ringkasan sesi pembelajaran yang tersimpan</p></div><button type="button" class="teacher-small-action" data-teacher-tab="history">Lihat riwayat →</button></div><div id="teacherLatestSessions" class="teacher-table-wrap"><p>Memuat aktivitas terbaru...</p></div></section>
       </div>
 
-      <div id="teacherPanelStudents" class="teacher-panel hidden"><div class="teacher-section-heading"><div><span class="teacher-eyebrow">MANAJEMEN SISWA</span><h3>Data Siswa</h3><p>Daftar akun siswa yang terdaftar di EcoSchool AI.</p></div></div><div class="teacher-widget"><div class="teacher-filter"><input id="teacherStudentSearch" type="search" placeholder="Cari nama atau NIS siswa..."><select id="teacherClassFilter"><option value="">Semua kelas</option></select></div><div id="teacherStudentsTable" class="teacher-table-wrap">Memuat data siswa...</div></div></div>
+      <div id="teacherPanelStudents" class="teacher-panel hidden">
+        <div class="teacher-section-heading"><div><span class="teacher-eyebrow">MANAJEMEN SISWA</span><h3>Data Siswa</h3><p>Daftar akun siswa yang terdaftar di EcoSchool AI.</p></div></div>
+        <div class="teacher-widget">
+          <div class="teacher-filter"><input id="teacherStudentSearch" type="search" placeholder="Cari nama atau NIS siswa..."><select id="teacherClassFilter"><option value="">Semua kelas</option></select></div>
+          <div id="teacherStudentsTable" class="teacher-table-wrap">Memuat data siswa...</div>
+        </div>
+        <section id="teacherStudentHistoryManager" class="teacher-widget teacher-history-manager hidden" aria-live="polite">
+          <div class="widget-heading"><div><h3>Manajemen Riwayat Siswa</h3><p>Pilih kategori riwayat yang akan dihapus. Akun dan data identitas siswa tidak akan dihapus.</p></div></div>
+          <div class="teacher-selected-student"><span>SISWA TERPILIH</span><strong id="teacherHistorySelectedName">-</strong><small id="teacherHistorySelectedClass">-</small></div>
+          <p class="teacher-history-warning">Penghapusan bersifat permanen. Pastikan siswa yang dipilih sudah benar sebelum melanjutkan.</p>
+          <div class="teacher-history-actions">
+            <button type="button" class="teacher-history-delete" data-delete-history-category="belajar">Hapus Riwayat Belajar</button>
+            <button type="button" class="teacher-history-delete" data-delete-history-category="hasil_kuis">Hapus Hasil Kuis</button>
+            <button type="button" class="teacher-history-delete" data-delete-history-category="pelanggaran">Hapus Catatan Pelanggaran</button>
+            <button type="button" class="teacher-history-delete" data-delete-history-category="progres">Hapus Progres Belajar</button>
+            <button type="button" class="teacher-history-delete teacher-history-delete-all" data-delete-history-category="semua">Hapus Semua Riwayat Siswa Ini</button>
+          </div>
+          <p id="teacherHistoryDeleteStatus" class="teacher-history-status" role="status">Belum ada penghapusan yang dilakukan.</p>
+        </section>
+      </div>
 
       <div id="teacherPanelHistory" class="teacher-panel hidden"><div class="teacher-section-heading"><div><span class="teacher-eyebrow">LAPORAN AKADEMIK</span><h3>Riwayat Belajar Siswa</h3><p>Telusuri sesi dan hasil pembelajaran setiap siswa.</p></div></div><div class="teacher-widget"><div class="teacher-filter"><input id="teacherHistorySearch" type="search" placeholder="Cari nama siswa, kelas, atau materi..."><select id="teacherHistoryLimit"><option value="10">10 riwayat</option><option value="25">25 riwayat</option><option value="50" selected>50 riwayat</option><option value="100">100 riwayat</option></select></div><div id="teacherHistoryTable" class="teacher-table-wrap">Memuat riwayat belajar...</div><div id="teacherAnswerDetail"></div></div></div>
 
@@ -1673,6 +1681,7 @@ function renderQuestion() {
   let teacherMonitoringCache = [];
   let teacherPrintCache = [];
   let teacherRecapCache = [];
+  let teacherSelectedHistoryStudent = null;
 
   const teacherLoginCard = document.getElementById("teacherLoginCard");
   const teacherDashboard = document.getElementById("teacherDashboard");
@@ -1885,13 +1894,84 @@ function renderQuestion() {
     });
     const rows = filtered.map((s, index) => {
       const status = s.aktif === false ? "Nonaktif" : "Aktif";
+      const studentId = escapeHtml(String(s.id ?? ""));
       return "<tr><td>" + (index + 1) + "</td><td>" + escapeHtml(s.nama || "-") +
         "</td><td>" + escapeHtml(s.kelas || "-") + "</td><td>" +
-        escapeHtml(s.nis || "-") + "</td><td>" + status + "</td></tr>";
+        escapeHtml(s.nis || "-") + "</td><td>" + status +
+        "</td><td><button type=\"button\" class=\"teacher-action\" data-manage-history-id=\"" + studentId + "\">Kelola Riwayat</button></td></tr>";
     });
     document.getElementById("teacherStudentsTable").innerHTML =
       '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherStudentsCache.length + " siswa.</p>" +
-      teacherTable(["No.", "Nama Siswa", "Kelas", "NIS", "Status"], rows);
+      teacherTable(["No.", "Nama Siswa", "Kelas", "NIS", "Status", "Aksi"], rows);
+  }
+
+  function selectStudentForHistory(studentId) {
+    const student = teacherStudentsCache.find(item => String(item.id) === String(studentId));
+    if (!student) {
+      teacherStatus("Data siswa yang dipilih tidak ditemukan. Muat ulang daftar siswa.", "error");
+      return;
+    }
+    teacherSelectedHistoryStudent = student;
+    document.getElementById("teacherHistorySelectedName").textContent = student.nama || "Siswa tanpa nama";
+    document.getElementById("teacherHistorySelectedClass").textContent = "Kelas " + (student.kelas || "-") + " · ID " + student.id;
+    const panel = document.getElementById("teacherStudentHistoryManager");
+    panel.classList.remove("hidden");
+    document.getElementById("teacherHistoryDeleteStatus").className = "teacher-history-status";
+    document.getElementById("teacherHistoryDeleteStatus").textContent = "Pilih kategori riwayat yang ingin dihapus untuk siswa ini.";
+    panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
+  }
+
+  async function deleteSelectedStudentHistory(category, clickedButton) {
+    const student = teacherSelectedHistoryStudent;
+    if (!student || !student.id) {
+      teacherStatus("Pilih siswa terlebih dahulu melalui tombol Kelola Riwayat.", "error");
+      return;
+    }
+    const labels = {
+      belajar: "riwayat belajar beserta rincian jawaban",
+      hasil_kuis: "hasil kuis",
+      pelanggaran: "catatan pelanggaran/pemantauan kuis",
+      progres: "progres belajar",
+      semua: "SELURUH RIWAYAT siswa ini (belajar, hasil kuis, pelanggaran, dan progres)"
+    };
+    const categoryLabel = labels[category];
+    if (!categoryLabel) return;
+    const confirmation = "Anda akan menghapus " + categoryLabel + " milik:\n\n" +
+      (student.nama || "Siswa") + " · " + (student.kelas || "-") + "\nID siswa: " + student.id +
+      "\n\nPenghapusan permanen dan tidak dapat dibatalkan.\n\nAkun, nama, kelas, dan kata sandi siswa TIDAK akan dihapus.\n\nLanjutkan?";
+    if (!window.confirm(confirmation)) return;
+
+    const status = document.getElementById("teacherHistoryDeleteStatus");
+    const buttons = document.querySelectorAll("#teacherStudentHistoryManager [data-delete-history-category]");
+    buttons.forEach(button => { button.disabled = true; });
+    status.className = "teacher-history-status";
+    status.textContent = "Memproses penghapusan. Mohon jangan tutup halaman...";
+    try {
+      const result = await teacherApi("/hapus-riwayat", {
+        studentId: Number(student.id),
+        category
+      });
+      if (!result || result.success !== true) {
+        throw new Error(result?.error || "Server belum mengonfirmasi penghapusan.");
+      }
+      const counts = result.terhapus || {};
+      const countLines = [
+        "Sesi belajar: " + (counts.learning_sessions ?? 0),
+        "Rincian jawaban: " + (counts.student_answers ?? 0),
+        "Hasil kuis: " + (counts.hasil_kuis ?? 0),
+        "Catatan pelanggaran: " + (counts.quiz_monitoring_events ?? 0),
+        "Progres belajar: " + (counts.progres_belajar ?? 0)
+      ];
+      status.className = "teacher-history-status success";
+      status.textContent = "Penghapusan berhasil untuk " + (student.nama || "siswa terpilih") + ".\n" + countLines.join("\n") +
+        "\nData akun dan identitas siswa tetap dipertahankan.";
+      await loadTeacherDashboard();
+    } catch (error) {
+      status.className = "teacher-history-status error";
+      status.textContent = "Penghapusan belum berhasil: " + error.message + "\nTidak ada perubahan yang boleh diasumsikan. Periksa kembali sebelum mencoba lagi.";
+    } finally {
+      buttons.forEach(button => { button.disabled = false; });
+    }
   }
 
   async function loadTeacherHistory(studentId = null) {
@@ -2328,6 +2408,15 @@ function renderQuestion() {
     });
   });
 
+  document.getElementById("teacherStudentsTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-manage-history-id]");
+    if (button) selectStudentForHistory(button.dataset.manageHistoryId);
+  });
+  document.getElementById("teacherStudentHistoryManager").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-delete-history-category]");
+    if (button) deleteSelectedStudentHistory(button.dataset.deleteHistoryCategory, button);
+  });
+
   document.getElementById("teacherStudentSearch").addEventListener("input", renderTeacherStudents);
   document.getElementById("teacherClassFilter").addEventListener("change", renderTeacherStudents);
   document.getElementById("teacherHistorySearch").addEventListener("input", renderTeacherHistory);
@@ -2363,6 +2452,8 @@ function renderQuestion() {
     teacherMonitoringCache = [];
     teacherPrintCache = [];
     teacherRecapCache = [];
+    teacherSelectedHistoryStudent = null;
+    document.getElementById("teacherStudentHistoryManager").classList.add("hidden");
     teacherDashboard.classList.add("hidden");
     teacherLoginCard.classList.add("hidden");
     teacherLoginForm.reset();
