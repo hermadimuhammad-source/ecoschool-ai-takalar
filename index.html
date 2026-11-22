@@ -272,7 +272,27 @@
     @media(max-width:760px){#teacherDashboard{width:calc(100% - 16px);margin:8px auto;display:block;border-radius:14px}#teacherDashboard .teacher-sidebar{width:100%;min-height:0;padding:13px 12px;border-right:0;border-bottom:1px solid var(--td-line)}#teacherDashboard .teacher-brand{padding:2px 5px 12px}#teacherDashboard .teacher-school-label{display:none}#teacherDashboard .teacher-nav-label{display:none}#teacherDashboard .teacher-nav{display:flex;flex-direction:row;overflow-x:auto;gap:6px;padding:3px 0 6px}#teacherDashboard .teacher-nav button{width:auto;flex:0 0 auto;padding:9px 10px;font-size:10px;white-space:nowrap}#teacherDashboard .nav-icon{width:auto}#teacherDashboard .teacher-report-label{margin-top:5px}#teacherDashboard .teacher-sidebar-bottom{display:none}#teacherDashboard .teacher-main{padding:18px 13px}#teacherDashboard .teacher-topbar{align-items:flex-start;flex-direction:column}#teacherDashboard .teacher-user-area{width:100%;flex-wrap:wrap}#teacherDashboard .teacher-topbar h2{font-size:21px}#teacherDashboard .teacher-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#teacherDashboard .teacher-stat{padding:12px}#teacherDashboard .teacher-stat strong{font-size:24px}#teacherDashboard .teacher-filter{grid-template-columns:1fr}#teacherDashboard .teacher-section-heading{align-items:flex-start}#teacherDashboard .teacher-system-pill{margin-right:auto}}
     @media(max-width:420px){#teacherDashboard .teacher-main{padding:15px 10px}#teacherDashboard .teacher-stats{gap:7px}#teacherDashboard .teacher-stat strong{font-size:22px}#teacherDashboard .teacher-stat .stat-top{font-size:9px}#teacherDashboard .teacher-widget{padding:13px 11px}#teacherDashboard .teacher-user-meta{flex:1}}
 
-  </style>
+  
+    /* LANDSCAPE / WIDE TEACHER DASHBOARD — scoped overrides only */
+    @media (min-width: 761px) {
+      #teacherDashboard { width: calc(100% - 24px); max-width: none; min-height: calc(100vh - 24px); margin: 12px auto; border-radius: 16px; }
+      #teacherDashboard .teacher-sidebar { width: 225px; flex-basis: 225px; padding: 22px 14px 16px; }
+      #teacherDashboard .teacher-main { padding: 24px clamp(18px, 2.2vw, 38px) 18px; }
+      #teacherDashboard .teacher-stats { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 15px; }
+      #teacherDashboard .teacher-dashboard-grid { grid-template-columns: minmax(0, 1.7fr) minmax(320px, 1fr); gap: 16px; }
+      #teacherDashboard .teacher-table-wrap { max-width: 100%; }
+      #teacherDashboard .teacher-filter { grid-template-columns: minmax(220px, 1fr) minmax(170px, 230px) auto; }
+    }
+    @media (min-width: 1400px) {
+      #teacherDashboard .teacher-main { padding-left: 42px; padding-right: 42px; }
+      #teacherDashboard .teacher-dashboard-grid { grid-template-columns: minmax(0, 1.9fr) minmax(360px, 1fr); }
+      #teacherDashboard .teacher-widget { padding: 20px 22px; }
+    }
+    @media (max-width: 1050px) and (min-width: 761px) {
+      #teacherDashboard .teacher-stats { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      #teacherDashboard .teacher-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
+    }
+</style>
 </head>
 
 <body>
