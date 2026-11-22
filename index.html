@@ -5,35 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>EcoSchool AI | SMK Negeri 2 Takalar</title>
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    * { box-sizing: border-box; }
     body {
       margin: 0;
       font-family: Arial, sans-serif;
-      background:
-        radial-gradient(circle at 12% 16%, rgba(22, 163, 74, 0.13), transparent 42%),
-        radial-gradient(circle at 88% 20%, rgba(14, 165, 233, 0.11), transparent 44%),
-        linear-gradient(150deg, #f5fbf7 0%, #eef7f1 55%, #f4f9fc 100%);
-      background-attachment: fixed;
+      background: #f0f7f3;
       color: #20352b;
     }
     header {
-      position: relative;
-      overflow: hidden;
-      background: linear-gradient(120deg, #075c3b, #138653 60%, #37a66d);
+      background: #126b45;
       color: white;
       padding: 25px 16px;
       text-align: center;
-      box-shadow: 0 8px 24px #064b3026;
-    }
-    header::after {
-      content: "";
-      position: absolute;
-      width: 240px; height: 240px;
-      right: -65px; top: -125px;
-      border: 2px solid #ffffff30;
-      border-radius: 50%;
-      box-shadow: 0 0 0 24px #ffffff0d, 0 0 0 48px #ffffff0a;
-      pointer-events: none;
     }
     header h1 { margin: 0 0 10px; font-size: 25px; }
     header p { margin: 5px 0; }
@@ -50,13 +33,11 @@
       padding: 0 15px;
     }
     .card {
-      background: rgba(255, 255, 255, 0.95);
+      background: white;
       border-radius: 14px;
       padding: 22px;
       margin-bottom: 18px;
-      border: 1px solid #ffffffb8;
-      box-shadow: 0 12px 35px #174c3020;
-      backdrop-filter: blur(8px);
+      box-shadow: 0 3px 12px #0000000d;
     }
     label {
       display: block;
@@ -80,16 +61,11 @@
       color: white;
       font-weight: bold;
       cursor: pointer;
-      transition: transform .18s ease, box-shadow .18s ease, background .18s ease;
     }
-    button:hover:not(:disabled) {
-      background: #0d5e39;
-      transform: translateY(-2px);
-      box-shadow: 0 7px 16px #0b593326;
-    }
+    button:hover { background: #0d5e39; }
     button:disabled { opacity: .65; cursor: wait; }
     .secondary { background: #64756b; }
-    .secondary:hover:not(:disabled) { background: #435248; }
+    .secondary:hover { background: #435248; }
     .hidden { display: none !important; }
     .status {
       margin-top: 14px;
@@ -139,7 +115,7 @@
     .main-menu .exit-button {
       background: #64756b;
     }
-    .main-menu .exit-button:hover:not(:disabled) {
+    .main-menu .exit-button:hover {
       background: #435248;
     }
     .panel-content { margin-top: 18px; }
@@ -152,12 +128,40 @@
     }
 
     @media(max-width:600px) {
-      body { background-attachment: scroll; }
       .main-menu {
         grid-template-columns: 1fr;
       }
     }
 
+    /* PENYEGARAN VISUAL ECOSCHOOL */
+    body {
+      background:
+        linear-gradient(135deg, rgba(238,248,241,.94), rgba(225,242,231,.90)),
+        url("https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?auto=format&fit=crop&w=1800&q=85") center/cover fixed;
+    }
+    header {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(120deg, #075c3b, #138653 60%, #37a66d);
+      box-shadow: 0 8px 24px #064b3026;
+    }
+    header::after {
+      content: "";
+      position: absolute;
+      width: 240px; height: 240px;
+      right: -65px; top: -125px;
+      border: 2px solid #ffffff30;
+      border-radius: 50%;
+      box-shadow: 0 0 0 24px #ffffff0d, 0 0 0 48px #ffffff0a;
+      pointer-events: none;
+    }
+    .card {
+      border: 1px solid #ffffffb8;
+      box-shadow: 0 12px 35px #174c3020;
+      backdrop-filter: blur(8px);
+    }
+    button { transition: transform .18s ease, box-shadow .18s ease, background .18s ease; }
+    button:hover:not(:disabled) { transform: translateY(-2px); box-shadow: 0 7px 16px #0b593326; }
     .hero-strip {
       padding: 20px; border-radius: 16px; color: white; margin: 16px 0 20px;
       background: linear-gradient(110deg, #075c3bdf, #168453c9),
@@ -208,13 +212,14 @@
     @keyframes quizEnter { from{opacity:0;transform:translateY(15px) scale(.99)} to{opacity:1;transform:translateY(0) scale(1)} }
     @keyframes bounce { 0%,80%,100%{transform:translateY(0);opacity:.5}40%{transform:translateY(-7px);opacity:1} }
     @media(max-width:600px) {
+      body { background-attachment:scroll; }
       .quiz-card,.quiz-result { padding:16px; }
       .quiz-question { font-size:16px; }
     }
 
     /* DASHBOARD GURU */
     .teacher-entry { margin-top: 10px; background: #365b48; }
-    .teacher-entry:hover:not(:disabled) { background: #244b37; }
+    .teacher-entry:hover { background: #244b37; }
     .teacher-auth, .teacher-dashboard { max-width: 1100px; margin-left:auto; margin-right:auto; }
     .teacher-topbar { display:flex; justify-content:space-between; align-items:center; gap:12px; flex-wrap:wrap; }
     .teacher-topbar button { width:auto; min-width:130px; }
@@ -247,6 +252,7 @@
       .teacher-stat strong { font-size:21px; }
     }
 
+
     /* DARK NEON TEACHER DASHBOARD — seluruh aturan dibatasi pada #teacherDashboard */
     #teacherDashboard{--td-bg:#080d1c;--td-panel:#111a2d;--td-panel2:#151f35;--td-line:#25314a;--td-muted:#8d9bb5;--td-text:#edf3ff;display:flex;gap:0;max-width:1500px;width:calc(100% - 36px);min-height:calc(100vh - 48px);margin:24px auto;padding:0;background:var(--td-bg);color:var(--td-text);border:1px solid #1c2941;border-radius:20px;overflow:hidden;box-shadow:0 24px 70px #02061755;font-family:Inter,Arial,sans-serif}
     #teacherDashboard.hidden{display:none!important}#teacherDashboard *{box-sizing:border-box}#teacherDashboard button{font-family:inherit}
@@ -266,6 +272,7 @@
     @media(max-width:760px){#teacherDashboard{width:calc(100% - 16px);margin:8px auto;display:block;border-radius:14px}#teacherDashboard .teacher-sidebar{width:100%;min-height:0;padding:13px 12px;border-right:0;border-bottom:1px solid var(--td-line)}#teacherDashboard .teacher-brand{padding:2px 5px 12px}#teacherDashboard .teacher-school-label{display:none}#teacherDashboard .teacher-nav-label{display:none}#teacherDashboard .teacher-nav{display:flex;flex-direction:row;overflow-x:auto;gap:6px;padding:3px 0 6px}#teacherDashboard .teacher-nav button{width:auto;flex:0 0 auto;padding:9px 10px;font-size:10px;white-space:nowrap}#teacherDashboard .nav-icon{width:auto}#teacherDashboard .teacher-report-label{margin-top:5px}#teacherDashboard .teacher-sidebar-bottom{display:none}#teacherDashboard .teacher-main{padding:18px 13px}#teacherDashboard .teacher-topbar{align-items:flex-start;flex-direction:column}#teacherDashboard .teacher-user-area{width:100%;flex-wrap:wrap}#teacherDashboard .teacher-topbar h2{font-size:21px}#teacherDashboard .teacher-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}#teacherDashboard .teacher-stat{padding:12px}#teacherDashboard .teacher-stat strong{font-size:24px}#teacherDashboard .teacher-filter{grid-template-columns:1fr}#teacherDashboard .teacher-section-heading{align-items:flex-start}#teacherDashboard .teacher-system-pill{margin-right:auto}}
     @media(max-width:420px){#teacherDashboard .teacher-main{padding:15px 10px}#teacherDashboard .teacher-stats{gap:7px}#teacherDashboard .teacher-stat strong{font-size:22px}#teacherDashboard .teacher-stat .stat-top{font-size:9px}#teacherDashboard .teacher-widget{padding:13px 11px}#teacherDashboard .teacher-user-meta{flex:1}}
 
+  
     /* LANDSCAPE / WIDE TEACHER DASHBOARD — scoped overrides only */
     @media (min-width: 761px) {
       #teacherDashboard { width: calc(100% - 24px); max-width: none; min-height: calc(100vh - 24px); margin: 12px auto; border-radius: 16px; }
@@ -286,10 +293,10 @@
       #teacherDashboard .teacher-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
-    body:has(#teacherDashboard:not(.hidden)) > header,
-    body:has(#teacherDashboard:not(.hidden)) > .notice {
-      display: none !important;
-    }
+
+    /* PERBAIKAN LANDSCAPE FINAL:
+       Perlebar wadah utama HANYA ketika Dashboard Guru sedang aktif.
+       Halaman login dan pembelajaran siswa tetap memakai lebar semula. */
     body:has(#teacherDashboard:not(.hidden)) main {
       max-width: none !important;
       width: 100% !important;
@@ -309,6 +316,7 @@
         min-width: 0;
       }
     }
+
   </style>
 </head>
 
@@ -337,8 +345,7 @@
 
   <!-- LOGIN SISWA -->
   <section class="card hidden" id="loginCard">
-    <h2>Login Siswa</h2>
-    <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
+    <h2>Login Siswa</h2> <p>Masuk menggunakan nama, kelas, dan kode akses yang diberikan sekolah.</p>
 
     <form id="loginForm">
       <label for="namaSiswa">Nama lengkap</label>
@@ -421,7 +428,7 @@
           <div class="teacher-stat neon-green"><div class="stat-top"><span>Total Siswa</span><b>♙</b></div><strong id="statStudents">-</strong><small>Terdaftar di sistem</small><div class="stat-accent"></div></div>
           <div class="teacher-stat neon-blue"><div class="stat-top"><span>Siswa Aktif</span><b>◉</b></div><strong id="statSessions">-</strong><small>Akun berstatus aktif</small><div class="stat-accent"></div></div>
           <div class="teacher-stat neon-purple"><div class="stat-top"><span>Catatan Pelanggaran</span><b>⚑</b></div><strong id="statBanks">-</strong><small>Riwayat pengawasan kuis</small><div class="stat-accent"></div></div>
-          <div class="teacher-stat neon-red"><div class="stat-top"><span>Pelanggaran Serius</span><b>⚠</b></div><strong id="statQuizzes">-</strong><small>Frekuensi kejadian 3 atau lebih</small><div class="stat-accent"></div></div>
+          <div class="teacher-stat neon-red"><div class="stat-top"><span>Pelanggaran Serius</span><b>⚠</b></div><strong id="statQuizzes">-</strong><small>Frekuensi kejadian ≥ 3</small><div class="stat-accent"></div></div>
         </div>
         <div class="teacher-dashboard-grid">
           <section class="teacher-widget teacher-chart-widget"><div class="widget-heading"><div><h3>Aktivitas Pelanggaran</h3><p>Distribusi catatan pengawasan dalam 7 hari terakhir</p></div><span class="widget-period">7 HARI</span></div><div id="teacherViolationChart" class="teacher-chart"><div class="teacher-chart-empty">Grafik akan tampil setelah data dimuat.</div></div></section>
@@ -467,325 +474,1058 @@
 
   <!-- PANEL UTAMA SISWA -->
   <section class="card hidden" id="belajarCard">
-    <div class="student-badge" id="studentBadge">
-      Login berhasil. Silakan mulai belajar.
+
+    <div class="student-badge">
+      Login sebagai <strong id="namaAktif"></strong><br>
+      Kelas: <strong id="kelasAktif"></strong>
     </div>
 
-    <div class="hero-strip">
-      <strong>Ruang Belajar Adaptif Kelas X</strong>
-      <p>Tanyakan konsep pelajaran atau latihan soal dengan bimbingan EcoSchool AI.</p>
+    <!-- TIGA TOMBOL UTAMA -->
+    <div class="main-menu" aria-label="Menu utama siswa">
+      <button id="btnMulaiBelajar" class="active" type="button">
+        📖 Mulai Belajar
+      </button>
+
+      <button id="btnBankSoal" type="button">
+        📚 Bank Soal
+      </button>
+
+      <button id="logoutButton" class="exit-button" type="button">
+        🚪 Keluar
+      </button>
     </div>
 
-    <div class="main-menu" role="tablist" aria-label="Menu Utama Siswa">
-      <button type="button" id="tabBelajar" class="active">Ruang Belajar AI</button>
-      <button type="button" id="tabBankSoal">Bank Soal</button>
-      <button type="button" id="logoutButton" class="exit-button">Keluar</button>
-    </div>
+    <!-- PANEL MULAI BELAJAR -->
+    <div id="ruangBelajarPanel" class="panel-content">
 
-    <div id="panelBelajar" class="panel-content">
-      <label for="mapel">Mata Pelajaran</label>
+      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+
+      <div class="hero-strip">
+        <h2>🌿 Ruang Belajar</h2>
+        <p>Belajar lebih menyenangkan, pahami konsep, dan temukan pengetahuan baru bersama EcoSchool AI.</p>
+      </div>
+      <p>Mulai dengan memilih mata pelajaran, materi, lalu tuliskan hal yang ingin kamu pahami.</p>
+
+      <label for="mapel">Pilih mata pelajaran</label>
       <select id="mapel">
-        <option value="Informatika">Informatika</option>
-        <option value="Projek IPAS">Projek IPAS</option>
+        <option value="IPAS">IPAS</option>
         <option value="Matematika">Matematika</option>
         <option value="Bahasa Indonesia">Bahasa Indonesia</option>
         <option value="Bahasa Inggris">Bahasa Inggris</option>
-      </select>
-
-      <label for="materi">Materi / Topik</label>
-      <input id="materi" type="text" placeholder="Contoh: Berpikir Komputasional atau Ekosistem">
-
-      <label for="pertanyaan">Pertanyaan Anda</label>
-      <textarea id="pertanyaan" rows="4" placeholder="Tuliskan pertanyaan atau konsep yang ingin dipahami..."></textarea>
-
-      <button type="button" id="belajarButton">Mulai Belajar dengan AI</button>
-      <div id="hasil"></div>
-    </div>
-
-    <div id="panelBankSoal" class="panel-content hidden">
-      <label for="bankMapel">Mata Pelajaran</label>
-      <select id="bankMapel">
         <option value="Informatika">Informatika</option>
       </select>
 
-      <label for="bankJenis">Jenis Paket Soal</label>
-      <select id="bankJenis">
+      <label for="materi">Materi yang ingin dipelajari</label>
+      <input id="materi" placeholder="Contoh: Energi terbarukan">
+
+      <label for="pertanyaan">Apa yang ingin kamu pahami?</label>
+      <textarea id="pertanyaan" rows="4"
+        placeholder="Tuliskan pertanyaanmu di sini..."></textarea>
+
+      <button id="belajarButton" type="button">
+        Mulai Belajar dengan AI
+      </button>
+
+      <div id="hasil" aria-live="polite"></div>
+    </div>
+
+    <!-- PANEL BANK SOAL -->
+    <div id="bankSoalCard" class="panel-content hidden">
+
+      <hr style="border:0;border-top:1px solid #e1e9e3;margin:22px 0">
+
+      <h2>📚 Bank Soal EcoSchool AI</h2>
+      <p>Buat latihan sesuai mata pelajaran dan materi. Untuk jenis Campuran, sistem otomatis membuat tepat 10 soal: 6 pilihan ganda dan 4 esai, dengan 4 soal Sedang, 3 Sulit, dan 3 HOTS.</p>
+
+      <label for="latihanMapel">Mata Pelajaran</label>
+      <select id="latihanMapel">
+        <option value="IPAS">IPAS</option>
+        <option value="Matematika">Matematika</option>
+        <option value="Bahasa Indonesia">Bahasa Indonesia</option>
+        <option value="Bahasa Inggris">Bahasa Inggris</option>
+        <option value="Informatika">Informatika</option>
+      </select>
+
+      <label for="latihanMateri">Materi</label>
+      <input id="latihanMateri" placeholder="Semua Topik / TIK / JIK / Data dan Informasi / DSI">
+
+      <p style="color:#64756b;font-size:13px;line-height:1.5">Untuk Informatika dengan jenis Pilihan Ganda, sistem mengambil soal dari bank tetap sekolah. Isi materi dengan Semua Topik, TIK, JIK, Data dan Informasi, atau DSI. Mata pelajaran lain tetap menggunakan pembuatan soal AI seperti sebelumnya.</p>
+
+      <label for="jenisSoal">Jenis Soal</label>
+      <select id="jenisSoal">
         <option value="pilihan_ganda">Pilihan Ganda</option>
-        <option value="esai">Esai</option>
+        <option value="esai">Soal Esai</option>
         <option value="campuran">Campuran</option>
       </select>
 
-      <label for="bankMateri">Materi Informatika</label>
-      <select id="bankMateri">
-        <option value="Semua Topik">Semua Topik</option>
-        <option value="TIK">TIK</option>
-        <option value="JIK">JIK</option>
-        <option value="Data dan Informasi">Data dan Informasi</option>
-        <option value="DSI">DSI</option>
+      <label for="tingkatKesulitan">Tingkat Kesulitan</label>
+      <select id="tingkatKesulitan">
+        <option value="mudah">Mudah</option>
+        <option value="sedang" selected>Sedang</option>
+        <option value="sulit">Sulit</option>
+        <option value="hots">HOTS</option>
       </select>
 
-      <label for="bankJumlah">Jumlah Soal (1 - 30)</label>
-      <input id="bankJumlah" type="number" min="1" max="30" value="10">
+      <label for="jumlahSoal">Jumlah Soal</label>
+      <input id="jumlahSoal" type="number" min="1" max="30" value="10">
 
-      <button type="button" id="mulaiBankSoalButton">Mulai Latihan Soal</button>
-      <div id="bankSoalStatus" class="status hidden" role="status" aria-live="polite"></div>
-      <div id="bankSoalContainer" class="quiz-shell"></div>
+      <p style="color:#64756b;font-size:13px;line-height:1.5">
+        Jumlah maksimal per satu sesi adalah 30 soal agar kualitas soal dan pembahasan tetap terjaga. Siswa dapat membuat sesi latihan baru kapan saja.
+      </p>
+
+      <button id="buatSoalButton" type="button">
+        ✨ Buat Latihan
+      </button>
+
+      <div id="hasilSoal" aria-live="polite"></div>
     </div>
-  </section>
 
+  </section>
 </main>
 
 <footer>
-  EcoSchool AI · SMK Negeri 2 Takalar
+  SMK Negeri 2 Takalar · EcoSchool AI · Versi 0.1
 </footer>
 
 <script>
-(function () {
-  const DATA_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/sesi";
-  const WORKER_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/tutor";
-  const SESSION_KEY = "ecoschool_student_token_v1";
-  const CACHE_PREFIX = "ecoschool_cache_v1:";
-  const CACHE_TTL_MS = 24 * 60 * 60 * 1000;
-  const INFO_TOPICS = ["Semua Topik", "TIK", "JIK", "Data dan Informasi", "DSI"];
+  const LOGIN_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/login-siswa";
+
+  const DATA_URL =
+    "https://mnhiijtjyxluvslsssmp.supabase.co/functions/v1/data-siswa";
+
+  const WORKER_URL =
+    "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/chat";
+
+  const SESSION_KEY = "ecoschool_siswa_token";
 
   const roleChooser = document.getElementById("roleChooser");
   const loginCard = document.getElementById("loginCard");
   const belajarCard = document.getElementById("belajarCard");
   const loginForm = document.getElementById("loginForm");
+  const loginButton = document.getElementById("loginButton");
   const loginStatus = document.getElementById("loginStatus");
   const belajarButton = document.getElementById("belajarButton");
   const hasil = document.getElementById("hasil");
 
-  // --- Helper Cache Cepat ---
-  window.ecoCacheGet = function (key) {
-    try {
-      const raw = localStorage.getItem(CACHE_PREFIX + key);
-      if (!raw) return null;
-      const parsed = JSON.parse(raw);
-      if (!parsed || Date.now() - parsed.savedAt > CACHE_TTL_MS) {
-        localStorage.removeItem(CACHE_PREFIX + key);
-        return null;
-      }
-      return parsed.data;
-    } catch (_) {
-      return null;
-    }
-  };
+  const ruangBelajarPanel = document.getElementById("ruangBelajarPanel");
+  const bankSoalCard = document.getElementById("bankSoalCard");
+  const btnMulaiBelajar = document.getElementById("btnMulaiBelajar");
+  const btnBankSoal = document.getElementById("btnBankSoal");
 
-  window.ecoCacheSet = function (key, data) {
-    try {
-      localStorage.setItem(
-        CACHE_PREFIX + key,
-        JSON.stringify({ savedAt: Date.now(), data })
+  // PERPINDAHAN ANTARMENU
+  function pilihMenu(menu) {
+    const tampilkanBank = menu === "bank";
+
+    ruangBelajarPanel.classList.toggle("hidden", tampilkanBank);
+    bankSoalCard.classList.toggle("hidden", !tampilkanBank);
+
+    btnMulaiBelajar.classList.toggle("active", !tampilkanBank);
+    btnBankSoal.classList.toggle("active", tampilkanBank);
+  }
+
+  btnMulaiBelajar.addEventListener("click", function() {
+    pilihMenu("belajar");
+  });
+
+  btnBankSoal.addEventListener("click", function() {
+    pilihMenu("bank");
+  });
+
+  // BANK SOAL AI INTERAKTIF
+  const GENERATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/generate-questions";
+  const EVALUATE_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/evaluate-answers";
+  const MONITORING_URL = "https://ecoschool-tutor-ai.hermadi-muhammad.workers.dev/api/quiz-monitoring";
+  const hasilSoal = document.getElementById("hasilSoal");
+  const jenisSoalInput = document.getElementById("jenisSoal");
+  const tingkatKesulitanInput = document.getElementById("tingkatKesulitan");
+  const jumlahSoalInput = document.getElementById("jumlahSoal");
+
+  function updateMixedQuizControls() {
+    const isMixed = jenisSoalInput.value === "campuran";
+    if (isMixed) jumlahSoalInput.value = "10";
+    jumlahSoalInput.disabled = isMixed;
+    tingkatKesulitanInput.disabled = isMixed;
+  }
+  jenisSoalInput.addEventListener("change", updateMixedQuizControls);
+  updateMixedQuizControls();
+
+  quizData = null;
+quizMonitoringActive = false;
+quizMonitoringNotices = [];
+quizMonitoringRequestPending = false;
+quizTabSwitchCount = 0;
+quizAnswers = [];
+
+async function recordQuizTabHidden() {
+  if (
+    !quizMonitoringActive ||
+    !quizData?.quizId ||
+    quizMonitoringRequestPending
+  ) {
+    return;
+  }
+
+  quizMonitoringRequestPending = true;
+  quizTabSwitchCount++;
+
+  const count = quizTabSwitchCount;
+
+  const eventId = (
+    typeof crypto !== "undefined" &&
+    typeof crypto.randomUUID === "function"
+  )
+    ? crypto.randomUUID()
+    : "tab-" + Date.now() + "-" +
+      Math.random().toString(36).slice(2);
+
+  try {
+    const token = sessionStorage.getItem(SESSION_KEY);
+
+    if (!token) {
+      throw new Error("Sesi login tidak ditemukan.");
+    }
+
+    const response = await fetch(MONITORING_URL, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify({
+        quizId: quizData.quizId,
+        eventId: eventId,
+        eventType: "tab_switch",
+        occurrenceCount: count
+      }),
+      keepalive: true
+    });
+
+    const data = await readJsonResponse(response);
+
+    if (!data.success) {
+      throw new Error(
+        data.error || "Catatan pengawasan tidak tersimpan."
       );
-    } catch (_) {}
-  };
+    }
+
+    const notice = count >= 3
+      ? "PERINGATAN SERIUS: Halaman kuis telah ditinggalkan " +
+        count + " kali. Guru akan meninjau catatan ini."
+      : "PERINGATAN " + count +
+        ": Halaman kuis terdeteksi tidak aktif. " +
+        "Tetaplah pada halaman kuis selama mengerjakan.";
+
+    quizMonitoringNotices.push(notice);
+    if (document.visibilityState === "visible") {
+  alert(quizMonitoringNotices.join("\n\n"));
+  quizMonitoringNotices = [];
+}
+
+    console.log("QUIZ_MONITORING_SAVED:", data);
+
+  } catch (error) {
+    console.warn(
+      "QUIZ_MONITORING_FAILED:",
+      error?.message || error
+    );
+
+  } finally {
+    quizMonitoringRequestPending = false;
+  }
+}
+
+// =====================================================
+// SATU LISTENER PEMANTAUAN PERPINDAHAN TAB
+// =====================================================
+document.addEventListener("visibilitychange", function() {
+  console.log("QUIZ_VISIBILITY_EVENT:", {
+    state: document.visibilityState,
+    monitoringActive: quizMonitoringActive,
+    quizId: quizData?.quizId
+  });
+
+  if (document.visibilityState === "hidden") {
+    console.log("QUIZ_TAB_HIDDEN: Pemantauan dipanggil.");
+    recordQuizTabHidden();
+  } else if (quizMonitoringNotices.length > 0) {
+    alert(quizMonitoringNotices.join("\n\n"));
+    quizMonitoringNotices = [];
+  }
+});
+
+function showThinking(target, message) {
+  target.innerHTML = '<div class="thinking">' + message +
+    '<span class="thinking-dots"><span></span><span></span><span></span></div>';
+}
+
+  async function postWorker(url, payload) {
+    const token = sessionStorage.getItem(SESSION_KEY);
+    if (!token) throw new Error("Sesi login tidak ditemukan. Silakan login kembali.");
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Authorization": "Bearer " + token
+      },
+      body: JSON.stringify(payload)
+    });
+    return await readJsonResponse(response);
+  }
+
+  document.getElementById("buatSoalButton").addEventListener("click", async function() {
+  const subject = document.getElementById("latihanMapel").value;
+  const topic = document.getElementById("latihanMateri").value.trim();
+  const type = document.getElementById("jenisSoal").value;
+  const difficulty = document.getElementById("tingkatKesulitan").value;
+  const requestedCount = Number(document.getElementById("jumlahSoal").value);
+  const totalCount = type === "campuran" ? 10 : requestedCount;
+
+  if (!topic) {
+    hasilSoal.textContent = "Silakan isi materi latihan terlebih dahulu.";
+    return;
+  }
+
+  if (
+    type !== "campuran" &&
+    (!Number.isInteger(totalCount) || totalCount < 1 || totalCount > 30)
+  ) {
+    hasilSoal.textContent = "Masukkan jumlah soal antara 1 sampai 30 per sesi.";
+    return;
+  }
+
+  const button = this;
+  button.disabled = true;
+  button.textContent = "Sedang membuat soal...";
+
+ quizData = null;
+quizMonitoringActive = false;
+quizMonitoringNotices = [];
+quizMonitoringRequestPending = false;
+quizTabSwitchCount = 0;
+quizAnswers = [];
+quizIndex = 0;
+
+  let quizId = null;
+  let batchIndex = 0;
+
+  function normalizeIncomingQuestion(question, index) {
+    const normalizedType = String(question.type || "").toLowerCase();
+    const isEssay =
+      normalizedType === "esai" ||
+      normalizedType === "essay";
+
+    const normalizedOptions = Array.isArray(question.options)
+      ? question.options.slice(0, 5).map((option, optionIndex) => {
+          const key = String(
+            option?.key ||
+            option?.label ||
+            ["A", "B", "C", "D", "E"][optionIndex]
+          ).trim().toUpperCase();
+
+          const text = typeof option === "string"
+            ? option
+            : String(
+                option?.text ||
+                option?.value ||
+                option?.content ||
+                ""
+              );
+
+          return { key, text };
+        })
+      : [];
+
+    return {
+      ...question,
+      number: Number(question.number) || index + 1,
+      type: isEssay ? "esai" : "pilihan_ganda",
+      options: normalizedOptions
+    };
+  }
+
+  function appendQuestions(incomingQuestions) {
+    if (!Array.isArray(incomingQuestions)) return;
+
+    const existingNumbers = new Set(
+      quizData.questions.map(question => Number(question.number))
+    );
+
+    incomingQuestions.forEach((question, index) => {
+      const normalized = normalizeIncomingQuestion(
+        question,
+        quizData.questions.length + index + 1
+      );
+
+      const number = Number(normalized.number);
+
+      if (!existingNumbers.has(number)) {
+        quizData.questions.push(normalized);
+        existingNumbers.add(number);
+      }
+    });
+
+    quizData.questions.sort(
+      (a, b) => Number(a.number) - Number(b.number)
+    );
+  }
+
+  try {
+    while (true) {
+      const remaining = totalCount - (
+        quizData ? quizData.questions.length : 0
+      );
+
+      const batchCount = Math.min(3, remaining);
+
+      const payload = {
+        subject,
+        topic,
+        type,
+        difficulty,
+        count: batchCount,
+        totalCount,
+        batchIndex
+      };
+
+      if (quizId) {
+        payload.quizId = quizId;
+      }
+
+      if (!quizData) {
+        showThinking(
+          hasilSoal,
+          "EcoSchool AI sedang menyusun tiga soal pertama..."
+        );
+      }
+
+      const data = await postWorker(GENERATE_URL, payload);
+
+      if (!data.success) {
+        throw new Error(data.error || "Soal belum berhasil dibuat.");
+      }
+
+      if (data.quizId) {
+        quizId = data.quizId;
+      }
+
+      if (!quizId) {
+        throw new Error("ID latihan tidak diterima dari server.");
+      }
+
+      if (!quizData) {
+        quizData = {
+          ...data,
+          quizId,
+          questions: [],
+          expectedTotal: totalCount,
+          generationComplete: false
+        };
+
+        quizAnswers = new Array(totalCount).fill("");
+        quizIndex = 0;
+      }
+
+      // Respons akhir dapat membawa seluruh soal.
+      // Respons pending membawa batchQuestions.
+      const incomingQuestions = data.pending
+        ? data.batchQuestions
+        : (
+            Array.isArray(data.questions)
+              ? data.questions
+              : data.batchQuestions
+          );
+
+      if (!Array.isArray(incomingQuestions) || incomingQuestions.length === 0) {
+        throw new Error(
+          "Server belum mengirimkan soal. Silakan coba kembali."
+        );
+      }
+
+      appendQuestions(incomingQuestions);
+
+      quizData.title = data.title || quizData.title;
+      quizData.instructions = data.instructions || quizData.instructions;
+      quizData.completed = quizData.questions.length;
+      quizData.total = totalCount;
+      quizData.expectedTotal = totalCount;
+      quizData.generationComplete = !data.pending;
+
+      // Aktifkan monitoring begitu soal pertama tampil.
+      if (!quizMonitoringActive) {
+        quizMonitoringActive = true;
+        quizMonitoringNotices = [];
+      }
+
+      // Tampilkan soal pertama segera, lalu perbarui
+      // tampilan setiap kali batch baru diterima.
+      renderQuestion();
+
+      if (quizData.generationComplete) {
+        break;
+      }
+
+      if (quizData.questions.length >= totalCount) {
+        quizData.generationComplete = true;
+        renderQuestion();
+        break;
+      }
+
+      batchIndex = Number(data.nextBatch) || (batchIndex + 1);
+    }
+
+    quizData.generationComplete = true;
+    quizData.completed = quizData.questions.length;
+
+    if (quizData.questions.length !== totalCount) {
+      throw new Error(
+        "Jumlah soal belum lengkap. Diterima " +
+        quizData.questions.length +
+        " dari " + totalCount + " soal."
+      );
+    }
+
+    renderQuestion();
+
+  } catch (error) {
+    console.error("Pembuatan latihan:", error);
+
+    if (quizData && quizData.questions.length > 0) {
+      quizData.generationError = error.message;
+
+      // Pertahankan soal yang sudah diterima dan jawaban siswa.
+      renderQuestion();
+
+      alert(
+        "Pembuatan soal berikutnya mengalami kendala.\n" +
+        "Soal yang sudah diterima tetap tersedia.\n\n" +
+        error.message
+      );
+    } else {
+      hasilSoal.textContent =
+        "Maaf, latihan belum berhasil dibuat.\n" +
+        error.message;
+    }
+
+  } finally {
+    button.disabled = false;
+    button.textContent = "✨ Buat Latihan";
+  }
+});
+
+function renderQuestion() {
+  if (!quizData) return;
+
+  const totalAvailable = quizData.questions.length;
+  const totalExpected = Number(
+    quizData.expectedTotal || quizData.total || totalAvailable
+  );
+
+  if (totalAvailable === 0) return;
+
+  if (quizIndex >= totalAvailable) {
+    quizIndex = totalAvailable - 1;
+  }
+
+  const q = quizData.questions[quizIndex];
+  if (!q) return;
+
+  const generationComplete =
+    quizData.generationComplete === true &&
+    totalAvailable >= totalExpected;
+
+  const isLastAvailable = quizIndex === totalAvailable - 1;
+  const isLastExpected = quizIndex === totalExpected - 1;
+
+  const progress = Math.round(
+    ((quizIndex + 1) / totalExpected) * 100
+  );
+
+  const wrapper = document.createElement("div");
+  wrapper.className = "quiz-shell";
+
+  let nextButtonText = "Soal Berikutnya →";
+  let nextButtonDisabled = false;
+
+  if (isLastAvailable && !generationComplete) {
+    nextButtonText = "Menyiapkan soal berikutnya...";
+    nextButtonDisabled = true;
+  } else if (isLastExpected && generationComplete) {
+    nextButtonText = "Selesaikan Latihan ✓";
+  }
+
+  wrapper.innerHTML = `
+    <div class="quiz-progress" aria-label="Kemajuan latihan">
+      <span style="width:${progress}%"></span>
+    </div>
+
+    <section class="quiz-card">
+      <div class="quiz-meta">
+        <span class="quiz-chip">
+          ${escapeHtml(quizData.subject || "")}
+        </span>
+
+        <span class="quiz-chip">
+          ${escapeHtml(
+            (q.difficulty || quizData.difficulty || "").toUpperCase()
+          )}
+        </span>
+
+        <span class="quiz-chip">
+          Soal ${quizIndex + 1} dari ${totalExpected}
+        </span>
+      </div>
+
+      <h3>${escapeHtml(quizData.title || "Latihan EcoSchool AI")}</h3>
+
+      <p>
+        ${escapeHtml(
+          quizData.instructions || "Bacalah soal dengan teliti."
+        )}
+      </p>
+
+      <div class="quiz-question">
+        ${escapeHtml(q.question)}
+      </div>
+
+      <div id="quizInputArea"></div>
+
+      <div class="quiz-actions">
+        <button
+          type="button"
+          id="quizPrev"
+          class="light-button"
+        >
+          ← Sebelumnya
+        </button>
+
+        <button
+          type="button"
+          id="quizNext"
+          ${nextButtonDisabled ? "disabled" : ""}
+        >
+          ${nextButtonText}
+        </button>
+      </div>
+
+      ${
+        !generationComplete
+          ? `<p class="quiz-generation-status">
+              EcoSchool AI sedang menyiapkan soal berikutnya.
+              Jawabanmu tetap tersimpan.
+            </p>`
+          : ""
+      }
+    </section>
+  `;
+
+  hasilSoal.replaceChildren(wrapper);
+
+  const inputArea = wrapper.querySelector("#quizInputArea");
+
+  if (q.type === "pilihan_ganda") {
+    (Array.isArray(q.options) ? q.options : []).forEach(
+      (option, optionIndex) => {
+        const optionKey = String(
+          option?.key ||
+          option?.label ||
+          ["A", "B", "C", "D", "E"][optionIndex]
+        );
+
+        const optionText = String(
+          option?.text ||
+          option?.value ||
+          option?.content ||
+          ""
+        );
+
+        const label = document.createElement("label");
+        label.className = "quiz-option";
+
+        const radio = document.createElement("input");
+        radio.type = "radio";
+        radio.name = "jawabanQuiz";
+        radio.value = optionKey;
+
+        radio.checked =
+          String(quizAnswers[quizIndex] || "") === optionKey;
+
+        radio.addEventListener("change", () => {
+          if (radio.checked) {
+            quizAnswers[quizIndex] = optionKey;
+          }
+        });
+
+        const text = document.createElement("span");
+        text.textContent = optionKey + ". " + optionText;
+
+        label.append(radio, text);
+        inputArea.appendChild(label);
+      }
+    );
+  } else {
+    const textarea = document.createElement("textarea");
+    textarea.className = "quiz-answer";
+    textarea.placeholder = "Tuliskan jawabanmu dengan jelas...";
+    textarea.value = quizAnswers[quizIndex] || "";
+
+    textarea.addEventListener("input", () => {
+      quizAnswers[quizIndex] = textarea.value;
+    });
+
+    inputArea.appendChild(textarea);
+  }
+
+  wrapper.querySelector("#quizPrev").disabled = quizIndex === 0;
+
+  wrapper.querySelector("#quizPrev").addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (quizIndex > 0) {
+      quizIndex--;
+      renderQuestion();
+    }
+  });
+
+  wrapper.querySelector("#quizNext").addEventListener("click", () => {
+    saveCurrentAnswer();
+
+    if (q.type === "pilihan_ganda" && !quizAnswers[quizIndex]) {
+      alert("Pilih salah satu jawaban terlebih dahulu.");
+      return;
+    }
+
+    if (
+      q.type === "esai" &&
+      !String(quizAnswers[quizIndex] || "").trim()
+    ) {
+      alert("Tuliskan jawaban terlebih dahulu.");
+      return;
+    }
+
+    if (quizIndex < totalAvailable - 1) {
+      quizIndex++;
+      renderQuestion();
+      return;
+    }
+
+    if (!generationComplete) {
+      alert("EcoSchool AI masih menyiapkan soal berikutnya. Silakan tunggu.");
+      return;
+    }
+
+    if (isLastExpected) {
+      submitQuiz();
+    }
+  });
+}
+
+  function saveCurrentAnswer() {
+    const q = quizData.questions[quizIndex];
+    if (q.type === "esai") {
+      const textarea = hasilSoal.querySelector("textarea");
+      if (textarea) quizAnswers[quizIndex] = textarea.value.trim();
+    } else {
+      const selected = hasilSoal.querySelector('input[name="jawabanQuiz"]:checked');
+      if (selected) quizAnswers[quizIndex] = selected.value;
+    }
+  }
 
   function escapeHtml(value) {
-    return String(value ?? "")
-      .replace(/&/g, "&amp;")
-      .replace(/</g, "&lt;")
-      .replace(/>/g, "&gt;")
-      .replace(/"/g, "&quot;")
-      .replace(/'/g, "&#39;");
+    return String(value ?? "").replace(/[&<>"']/g, char => ({
+      "&":"&amp;", "<":"&lt;", ">":"&gt;", '"':"&quot;", "'":"&#39;"
+    })[char]);
+  }async function submitQuiz() {
+  // Pastikan seluruh soal sudah selesai dibuat.
+  if (!quizData || !quizData.quizId) {
+    alert("ID latihan tidak ditemukan. Silakan buat latihan baru.");
+    return;
   }
 
-  async function readJsonResponse(response) {
-    const text = await response.text();
-    let parsed = {};
-    if (text) {
-      try {
-        parsed = JSON.parse(text);
-      } catch (_) {
-        throw new Error("Respons server tidak berbentuk JSON yang valid.");
-      }
+  const expectedTotal = Number(
+    quizData.expectedTotal || quizData.total || quizData.questions.length
+  );
+
+  if (
+    quizData.generationComplete !== true ||
+    quizData.questions.length !== expectedTotal
+  ) {
+    alert(
+      "EcoSchool AI masih menyiapkan soal.\n" +
+      "Silakan tunggu sampai seluruh soal tersedia."
+    );
+    return;
+  }
+
+  if (quizAnswers.length < expectedTotal) {
+    alert("Masih ada data jawaban yang belum siap. Silakan periksa kembali.");
+    return;
+  }
+
+  // Pastikan semua jawaban sudah diisi.
+  for (let index = 0; index < quizData.questions.length; index++) {
+    const question = quizData.questions[index];
+    const answer = String(quizAnswers[index] ?? "").trim();
+
+    if (!answer) {
+      alert(
+        "Jawaban soal nomor " +
+        (Number(question.number) || index + 1) +
+        " belum diisi."
+      );
+
+      quizIndex = index;
+      renderQuestion();
+      return;
     }
-    if (!response.ok) {
-      throw new Error(parsed.error || parsed.message || ("Permintaan gagal (HTTP " + response.status + ")."));
+  }
+
+  quizMonitoringActive = false;
+
+  const nextButton = hasilSoal.querySelector("#quizNext");
+
+  if (nextButton) {
+    nextButton.disabled = true;
+    nextButton.textContent = "Sedang menilai...";
+  }
+
+  showThinking(
+    hasilSoal,
+    "Sistem sedang memeriksa jawaban dan menyiapkan pembahasan..."
+  );
+
+  try {
+    const answers = quizData.questions.map((question, index) => ({
+      id: question.id,
+      answer: String(quizAnswers[index] ?? "")
+    }));
+
+    const data = await postWorker(EVALUATE_URL, {
+      quizId: quizData.quizId,
+      answers
+    });
+
+    if (!data.success || !Array.isArray(data.results)) {
+      throw new Error(
+        data.error || "Penilaian belum berhasil diproses."
+      );
     }
-    return parsed;
+
+    renderQuizResult(data);
+
+  } catch (error) {
+    console.error("Penilaian latihan:", error);
+
+    quizMonitoringActive = true;
+
+    hasilSoal.textContent =
+      "Penilaian belum berhasil.\n" +
+      error.message +
+      "\nJawabanmu masih tersimpan di halaman ini. Silakan coba penilaian kembali.";
+
+    const retry = document.createElement("button");
+    retry.textContent = "Coba Penilaian Lagi";
+    retry.addEventListener("click", submitQuiz);
+
+    hasilSoal.appendChild(retry);
+  }
+}
+
+  function renderQuizResult(data) {
+    quizMonitoringActive = false;
+    const total = Number(data.totalQuestions ?? data.total ?? quizData.questions.length);
+    const correctCount = Array.isArray(data.results)
+      ? data.results.filter(item => item && item.correct).length
+      : 0;
+    const score = Math.max(0, Math.min(100, Number(data.score) || 0));
+
+    const result = document.createElement("section");
+    result.className = "quiz-result";
+    result.innerHTML = `
+      <h2 style="text-align:center">🏆 Latihan Selesai!</h2>
+      <div class="score-circle" style="--score:${score}%">
+        <strong>${score}</strong>
+      </div>
+      <p style="text-align:center"><strong>${escapeHtml(data.grade || "")}</strong></p>
+      <p style="text-align:center"><strong>${escapeHtml(data.summary || "Terus semangat belajar!")}</strong></p>
+      <p style="text-align:center">Jawaban tepat: ${correctCount} dari ${total} soal</p>
+      <h3>📖 Pembahasan Jawaban</h3>
+      <div id="quizReview"></div>
+      <button type="button" id="ulangQuiz">↻ Buat Latihan Baru</button>`;
+
+    const review = result.querySelector("#quizReview");
+
+    data.results.forEach((item, index) => {
+      const q = quizData.questions[index];
+      if (!q || !item) return;
+
+      const row = document.createElement("div");
+      row.className = "review-item";
+
+      const status = item.correct ? "✓ Tepat" : "✗ Perlu diperbaiki";
+      const answerText = q.type === "pilihan_ganda"
+        ? (q.options.find(option =>
+            String(option.key || option.label).toUpperCase() === String(item.correctAnswer).toUpperCase()
+          )?.text || item.correctAnswer)
+        : item.correctAnswer;
+
+      const heading = document.createElement("strong");
+      heading.textContent = "Soal " + (index + 1) + " — " + status;
+      heading.className = item.correct ? "correct-text" : "wrong-text";
+
+      const question = document.createElement("p");
+      question.textContent = q.question;
+
+      const studentAnswer = document.createElement("p");
+      studentAnswer.textContent = "Jawabanmu: " + (item.studentAnswer || "(tidak dijawab)");
+
+      const correct = document.createElement("p");
+      correct.textContent = "Acuan jawaban: " + (answerText || "-");
+
+      const feedback = document.createElement("p");
+      feedback.textContent = "Umpan balik: " + (item.feedback || "-");
+
+      const explanation = document.createElement("p");
+      explanation.textContent = "Pembahasan: " +
+        (item.explanation || "Pelajari kembali materi terkait.");
+
+      row.append(heading, question, studentAnswer, correct, feedback, explanation);
+      review.appendChild(row);
+    });
+
+    hasilSoal.replaceChildren(result);
+    result.querySelector("#ulangQuiz").addEventListener("click", () => {
+      quizData = null;
+      quizAnswers = [];
+      quizIndex = 0;
+      hasilSoal.replaceChildren();
+      document.getElementById("latihanMateri").focus();
+    });
   }
 
-  function showStatus(target, message, type) {
-    if (!target) return;
-    target.textContent = message;
-    target.className = "status " + (type || "");
-    target.classList.remove("hidden");
+  function showStatus(element, message, type) {
+    element.textContent = message;
+    element.className = "status " + (type || "");
+    element.classList.remove("hidden");
   }
 
-  function hideStatus(target) {
-    if (!target) return;
-    target.textContent = "";
-    target.className = "status hidden";
+  function hideStatus(element) {
+    element.textContent = "";
+    element.className = "status hidden";
   }
 
   function showLogin() {
-    if (roleChooser) roleChooser.classList.add("hidden");
-    if (belajarCard) belajarCard.classList.add("hidden");
-    if (teacherLoginCard) teacherLoginCard.classList.add("hidden");
-    if (teacherDashboard) teacherDashboard.classList.add("hidden");
-    if (loginCard) loginCard.classList.remove("hidden");
-    hideTeacherStatus(teacherLoginStatus);
+    roleChooser.classList.remove("hidden");
+    loginCard.classList.add("hidden");
+    teacherLoginCard.classList.add("hidden");
+    teacherDashboard.classList.add("hidden");
+    belajarCard.classList.add("hidden");
   }
 
   function openStudentLogin() {
+    roleChooser.classList.add("hidden");
+    teacherLoginCard.classList.add("hidden");
+    teacherDashboard.classList.add("hidden");
+    belajarCard.classList.add("hidden");
+    loginCard.classList.remove("hidden");
     hideStatus(loginStatus);
-    showLogin();
   }
 
   function showLearning(siswa) {
-    if (roleChooser) roleChooser.classList.add("hidden");
-    if (loginCard) loginCard.classList.add("hidden");
-    if (teacherLoginCard) teacherLoginCard.classList.add("hidden");
-    if (teacherDashboard) teacherDashboard.classList.add("hidden");
-    if (belajarCard) belajarCard.classList.remove("hidden");
+    document.getElementById("namaAktif").textContent = siswa.nama;
+    document.getElementById("kelasAktif").textContent = siswa.kelas;
+
+    roleChooser.classList.add("hidden");
+    loginCard.classList.add("hidden");
+    teacherLoginCard.classList.add("hidden");
+    teacherDashboard.classList.add("hidden");
+    belajarCard.classList.remove("hidden");
+
+    pilihMenu("belajar");
+    hideStatus(loginStatus);
+  }
+
+  async function readJsonResponse(response) {
+    let data;
+
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Server memberikan respons yang tidak dapat dibaca.");
+    }
+
+    if (!response.ok) {
+      throw new Error(
+        data.error || data.message ||
+        ("Permintaan gagal (" + response.status + ").")
+      );
+    }
+
+    return data;
+  }
+
+  // LOGIN SISWA
+  loginForm.addEventListener("submit", async function(event) {
+    event.preventDefault();
     hideStatus(loginStatus);
 
-    const badge = document.getElementById("studentBadge");
-    if (badge && siswa) {
-      badge.innerHTML =
-        "<strong>" + escapeHtml(siswa.nama || "Siswa") + "</strong>" +
-        (siswa.kelas ? " · Kelas " + escapeHtml(siswa.kelas) : "") +
-        (siswa.nis ? " · NIS " + escapeHtml(siswa.nis) : "");
+    const nama = document.getElementById("namaSiswa").value.trim();
+    const kelas = document.getElementById("kelasSiswa").value.trim();
+    const nis = document.getElementById("nisSiswa").value.trim();
+    const kode_akses = document.getElementById("kodeAkses").value;
+
+    if (!nama || !kelas || !kode_akses) {
+      showStatus(loginStatus, "Lengkapi nama, kelas, dan kode akses.", "error");
+      return;
     }
-  }
 
-  // Tab Siswa: Ruang Belajar AI vs Bank Soal
-  const tabBelajar = document.getElementById("tabBelajar");
-  const tabBankSoal = document.getElementById("tabBankSoal");
-  const panelBelajar = document.getElementById("panelBelajar");
-  const panelBankSoal = document.getElementById("panelBankSoal");
+    loginButton.disabled = true;
+    loginButton.textContent = "Memeriksa login...";
 
-  function switchStudentTab(mode) {
-    const isQuiz = mode === "bank";
-    if (tabBelajar) tabBelajar.classList.toggle("active", !isQuiz);
-    if (tabBankSoal) tabBankSoal.classList.toggle("active", isQuiz);
-    if (panelBelajar) panelBelajar.classList.toggle("hidden", isQuiz);
-    if (panelBankSoal) panelBankSoal.classList.toggle("hidden", !isQuiz);
-  }
+    try {
+      const response = await fetch(LOGIN_URL, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ nama, kelas, nis, kode_akses })
+      });
 
-  if (tabBelajar) tabBelajar.addEventListener("click", () => switchStudentTab("belajar"));
-  if (tabBankSoal) tabBankSoal.addEventListener("click", () => switchStudentTab("bank"));
+      const data = await readJsonResponse(response);
 
-  // Validasi Form Bank Soal (1-30, otomatis 10 untuk campuran, materi Informatika)
-  const bankJenis = document.getElementById("bankJenis");
-  const bankMateri = document.getElementById("bankMateri");
-  const bankJumlah = document.getElementById("bankJumlah");
-  const bankSoalStatus = document.getElementById("bankSoalStatus");
-  const bankSoalContainer = document.getElementById("bankSoalContainer");
-  const mulaiBankSoalButton = document.getElementById("mulaiBankSoalButton");
-
-  function syncBankSoalForm() {
-    if (!bankJenis || !bankJumlah) return;
-    if (bankJenis.value === "campuran") {
-      bankJumlah.value = "10";
-      bankJumlah.readOnly = true;
-    } else {
-      bankJumlah.readOnly = false;
-      const raw = parseInt(bankJumlah.value, 10);
-      if (Number.isNaN(raw)) {
-        bankJumlah.value = "10";
-      } else if (raw < 1) {
-        bankJumlah.value = "1";
-      } else if (raw > 30) {
-        bankJumlah.value = "30";
+      if (!data.token || !data.siswa) {
+        throw new Error("Respons login belum lengkap. Silakan coba kembali.");
       }
+
+      sessionStorage.setItem(SESSION_KEY, data.token);
+      document.getElementById("kodeAkses").value = "";
+
+      showLearning(data.siswa);
+      hasil.textContent = "";
+
+    } catch (error) {
+      showStatus(
+        loginStatus,
+        "Login belum berhasil.\n" + error.message +
+        "\nPeriksa nama, kelas, dan kode akses, lalu coba lagi.",
+        "error"
+      );
+    } finally {
+      loginButton.disabled = false;
+      loginButton.textContent = "Login";
     }
-    if (bankMateri && !INFO_TOPICS.includes(bankMateri.value)) {
-      bankMateri.value = "Semua Topik";
-    }
-  }
+  });
 
-  if (bankJenis) bankJenis.addEventListener("change", syncBankSoalForm);
-  if (bankJumlah) bankJumlah.addEventListener("change", syncBankSoalForm);
-  syncBankSoalForm();
-
-  if (mulaiBankSoalButton) {
-    mulaiBankSoalButton.addEventListener("click", function () {
-      syncBankSoalForm();
-      const jenis = bankJenis ? bankJenis.value : "pilihan_ganda";
-      const materi = bankMateri ? bankMateri.value : "Semua Topik";
-      const jumlah = bankJumlah ? parseInt(bankJumlah.value, 10) : 10;
-
-      if (!INFO_TOPICS.includes(materi)) {
-        showStatus(bankSoalStatus, "Materi bank soal Informatika tidak valid.", "error");
-        return;
-      }
-      if (Number.isNaN(jumlah) || jumlah < 1 || jumlah > 30) {
-        showStatus(bankSoalStatus, "Jumlah soal harus antara 1 sampai 30.", "error");
-        return;
-      }
-
-      hideStatus(bankSoalStatus);
-      const cacheKey = "bank_" + jenis + "_" + materi + "_" + jumlah;
-      const cached = window.ecoCacheGet(cacheKey);
-
-      bankSoalContainer.innerHTML =
-        '<div class="quiz-card">' +
-        '<div class="quiz-meta">' +
-        '<span class="quiz-chip">Informatika</span>' +
-        '<span class="quiz-chip">' + escapeHtml(materi) + "</span>" +
-        '<span class="quiz-chip">' + escapeHtml(jenis.replace("_", " ")) + "</span>" +
-        '<span class="quiz-chip">' + escapeHtml(jumlah) + " Soal</span>" +
-        "</div>" +
-        '<div class="quiz-question">Paket latihan siap digunakan untuk topik ' + escapeHtml(materi) + ".</div>" +
-        '<p class="teacher-muted">' + (cached ? "Dimuat dari cache lokal cepat." : "Siap dihubungkan ke bank soal/AI sesi Anda.") + "</p>" +
-        "</div>";
-
-      window.ecoCacheSet(cacheKey, { jenis, materi, jumlah, readyAt: Date.now() });
-      showStatus(bankSoalStatus, "Konfigurasi paket latihan (" + jumlah + " soal) tervalidasi.", "success");
-    });
-  }
-
-  // Login Siswa
-  if (loginForm) {
-    loginForm.addEventListener("submit", async function (event) {
-      event.preventDefault();
-      hideStatus(loginStatus);
-
-      const nama = document.getElementById("namaSiswa").value.trim();
-      const kelas = document.getElementById("kelasSiswa").value.trim();
-      const nis = document.getElementById("nisSiswa").value.trim();
-      const kodeAkses = document.getElementById("kodeAkses").value.trim();
-      const loginButton = document.getElementById("loginButton");
-
-      if (!nama || !kelas || !kodeAkses) {
-        showStatus(loginStatus, "Nama lengkap, kelas, dan kode akses wajib diisi.", "error");
-        return;
-      }
-
-      loginButton.disabled = true;
-      loginButton.textContent = "Memeriksa sesi...";
-
-      try {
-        const response = await fetch(DATA_URL, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ nama, kelas, nis, kodeAkses })
-        });
-        const data = await readJsonResponse(response);
-        const token = data.session_token || data.token || "";
-        if (token) {
-          sessionStorage.setItem(SESSION_KEY, token);
-        }
-        if (data.siswa) {
-          showLearning(data.siswa);
-        } else {
-          throw new Error(data.error || "Data siswa tidak ditemukan.");
-        }
-      } catch (error) {
-        showStatus(loginStatus, "Login gagal: " + error.message, "error");
-      } finally {
-        loginButton.disabled = false;
-        loginButton.textContent = "Login";
-      }
-    });
-  }
-
-  // Cek sesi siswa yang tersimpan saat halaman dibuka
-  async function restoreStudentSession() {
+  // MEMERIKSA SESI TERSIMPAN
+  async function validateExistingSession() {
     const existingSessionToken = sessionStorage.getItem(SESSION_KEY);
-    if (!existingSessionToken) return;
+
+    if (!existingSessionToken) {
+      if (window.location.hash.toLowerCase() === "#guru") {
+        openTeacherLogin();
+      } else {
+        showLogin();
+      }
+      return;
+    }
 
     try {
       const response = await fetch(DATA_URL, {
@@ -802,9 +1542,11 @@
       }
 
       showLearning(data.siswa);
-    } catch (_) {
+
+    } catch {
       sessionStorage.removeItem(SESSION_KEY);
       showLogin();
+
       showStatus(
         loginStatus,
         "Sesi login sudah berakhir atau tidak valid. Silakan login kembali.",
@@ -813,8 +1555,8 @@
     }
   }
 
-  // KELUAR SISWA
-  document.getElementById("logoutButton").addEventListener("click", function () {
+  // KELUAR
+  document.getElementById("logoutButton").addEventListener("click", function() {
     sessionStorage.removeItem(SESSION_KEY);
 
     document.getElementById("materi").value = "";
@@ -923,6 +1665,7 @@
           const answerHeading = document.createElement("h3");
           answerHeading.textContent = headingMatch[1].replace(/\*\*/g, "");
           content.appendChild(answerHeading);
+
         } else if (numberedMatch) {
           if (!list || list.tagName !== "OL") {
             list = document.createElement("ol");
@@ -932,6 +1675,7 @@
           const item = document.createElement("li");
           item.textContent = numberedMatch[1].replace(/\*\*/g, "");
           list.appendChild(item);
+
         } else if (bulletMatch) {
           if (!list || list.tagName !== "UL") {
             list = document.createElement("ul");
@@ -941,6 +1685,7 @@
           const item = document.createElement("li");
           item.textContent = bulletMatch[1].replace(/\*\*/g, "");
           list.appendChild(item);
+
         } else {
           list = null;
 
@@ -955,16 +1700,19 @@
       }
 
       hasil.appendChild(content);
+
     } catch (error) {
       hasil.textContent =
         "Maaf, jawaban belum berhasil dimuat.\n\nPenyebab: " +
         error.message +
         "\n\nSilakan coba kembali beberapa saat lagi.";
+
     } finally {
       belajarButton.disabled = false;
       belajarButton.textContent = "Mulai Belajar dengan AI";
     }
   }
+
 
   // =========================================================
   // DASHBOARD GURU - API WORKER TERPISAH DARI SESI SISWA
@@ -986,25 +1734,13 @@
   const teacherLoginStatus = document.getElementById("teacherLoginStatus");
   const teacherDashboardStatus = document.getElementById("teacherDashboardStatus");
 
-  const TAB_TITLES = {
-    dashboard: "Dashboard Overview",
-    students: "Data Siswa",
-    monitoring: "Pemantauan & Riwayat Pelanggaran",
-    history: "Riwayat Belajar Siswa",
-    progress: "Progres Belajar Siswa",
-    print: "Cetak Hasil Kuis",
-    recap: "Rekap Nilai Kuis Siswa"
-  };
-
   function teacherStatus(message, type, target = teacherDashboardStatus) {
-    if (!target) return;
     target.textContent = message;
     target.className = "status " + (type || "");
     target.classList.remove("hidden");
   }
 
   function hideTeacherStatus(target = teacherDashboardStatus) {
-    if (!target) return;
     target.textContent = "";
     target.className = "status hidden";
   }
@@ -1052,81 +1788,15 @@
     hideTeacherStatus(teacherLoginStatus);
   }
 
-  function logoutTeacher() {
-    teacherAccessToken = "";
-    teacherSelectedHistoryStudent = null;
-    teacherDashboard.classList.add("hidden");
-    roleChooser.classList.remove("hidden");
-    hideTeacherStatus();
-  }
-
   document.getElementById("openStudentLogin").addEventListener("click", openStudentLogin);
   document.getElementById("openTeacherLogin").addEventListener("click", openTeacherLogin);
   document.getElementById("backToRoleChooser").addEventListener("click", showLogin);
-  document.getElementById("backToStudentLogin").addEventListener("click", showLogin);
-  document.getElementById("teacherLogoutButton").addEventListener("click", logoutTeacher);
 
-  async function switchTeacherTab(tabName) {
-    if (!teacherAccessToken) {
-      openTeacherLogin();
-      return;
-    }
-    hideTeacherStatus();
-    const panels = {
-      dashboard: document.getElementById("teacherPanelDashboard"),
-      students: document.getElementById("teacherPanelStudents"),
-      monitoring: document.getElementById("teacherPanelMonitoring"),
-      history: document.getElementById("teacherPanelHistory"),
-      progress: document.getElementById("teacherPanelProgress"),
-      print: document.getElementById("teacherPanelPrint"),
-      recap: document.getElementById("teacherPanelRecap")
-    };
-    Object.entries(panels).forEach(([key, panel]) => {
-      if (panel) panel.classList.toggle("hidden", key !== tabName);
-    });
-    document.querySelectorAll("#teacherDashboard [data-teacher-tab]").forEach(btn => {
-      btn.classList.toggle("active", btn.dataset.teacherTab === tabName);
-    });
-    const titleEl = document.getElementById("teacherPageTitle");
-    if (titleEl && TAB_TITLES[tabName]) titleEl.textContent = TAB_TITLES[tabName];
-
-    if (tabName === "dashboard") await loadTeacherDashboard();
-    else if (tabName === "students") await loadTeacherStudents();
-    else if (tabName === "monitoring") await loadTeacherMonitoring();
-    else if (tabName === "history") await loadTeacherHistory();
-    else if (tabName === "progress") await loadTeacherProgress();
-    else if (tabName === "print") await loadTeacherPrintResults();
-    else if (tabName === "recap") await loadTeacherGradeRecap();
-  }
-
-  teacherDashboard.addEventListener("click", function (event) {
-    const tabBtn = event.target.closest("[data-teacher-tab]");
-    if (tabBtn && tabBtn.dataset.teacherTab) {
-      switchTeacherTab(tabBtn.dataset.teacherTab);
-      return;
-    }
-    const manageBtn = event.target.closest("[data-manage-history-id]");
-    if (manageBtn) {
-      selectStudentForHistory(manageBtn.dataset.manageHistoryId);
-      return;
-    }
-    const deleteCatBtn = event.target.closest("[data-delete-history-category]");
-    if (deleteCatBtn) {
-      deleteSelectedStudentHistory(deleteCatBtn.dataset.deleteHistoryCategory, deleteCatBtn);
-      return;
-    }
-    const detailBtn = event.target.closest("[data-session-id]");
-    if (detailBtn) {
-      showTeacherSessionDetail(detailBtn.dataset.sessionId);
-      return;
-    }
-    const printBtn = event.target.closest("[data-print-session-id]");
-    if (printBtn) {
-      printTeacherSessionResult(printBtn.dataset.printSessionId);
-    }
+  document.getElementById("backToStudentLogin").addEventListener("click", function() {
+    showLogin();
   });
 
-  teacherLoginForm.addEventListener("submit", async function (event) {
+  teacherLoginForm.addEventListener("submit", async function(event) {
     event.preventDefault();
     hideTeacherStatus(teacherLoginStatus);
     const email = document.getElementById("teacherEmail").value.trim();
@@ -1144,7 +1814,7 @@
       document.getElementById("teacherActiveName").textContent = data.guru.nama || "Guru";
       teacherLoginCard.classList.add("hidden");
       teacherDashboard.classList.remove("hidden");
-      await switchTeacherTab("dashboard");
+      await loadTeacherDashboard();
     } catch (error) {
       teacherStatus("Login guru belum berhasil.\n" + error.message, "error", teacherLoginStatus);
     } finally {
@@ -1226,12 +1896,12 @@
   function renderTeacherIncidentShortlist(incidents) {
     const target = document.getElementById("teacherRecentIncidents");
     if (!target) return;
-    const latest = [...incidents].sort((a, b) => new Date(b.occurred_at || b.created_at) - new Date(a.occurred_at || a.created_at)).slice(0, 4);
+    const latest = [...incidents].sort((a,b) => new Date(b.occurred_at || b.created_at) - new Date(a.occurred_at || a.created_at)).slice(0, 4);
     target.innerHTML = latest.map(item => '<button type="button" class="incident-pick" data-incident-student="' + escapeHtml(String(item.student_id || "")) + '" data-incident-name="' + escapeHtml(item.student_name || "Siswa") + '" data-incident-class="' + escapeHtml(item.student_class || "-") + '"><span>' + escapeHtml(item.student_name || "Siswa") + ' · ' + escapeHtml(item.student_class || "-") + '</span><span>' + teacherNumber(item.occurrence_count) + ' kejadian</span></button>').join("");
     if (!latest.length) target.innerHTML = '<p class="teacher-muted">Belum ada catatan pelanggaran.</p>';
   }
 
-  document.getElementById("teacherRecentIncidents").addEventListener("click", function (event) {
+  document.getElementById("teacherRecentIncidents").addEventListener("click", function(event) {
     const button = event.target.closest("button[data-incident-student]");
     if (!button) return;
     const id = button.dataset.incidentStudent;
@@ -1280,9 +1950,6 @@
       teacherTable(["No.", "Nama Siswa", "Kelas", "NIS", "Status", "Aksi"], rows);
   }
 
-  document.getElementById("teacherStudentSearch").addEventListener("input", renderTeacherStudents);
-  document.getElementById("teacherClassFilter").addEventListener("change", renderTeacherStudents);
-
   function selectStudentForHistory(studentId) {
     const student = teacherStudentsCache.find(item => String(item.id) === String(studentId));
     if (!student) {
@@ -1299,7 +1966,7 @@
     panel.scrollIntoView({ behavior: "smooth", block: "nearest" });
   }
 
-  async function deleteSelectedStudentHistory(category) {
+  async function deleteSelectedStudentHistory(category, clickedButton) {
     const student = teacherSelectedHistoryStudent;
     if (!student || !student.id) {
       teacherStatus("Pilih siswa terlebih dahulu melalui tombol Kelola Riwayat.", "error");
@@ -1389,58 +2056,6 @@
       teacherTable(["Siswa", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Waktu", "Detail"], rows);
   }
 
-  document.getElementById("teacherHistorySearch").addEventListener("input", renderTeacherHistory);
-  document.getElementById("teacherHistoryLimit").addEventListener("change", () => loadTeacherHistory());
-
-  async function showTeacherSessionDetail(sessionId) {
-    const detailBox = document.getElementById("teacherAnswerDetail");
-    detailBox.innerHTML = '<div class="teacher-detail">Memuat rincian jawaban...</div>';
-    try {
-      const data = await teacherApi("/detail-jawaban", { sessionId });
-      const answers = Array.isArray(data.jawaban) ? data.jawaban : [];
-      if (!answers.length) {
-        detailBox.innerHTML = '<div class="teacher-detail">Tidak ada rincian jawaban tersimpan untuk sesi ini.</div>';
-        return;
-      }
-      detailBox.innerHTML = '<div class="teacher-detail"><strong>Rincian Jawaban Sesi</strong>' +
-        answers.map((ans, idx) =>
-          '<div class="teacher-answer">' +
-          '<p><strong>Soal ' + (idx + 1) + ':</strong> ' + escapeHtml(ans.question || ans.pertanyaan || "-") + '</p>' +
-          '<p><strong>Jawaban Siswa:</strong> ' + escapeHtml(ans.student_answer || ans.jawaban || "-") + '</p>' +
-          '<p><strong>Kunci / Pembahasan:</strong> ' + escapeHtml(ans.correct_answer || ans.pembahasan || "-") + '</p>' +
-          '</div>'
-        ).join("") + '</div>';
-    } catch (error) {
-      detailBox.innerHTML = '<div class="teacher-detail">Gagal memuat rincian jawaban: ' + escapeHtml(error.message) + '</div>';
-    }
-  }
-
-  function printTeacherSessionResult(sessionId) {
-    const item = teacherPrintCache.find(row => String(row.id) === String(sessionId));
-    if (!item) {
-      teacherStatus("Data hasil kuis tidak ditemukan.", "error");
-      return;
-    }
-    const win = window.open("", "_blank");
-    if (!win) {
-      teacherStatus("Jendela cetak diblokir browser. Izinkan pop-up lalu coba lagi.", "error");
-      return;
-    }
-    win.document.write(
-      "<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><title>Hasil Kuis</title>" +
-      "<style>body{font-family:Arial,sans-serif;padding:24px;color:#111}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>" +
-      "<h2>Laporan Hasil Kuis – EcoSchool AI (SMK Negeri 2 Takalar)</h2>" +
-      "<p><strong>Nama Siswa:</strong> " + escapeHtml(item.nama_siswa || "-") + " | <strong>Kelas:</strong> " + escapeHtml(item.kelas || "-") + "</p>" +
-      "<p><strong>Mata Pelajaran / Materi:</strong> " + escapeHtml(item.subject || "-") + " / " + escapeHtml(item.topic || "-") + "</p>" +
-      "<table><tr><th>Jumlah Soal</th><th>Benar</th><th>Nilai</th><th>Predikat</th><th>Waktu</th></tr>" +
-      "<tr><td>" + escapeHtml(item.total_questions ?? "-") + "</td><td>" + escapeHtml(item.correct_answers ?? "-") +
-      "</td><td>" + escapeHtml(item.score ?? "-") + "</td><td>" + escapeHtml(item.grade || "-") +
-      "</td><td>" + escapeHtml(teacherDate(item.completed_at || item.created_at)) + "</td></tr></table>" +
-      "<script>window.print();<\/script></body></html>"
-    );
-    win.document.close();
-  }
-
   async function loadTeacherPrintResults() {
     const target = document.getElementById("teacherPrintTable");
     target.textContent = "Memuat hasil kuis siswa...";
@@ -1492,10 +2107,6 @@
       teacherTable(["Siswa / Kelas", "Mata Pelajaran / Materi", "Jumlah Soal", "Benar", "Nilai", "Predikat", "Waktu", "Aksi"], rows);
   }
 
-  document.getElementById("teacherPrintSearch").addEventListener("input", renderTeacherPrintResults);
-  document.getElementById("teacherPrintClassFilter").addEventListener("change", renderTeacherPrintResults);
-  document.getElementById("teacherPrintRefresh").addEventListener("click", loadTeacherPrintResults);
-
   async function loadTeacherGradeRecap() {
     const target = document.getElementById("teacherRecapTable");
     target.textContent = "Memuat rekap nilai siswa...";
@@ -1535,9 +2146,9 @@
     });
     return [...grouped.values()].map(row => ({
       ...row,
-      average: row.scores.length ? row.scores.reduce((a, b) => a + b, 0) / row.scores.length : null,
+      average: row.scores.length ? row.scores.reduce((a,b) => a+b, 0) / row.scores.length : null,
       highest: row.scores.length ? Math.max(...row.scores) : null
-    })).sort((a, b) => a.kelas.localeCompare(b.kelas, "id") || a.nama.localeCompare(b.nama, "id"));
+    })).sort((a,b) => a.kelas.localeCompare(b.kelas, "id") || a.nama.localeCompare(b.nama, "id"));
   }
 
   function renderTeacherGradeRecap() {
@@ -1548,10 +2159,10 @@
       (!kelas || row.kelas === kelas)
     );
     const scores = filtered.filter(row => row.average !== null).map(row => row.average);
-    const overall = scores.length ? scores.reduce((a, b) => a + b, 0) / scores.length : null;
+    const overall = scores.length ? scores.reduce((a,b) => a+b, 0) / scores.length : null;
     document.getElementById("teacherRecapSummary").innerHTML =
       '<div class="teacher-stat"><small>Siswa pada rekap</small><strong>' + filtered.length + '</strong></div>' +
-      '<div class="teacher-stat"><small>Total pengerjaan kuis</small><strong>' + filtered.reduce((sum, row) => sum + row.attempts, 0) + '</strong></div>' +
+      '<div class="teacher-stat"><small>Total pengerjaan kuis</small><strong>' + filtered.reduce((sum,row) => sum + row.attempts, 0) + '</strong></div>' +
       '<div class="teacher-stat"><small>Rata-rata nilai siswa</small><strong>' + (overall === null ? '-' : overall.toFixed(2).replace('.', ',')) + '</strong></div>';
     const rows = filtered.map(row => '<tr><td>' + escapeHtml(row.nama) + '</td><td>' + escapeHtml(row.kelas) +
       '</td><td>' + row.attempts + '</td><td>' + (row.average === null ? '-' : row.average.toFixed(2).replace('.', ',')) +
@@ -1578,68 +2189,90 @@
       teacherStatus("Jendela cetak diblokir browser. Izinkan pop-up untuk situs EcoSchool AI, lalu coba lagi.", "error");
       return;
     }
-    const rows = filtered.map((row, index) =>
-      '<tr><td>' + (index + 1) + '</td><td>' + escapeHtml(row.nama) + '</td><td>' + escapeHtml(row.kelas) +
-      '</td><td>' + row.attempts + '</td><td>' + (row.average === null ? '-' : row.average.toFixed(2).replace('.', ',')) +
-      '</td><td>' + (row.highest === null ? '-' : row.highest.toLocaleString('id-ID')) + '</td></tr>'
-    ).join("");
-    printWindow.document.write(
-      "<!DOCTYPE html><html lang='id'><head><meta charset='UTF-8'><title>Rekap Nilai Kuis</title>" +
-      "<style>body{font-family:Arial,sans-serif;padding:24px;color:#111}table{width:100%;border-collapse:collapse;margin-top:16px}th,td{border:1px solid #ccc;padding:8px;text-align:left}</style></head><body>" +
-      "<h2>Rekap Nilai Kuis Siswa – EcoSchool AI (SMK Negeri 2 Takalar)</h2>" +
-      "<table><thead><tr><th>No</th><th>Nama Siswa</th><th>Kelas</th><th>Jumlah Kuis</th><th>Rata-rata</th><th>Tertinggi</th></tr></thead><tbody>" +
-      rows + "</tbody></table><script>window.print();<\/script></body></html>"
-    );
+    const rows = filtered.map((row,index) => '<tr><td>' + (index+1) + '</td><td>' + escapeHtml(row.nama) + '</td><td>' + escapeHtml(row.kelas) + '</td><td>' + row.attempts + '</td><td>' + (row.average === null ? '-' : row.average.toFixed(2).replace('.', ',')) + '</td><td>' + (row.highest === null ? '-' : row.highest.toLocaleString('id-ID')) + '</td><td>' + escapeHtml(row.latest ? teacherDate(row.latest.toISOString()) : '-') + '</td></tr>').join("");
+    printWindow.document.open();
+    printWindow.document.write('<!DOCTYPE html><html lang="id"><head><meta charset="UTF-8"><title>Rekap Nilai Kuis - SMK Negeri 2 Takalar</title><style>body{font-family:Arial,sans-serif;margin:24px;color:#172b21}h1,p{text-align:center}table{width:100%;border-collapse:collapse;margin-top:20px}th,td{border:1px solid #999;padding:8px;text-align:left;font-size:12px}th{background:#eaf2ec}.actions{text-align:center;margin:20px}@media print{.actions{display:none}body{margin:12mm}}</style></head><body><h1>SMK NEGERI 2 TAKALAR</h1><p>REKAP NILAI KUIS — ECOSCHOOL AI</p><p>Dicetak: ' + escapeHtml(teacherDate(new Date().toISOString())) + '</p><table><thead><tr><th>No.</th><th>Nama Siswa</th><th>Kelas</th><th>Jumlah Kuis</th><th>Rata-rata Nilai</th><th>Nilai Tertinggi</th><th>Pengerjaan Terakhir</th></tr></thead><tbody>' + rows + '</tbody></table><div class="actions"><button onclick="window.print()">Cetak / Simpan sebagai PDF</button></div></body></html>');
     printWindow.document.close();
+    printWindow.focus();
   }
 
-  document.getElementById("teacherRecapSearch").addEventListener("input", renderTeacherGradeRecap);
-  document.getElementById("teacherRecapClassFilter").addEventListener("change", renderTeacherGradeRecap);
-  document.getElementById("teacherRecapRefresh").addEventListener("click", loadTeacherGradeRecap);
-  document.getElementById("teacherRecapPrint").addEventListener("click", printTeacherGradeRecap);
-
-  async function loadTeacherMonitoring() {
-    const target = document.getElementById("teacherMonitoringTable");
-    target.textContent = "Memuat catatan pengawasan...";
+  async function printTeacherQuizResult(sessionId, button) {
+    // Buka jendela cetak langsung dari klik pengguna agar tidak diblokir browser.
+    const printWindow = window.open("", "_blank");
+    if (!printWindow) {
+      teacherStatus("Jendela cetak diblokir browser. Izinkan pop-up untuk situs EcoSchool AI, lalu coba lagi.", "error");
+      return;
+    }
+    if (button) button.disabled = true;
     try {
-      const data = await teacherApi("/pelanggaran", { limit: 500 });
-      if (!data.success || !Array.isArray(data.pelanggaran)) {
-        throw new Error(data.error || "Data pengawasan tidak valid.");
-      }
-      teacherMonitoringCache = data.pelanggaran;
-      const classes = [...new Set(teacherMonitoringCache.map(item => String(item.student_class || "").trim()).filter(Boolean))].sort();
-      const filterEl = document.getElementById("teacherMonitoringClassFilter");
-      const previous = filterEl.value;
-      filterEl.innerHTML = '<option value="">Semua kelas</option>' +
-        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
-      if (classes.includes(previous)) filterEl.value = previous;
-      renderTeacherMonitoring();
+      const data = await teacherApi("/jawaban", { sessionId });
+      if (!data.success) throw new Error(data.error || "Rincian hasil kuis tidak tersedia.");
+      const session = data.sesi || {};
+      const student = data.siswa || {};
+      const answers = Array.isArray(data.jawaban) ? data.jawaban : [];
+      const answerRows = answers.map((answer, index) => {
+        const correct = answer.is_correct === true;
+        const incorrect = answer.is_correct === false;
+        const status = correct ? "Benar" : incorrect ? "Belum tepat" : "Perlu diperiksa";
+        const statusClass = correct ? "correct" : incorrect ? "wrong" : "neutral";
+        return `<article class="question">
+          <h3>Soal ${escapeHtml(answer.question_number || index + 1)} <span class="${statusClass}">${status}</span></h3>
+          <p class="question-text">${escapeHtml(answer.question || "-")}</p>
+          <p><strong>Jawaban siswa:</strong> ${escapeHtml(answer.student_answer || "(tidak dijawab)")}</p>
+          <p><strong>Kunci/acuan jawaban:</strong> ${escapeHtml(answer.correct_answer || "-")}</p>
+          <p><strong>Umpan balik:</strong> ${escapeHtml(answer.feedback || "-")}</p>
+          <p><strong>Pembahasan:</strong> ${escapeHtml(answer.explanation || "-")}</p>
+        </article>`;
+      }).join("");
+      const reportHtml = `<!DOCTYPE html>
+<html lang="id"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Hasil Kuis - ${escapeHtml(student.nama || "Siswa")}</title>
+<style>
+  body{font-family:Arial,sans-serif;color:#172b21;margin:28px;line-height:1.5}
+  .header{text-align:center;border-bottom:2px solid #176b45;padding-bottom:14px;margin-bottom:20px}
+  h1{font-size:22px;margin:0 0 5px;color:#176b45} .sub{margin:3px 0;color:#52665a}
+  .identity,.summary{border:1px solid #d7e5da;border-radius:8px;padding:14px;margin:14px 0}
+  .grid{display:grid;grid-template-columns:1fr 1fr;gap:8px 18px}
+  .score{font-size:30px;font-weight:bold;color:#176b45}
+  .question{padding:12px 0;border-bottom:1px solid #dce7df;break-inside:avoid}
+  .question h3{font-size:16px;margin:0 0 8px}.question p{margin:6px 0}
+  .correct{color:#167342;font-size:13px}.wrong{color:#a43a31;font-size:13px}.neutral{color:#725b12;font-size:13px}
+  .question-text{font-weight:bold}.footer{margin-top:28px;text-align:right;font-size:12px;color:#64756b}
+  .print-actions{text-align:center;margin:18px 0}.print-actions button{padding:10px 22px;background:#176b45;color:white;border:0;border-radius:6px;font-weight:bold;cursor:pointer}
+  @media print{body{margin:12mm}.print-actions{display:none}.question{break-inside:avoid}}
+  @media(max-width:600px){body{margin:14px}.grid{grid-template-columns:1fr}}
+</style></head><body>
+<div class="header"><h1>SMK NEGERI 2 TAKALAR</h1><p class="sub">LAPORAN HASIL KUIS — ECOSCHOOL AI</p></div>
+<section class="identity"><div class="grid">
+  <div><strong>Nama Siswa:</strong> ${escapeHtml(student.nama || "-")}</div>
+  <div><strong>Kelas:</strong> ${escapeHtml(student.kelas || "-")}</div>
+  <div><strong>Mata Pelajaran:</strong> ${escapeHtml(session.subject || "-")}</div>
+  <div><strong>Materi:</strong> ${escapeHtml(session.topic || "-")}</div>
+  <div><strong>Tanggal:</strong> ${escapeHtml(teacherDate(session.completed_at || session.created_at || session.started_at))}</div>
+  <div><strong>ID Sesi:</strong> ${escapeHtml(session.id || sessionId)}</div>
+</div></section>
+<section class="summary"><div class="grid">
+  <div><div class="sub">NILAI</div><div class="score">${escapeHtml(session.score == null ? "-" : session.score)}</div></div>
+  <div><div class="sub">PREDIKAT</div><strong>${escapeHtml(session.grade || "-")}</strong></div>
+  <div><strong>Jumlah soal:</strong> ${escapeHtml(session.total_questions ?? answers.length)}</div>
+  <div><strong>Jawaban benar:</strong> ${escapeHtml(session.correct_answers ?? "-")}</div>
+  <div><strong>Jawaban salah:</strong> ${escapeHtml(session.wrong_answers ?? "-")}</div>
+</div><p><strong>Ringkasan:</strong> ${escapeHtml(session.summary || "-")}</p></section>
+<h2>Rincian Jawaban</h2>${answerRows || "<p>Rincian jawaban belum tersedia.</p>"}
+<div class="footer">Dicetak dari EcoSchool AI · SMK Negeri 2 Takalar</div>
+<div class="print-actions"><button onclick="window.print()">Cetak / Simpan sebagai PDF</button></div>
+</body></html>`;
+      printWindow.document.open();
+      printWindow.document.write(reportHtml);
+      printWindow.document.close();
+      printWindow.focus();
     } catch (error) {
-      target.textContent = "Catatan pengawasan belum berhasil dimuat: " + error.message;
+      printWindow.close();
+      teacherStatus("Hasil kuis gagal disiapkan untuk dicetak: " + error.message, "error");
+    } finally {
+      if (button) button.disabled = false;
     }
   }
-
-  function renderTeacherMonitoring() {
-    const search = document.getElementById("teacherMonitoringSearch").value.trim().toLowerCase();
-    const kelas = document.getElementById("teacherMonitoringClassFilter").value;
-    const filtered = teacherMonitoringCache.filter(item => {
-      const searchable = [item.student_name, item.student_class, item.reason, item.event_type].join(" ").toLowerCase();
-      return (!search || searchable.includes(search)) && (!kelas || String(item.student_class || "") === kelas);
-    });
-    const rows = filtered.map(item =>
-      "<tr><td>" + escapeHtml(item.student_name || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.student_class || "-") + "</span></td>" +
-      "<td>" + escapeHtml(item.event_type || item.reason || "Halaman tidak aktif") + "</td>" +
-      "<td>" + teacherNumber(item.occurrence_count ?? 1) + "</td>" +
-      "<td>" + escapeHtml(teacherDate(item.occurred_at || item.created_at)) + "</td></tr>"
-    );
-    document.getElementById("teacherMonitoringTable").innerHTML =
-      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherMonitoringCache.length + " catatan.</p>" +
-      teacherTable(["Siswa / Kelas", "Keterangan", "Frekuensi", "Waktu"], rows);
-  }
-
-  document.getElementById("teacherMonitoringSearch").addEventListener("input", renderTeacherMonitoring);
-  document.getElementById("teacherMonitoringClassFilter").addEventListener("change", renderTeacherMonitoring);
-  document.getElementById("teacherMonitoringRefresh").addEventListener("click", loadTeacherMonitoring);
 
   async function loadTeacherProgress() {
     const target = document.getElementById("teacherProgressTable");
@@ -1647,15 +2280,19 @@
     try {
       const data = await teacherApi("/progres", {});
       if (!data.success || !Array.isArray(data.progres)) {
-        throw new Error(data.error || "Data progres tidak valid.");
+        throw new Error(data.error || "Data progres belajar tidak valid.");
       }
+
       teacherProgressCache = data.progres;
-      const classes = [...new Set(teacherProgressCache.map(item => String(item.kelas || "").trim()).filter(Boolean))].sort();
-      const filterEl = document.getElementById("teacherProgressClassFilter");
-      const previous = filterEl.value;
-      filterEl.innerHTML = '<option value="">Semua kelas</option>' +
+      const classes = [...new Set(
+        teacherProgressCache.map(item => String(item.kelas || "").trim()).filter(Boolean)
+      )].sort();
+      const classFilter = document.getElementById("teacherProgressClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
         classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
-      if (classes.includes(previous)) filterEl.value = previous;
+      if (classes.includes(previous)) classFilter.value = previous;
+
       renderTeacherProgress();
     } catch (error) {
       target.textContent = "Progres belajar belum berhasil dimuat: " + error.message;
@@ -1666,26 +2303,217 @@
     const search = document.getElementById("teacherProgressSearch").value.trim().toLowerCase();
     const kelas = document.getElementById("teacherProgressClassFilter").value;
     const filtered = teacherProgressCache.filter(item => {
-      const searchable = [item.nama_siswa, item.kelas, item.subject, item.topic, item.status].join(" ").toLowerCase();
-      return (!search || searchable.includes(search)) && (!kelas || String(item.kelas || "") === kelas);
+      const searchable = [item.nama_siswa, item.kelas, item.materi].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) &&
+        (!kelas || String(item.kelas || "") === kelas);
     });
-    const rows = filtered.map(item =>
-      "<tr><td>" + escapeHtml(item.nama_siswa || "-") + "</td><td>" + escapeHtml(item.kelas || "-") +
-      "</td><td>" + escapeHtml(item.subject || "-") + "</td><td>" + escapeHtml(item.topic || "-") +
-      "</td><td>" + escapeHtml(item.progress_percent != null ? item.progress_percent + "%" : (item.status || "Belum mulai")) +
-      "</td><td>" + escapeHtml(teacherDate(item.updated_at || item.created_at)) + "</td></tr>"
-    );
+
+    const rows = filtered.map((item, index) => {
+      const student = escapeHtml(item.nama_siswa || "-") +
+        "<br><span class='teacher-muted'>" + escapeHtml(item.kelas || "-") + "</span>";
+      const materi = item.memiliki_progres
+        ? escapeHtml(item.materi || "-")
+        : "<span class='teacher-muted'>Belum ada progres</span>";
+      const updated = item.diperbarui_pada ? escapeHtml(teacherDate(item.diperbarui_pada)) : "-";
+      return "<tr><td>" + (index + 1) + "</td><td>" + student +
+        "</td><td>" + materi + "</td><td>" + teacherNumber(item.misi_selesai) +
+        "</td><td>" + teacherNumber(item.total_poin) + "</td><td>" +
+        escapeHtml(item.skor_terakhir == null ? "-" : item.skor_terakhir) +
+        "</td><td>" + updated + "</td></tr>";
+    });
+
     document.getElementById("teacherProgressTable").innerHTML =
-      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherProgressCache.length + " data progres.</p>" +
-      teacherTable(["Nama Siswa", "Kelas", "Mata Pelajaran", "Materi", "Progres", "Pembaruan"], rows);
+      '<p class="teacher-muted">Menampilkan ' + filtered.length +
+      " dari " + teacherProgressCache.length + " baris progres.</p>" +
+      teacherTable(
+        ["No.", "Nama Siswa / Kelas", "Materi", "Misi Selesai", "Total Poin", "Skor Terakhir", "Diperbarui"],
+        rows
+      );
   }
 
+
+  async function loadTeacherMonitoring() {
+    const target = document.getElementById("teacherMonitoringTable");
+    target.textContent = "Memuat catatan pengawasan kuis...";
+    try {
+      const data = await teacherApi("/pelanggaran", { limit: 500 });
+      if (!data.success || !Array.isArray(data.pelanggaran)) {
+        throw new Error(data.error || "Data pengawasan kuis tidak valid.");
+      }
+      teacherMonitoringCache = data.pelanggaran;
+      const classes = [...new Set(teacherMonitoringCache.map(item => String(item.student_class || "").trim()).filter(Boolean))].sort();
+      const classFilter = document.getElementById("teacherMonitoringClassFilter");
+      const previous = classFilter.value;
+      classFilter.innerHTML = '<option value="">Semua kelas</option>' +
+        classes.map(k => '<option value="' + escapeHtml(k) + '">' + escapeHtml(k) + '</option>').join("");
+      if (classes.includes(previous)) classFilter.value = previous;
+      renderTeacherMonitoring();
+    } catch (error) {
+      target.textContent = "Catatan pengawasan belum berhasil dimuat: " + error.message;
+    }
+  }
+
+  function renderTeacherMonitoring() {
+    const search = document.getElementById("teacherMonitoringSearch").value.trim().toLowerCase();
+    const kelas = document.getElementById("teacherMonitoringClassFilter").value;
+    const filtered = teacherMonitoringCache.filter(item => {
+      const searchable = [item.student_name, item.student_class].join(" ").toLowerCase();
+      return (!search || searchable.includes(search)) && (!kelas || String(item.student_class || "") === kelas);
+    });
+    const rows = filtered.map((item, index) => {
+      const student = escapeHtml(item.student_name || "-") + "<br><span class='teacher-muted'>" + escapeHtml(item.student_class || "-") + "</span>";
+      const severity = Number(item.occurrence_count) >= 3
+        ? "<strong style='color:#b42318'>Peringatan serius</strong>"
+        : "Peringatan";
+      return "<tr><td>" + (index + 1) + "</td><td>" + student + "</td><td>" +
+        teacherNumber(item.occurrence_count) + "</td><td>" + severity + "</td><td>" +
+        escapeHtml(teacherDate(item.occurred_at)) + "</td><td><code>" +
+        escapeHtml(String(item.quiz_id || "").slice(0, 8)) + "</code></td></tr>";
+    });
+    document.getElementById("teacherMonitoringTable").innerHTML =
+      '<p class="teacher-muted">Menampilkan ' + filtered.length + " dari " + teacherMonitoringCache.length + " catatan.</p>" +
+      teacherTable(["No.", "Nama Siswa / Kelas", "Frekuensi", "Tingkat", "Waktu", "ID Kuis"], rows);
+  }
+
+  async function loadTeacherAnswers(sessionId, button) {
+    const detail = document.getElementById("teacherAnswerDetail");
+    detail.innerHTML = '<div class="teacher-detail">Memuat detail jawaban sesi ' + escapeHtml(sessionId) + '...</div>';
+    if (button) button.disabled = true;
+    try {
+      const data = await teacherApi("/jawaban", { sessionId });
+      if (!data.success) throw new Error(data.error || "Detail jawaban tidak tersedia.");
+      const session = data.sesi || {};
+      const student = data.siswa || {};
+      const answers = Array.isArray(data.jawaban) ? data.jawaban : [];
+      const summary = document.createElement("div");
+      summary.className = "teacher-detail";
+      const heading = document.createElement("h3");
+      heading.textContent = "Detail Sesi Belajar #" + session.id;
+      const identity = document.createElement("p");
+      identity.textContent = "Siswa: " + (student.nama || "-") + " · Kelas: " + (student.kelas || "-");
+      const meta = document.createElement("p");
+      meta.textContent = "Mata pelajaran: " + (session.subject || "-") +
+        " · Materi: " + (session.topic || "-") +
+        " · Nilai: " + (session.score == null ? "-" : session.score) +
+        " · Benar: " + (session.correct_answers ?? "-") +
+        " · Salah: " + (session.wrong_answers ?? "-");
+      summary.append(heading, identity, meta);
+      const answersHeading = document.createElement("h4");
+      answersHeading.textContent = "Jawaban Siswa (" + answers.length + ")";
+      summary.appendChild(answersHeading);
+      answers.forEach((answer, index) => {
+        const box = document.createElement("article");
+        box.className = "teacher-answer";
+        const title = document.createElement("strong");
+        title.textContent = "Soal " + (answer.question_number || index + 1) +
+          (answer.is_correct === true ? " — Tepat" : answer.is_correct === false ? " — Belum tepat" : "");
+        const question = document.createElement("p");
+        question.textContent = answer.question || "-";
+        const studentAnswer = document.createElement("p");
+        studentAnswer.textContent = "Jawaban siswa: " + (answer.student_answer || "(tidak dijawab)");
+        const correctAnswer = document.createElement("p");
+        correctAnswer.textContent = "Kunci/acuan jawaban: " + (answer.correct_answer || "-");
+        const feedback = document.createElement("p");
+        feedback.textContent = "Umpan balik: " + (answer.feedback || "-");
+        const explanation = document.createElement("p");
+        explanation.textContent = "Pembahasan: " + (answer.explanation || "-");
+        box.append(title, question, studentAnswer, correctAnswer, feedback, explanation);
+        summary.appendChild(box);
+      });
+      detail.replaceChildren(summary);
+      detail.scrollIntoView({ behavior: "smooth", block: "start" });
+    } catch (error) {
+      detail.textContent = "Detail jawaban gagal dimuat: " + error.message;
+    } finally {
+      if (button) button.disabled = false;
+    }
+  }
+
+  document.querySelectorAll("[data-teacher-tab]").forEach(button => {
+    button.addEventListener("click", async function() {
+      const tab = this.dataset.teacherTab;
+      document.querySelectorAll(".teacher-sidebar [data-teacher-tab]").forEach(item => item.classList.toggle("active", item.dataset.teacherTab === tab));
+      const pageTitles = { dashboard: "Dashboard Overview", students: "Data Siswa", monitoring: "Pemantauan Kuis", history: "Riwayat Belajar", progress: "Progres Belajar", print: "Cetak Hasil Kuis", recap: "Rekap Nilai" };
+      document.getElementById("teacherPageTitle").textContent = pageTitles[tab] || "Dashboard Guru";
+      document.getElementById("teacherPanelDashboard").classList.toggle("hidden", tab !== "dashboard");
+      document.getElementById("teacherPanelStudents").classList.toggle("hidden", tab !== "students");
+      document.getElementById("teacherPanelHistory").classList.toggle("hidden", tab !== "history");
+      document.getElementById("teacherPanelProgress").classList.toggle("hidden", tab !== "progress");
+      document.getElementById("teacherPanelMonitoring").classList.toggle("hidden", tab !== "monitoring");
+      document.getElementById("teacherPanelPrint").classList.toggle("hidden", tab !== "print");
+      document.getElementById("teacherPanelRecap").classList.toggle("hidden", tab !== "recap");
+      hideTeacherStatus();
+      if (tab === "dashboard") await loadTeacherDashboard();
+      if (tab === "students") await loadTeacherStudents();
+      if (tab === "history") await loadTeacherHistory();
+      if (tab === "progress") await loadTeacherProgress();
+      if (tab === "monitoring") await loadTeacherMonitoring();
+      if (tab === "print") await loadTeacherPrintResults();
+      if (tab === "recap") await loadTeacherGradeRecap();
+    });
+  });
+
+  document.getElementById("teacherStudentsTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-manage-history-id]");
+    if (button) selectStudentForHistory(button.dataset.manageHistoryId);
+  });
+  document.getElementById("teacherStudentHistoryManager").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-delete-history-category]");
+    if (button) deleteSelectedStudentHistory(button.dataset.deleteHistoryCategory, button);
+  });
+
+  document.getElementById("teacherStudentSearch").addEventListener("input", renderTeacherStudents);
+  document.getElementById("teacherClassFilter").addEventListener("change", renderTeacherStudents);
+  document.getElementById("teacherHistorySearch").addEventListener("input", renderTeacherHistory);
+  document.getElementById("teacherHistoryLimit").addEventListener("change", () => loadTeacherHistory());
   document.getElementById("teacherProgressSearch").addEventListener("input", renderTeacherProgress);
   document.getElementById("teacherProgressClassFilter").addEventListener("change", renderTeacherProgress);
+  document.getElementById("teacherMonitoringSearch").addEventListener("input", renderTeacherMonitoring);
+  document.getElementById("teacherMonitoringClassFilter").addEventListener("change", renderTeacherMonitoring);
+  document.getElementById("teacherMonitoringRefresh").addEventListener("click", loadTeacherMonitoring);
+  document.getElementById("teacherPrintSearch").addEventListener("input", renderTeacherPrintResults);
+  document.getElementById("teacherPrintClassFilter").addEventListener("change", renderTeacherPrintResults);
+  document.getElementById("teacherPrintRefresh").addEventListener("click", loadTeacherPrintResults);
+  document.getElementById("teacherRecapSearch").addEventListener("input", renderTeacherGradeRecap);
+  document.getElementById("teacherRecapClassFilter").addEventListener("change", renderTeacherGradeRecap);
+  document.getElementById("teacherRecapRefresh").addEventListener("click", loadTeacherGradeRecap);
+  document.getElementById("teacherRecapPrint").addEventListener("click", printTeacherGradeRecap);
 
-  restoreStudentSession();
-})();
+  document.getElementById("teacherPrintTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-print-session-id]");
+    if (button) printTeacherQuizResult(button.dataset.printSessionId, button);
+  });
+
+  document.getElementById("teacherHistoryTable").addEventListener("click", function(event) {
+    const button = event.target.closest("button[data-session-id]");
+    if (button) loadTeacherAnswers(button.dataset.sessionId, button);
+  });
+
+  document.getElementById("teacherLogoutButton").addEventListener("click", function() {
+    teacherAccessToken = "";
+    teacherStudentsCache = [];
+    teacherHistoryCache = [];
+    teacherProgressCache = [];
+    teacherMonitoringCache = [];
+    teacherPrintCache = [];
+    teacherRecapCache = [];
+    teacherSelectedHistoryStudent = null;
+    document.getElementById("teacherStudentHistoryManager").classList.add("hidden");
+    teacherDashboard.classList.add("hidden");
+    teacherLoginCard.classList.add("hidden");
+    teacherLoginForm.reset();
+    showLogin();
+    hideTeacherStatus(teacherLoginStatus);
+    teacherStatus("Anda telah keluar dari Dashboard Guru.", "success", loginStatus);
+  });
+
+
+  // Tautan lama /guru.html dapat diarahkan ke index.html#guru.
+  if (window.location.hash.toLowerCase() === "#guru") {
+    openTeacherLogin();
+  }
+
+  validateExistingSession();
 </script>
-
 </body>
 </html>
