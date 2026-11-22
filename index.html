@@ -293,27 +293,31 @@
       #teacherDashboard .teacher-dashboard-grid { grid-template-columns: minmax(0, 1fr); }
     }
 
-    /* PERBAIKAN LAYOUT LANDSCAPE DASHBOARD GURU: override aturan lama */
+
+    /* PERBAIKAN LANDSCAPE FINAL:
+       Perlebar wadah utama HANYA ketika Dashboard Guru sedang aktif.
+       Halaman login dan pembelajaran siswa tetap memakai lebar semula. */
+    body:has(#teacherDashboard:not(.hidden)) main {
+      max-width: none !important;
+      width: 100% !important;
+      margin: 24px 0 !important;
+      padding: 0 18px !important;
+    }
+    body:has(#teacherDashboard:not(.hidden)) #teacherDashboard {
+      width: 100% !important;
+      max-width: 1600px !important;
+      margin: 0 auto !important;
+    }
     @media (min-width: 900px) {
-      #teacherDashboard:not(.hidden) { display:flex !important; flex-direction:row !important; width:calc(100% - 24px) !important; max-width:none !important; margin:12px auto !important; min-height:calc(100vh - 24px) !important; }
-      #teacherDashboard .teacher-sidebar { flex:0 0 225px !important; width:225px !important; min-height:calc(100vh - 24px) !important; }
-      #teacherDashboard .teacher-main { flex:1 1 auto !important; width:auto !important; min-width:0 !important; padding:24px clamp(18px,2vw,36px) 18px !important; }
-      #teacherDashboard .teacher-topbar { flex-direction:row !important; align-items:center !important; }
-      #teacherDashboard .teacher-stats { grid-template-columns:repeat(4,minmax(0,1fr)) !important; }
-      #teacherDashboard .teacher-dashboard-grid { grid-template-columns:minmax(0,1.55fr) minmax(0,1fr) !important; }
-      #teacherDashboard .teacher-filter { grid-template-columns:minmax(180px,1fr) minmax(150px,220px) auto !important; }
-    }
-    @media (min-width: 1200px) {
-      #teacherDashboard .teacher-main { padding-left:36px !important; padding-right:36px !important; }
-      #teacherDashboard .teacher-dashboard-grid { grid-template-columns:minmax(0,1.8fr) minmax(330px,1fr) !important; }
-    }
-    @media (max-width: 899px) {
-      #teacherDashboard:not(.hidden) { display:block !important; width:calc(100% - 16px) !important; margin:8px auto !important; }
-      #teacherDashboard .teacher-sidebar { width:100% !important; flex-basis:auto !important; min-height:0 !important; }
-      #teacherDashboard .teacher-main { width:100% !important; }
+      body:has(#teacherDashboard:not(.hidden)) #teacherDashboard {
+        min-height: calc(100vh - 48px);
+      }
+      body:has(#teacherDashboard:not(.hidden)) #teacherDashboard .teacher-main {
+        min-width: 0;
+      }
     }
 
-</style>
+  </style>
 </head>
 
 <body>
